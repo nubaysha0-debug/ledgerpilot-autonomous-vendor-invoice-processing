@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   Info,
+  ShieldCheck,
   X,
   XCircle,
 } from 'lucide-react';
@@ -17,6 +18,20 @@ import { formatINR } from '../../ledger/money';
 
 export function cn(...values: Array<string | false | null | undefined>): string {
   return values.filter(Boolean).join(' ');
+}
+
+export function SimulatedStamp({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-md border border-[#d9ded8] bg-[#f3f5f2] px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.08em] text-[#52605a]',
+        className,
+      )}
+    >
+      <ShieldCheck className="h-3 w-3" />
+      SIMULATED — no money transferred
+    </span>
+  );
 }
 
 export function Money({

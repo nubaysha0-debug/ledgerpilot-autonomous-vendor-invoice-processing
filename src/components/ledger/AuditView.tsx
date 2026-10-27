@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ArrowUpRight, ScrollText, Search, ShieldCheck } from 'lucide-react';
 import type { AuditEvent, DemoState } from '../../ledger/types';
 import { formatDate, formatTime } from '../../ledger/money';
-import { Button, Card, EmptyState, cn } from './ui';
+import { Button, Card, EmptyState, SimulatedStamp, cn } from './ui';
 
 type AuditFilter = 'All' | 'invoice' | 'payment' | 'vendor' | 'system';
 
@@ -97,6 +97,7 @@ export function AuditView({
           <p className="mt-1 text-[12.5px] text-[#66706a]">
             {state.audit.length} immutable events · every approval and simulated transfer is recorded
           </p>
+          <SimulatedStamp className="mt-2" />
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-[#d4e2d8] bg-[#eef5f0] px-3 py-2 text-[11px] font-medium text-[#1f5c45]">
           <ShieldCheck className="h-4 w-4" />

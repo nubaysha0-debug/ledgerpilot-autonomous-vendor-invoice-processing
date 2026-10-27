@@ -13,6 +13,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type { Business, BusinessProfileInput, DemoState } from '../../ledger/types';
+import type { LedgerMode } from '../../ledger/store';
 import { formatDateTime, formatINR } from '../../ledger/money';
 import {
   INDIAN_STATES,
@@ -40,6 +41,7 @@ import {
 interface DataViewProps {
   state: DemoState;
   canEdit: boolean;
+  mode?: LedgerMode;
   onSaveProfile: (input: BusinessProfileInput) => void;
   onImport: (
     input: WorkspaceImportInput,
@@ -197,6 +199,7 @@ function FileDrop({
 export function DataView({
   state,
   canEdit,
+  mode = 'local',
   onSaveProfile,
   onImport,
   onRestore,
@@ -337,14 +340,15 @@ export function DataView({
             Data &amp; backups
           </h1>
           <p className="mt-1 max-w-2xl text-[12.5px] leading-relaxed text-[#66706a]">
-            Load your own vendors and invoices from CSV. Files are read in this browser and
-            nothing is uploaded to a server.
+            {mode === 'api'
+              ? 'Load vendors and invoices from CSV into the PostgreSQL workspace. The FastAPI service validates and stores each import.'
+              : 'Load your own vendors and invoices from CSV. Files are read in this browser and nothing is uploaded to a server.'}
           </p>
         </div>
         <div className="flex flex-wrap gap-1.5">
           <span className="inline-flex items-center gap-1 rounded-md border border-[#d9ded8] bg-[#f3f5f2] px-2 py-1 text-[10px] font-medium text-[#4e5a52]">
             <Database className="h-3 w-3" />
-            Local only
+            {mode === 'api' ? 'PostgreSQL API' : 'Local only'}
           </span>
           <span className="inline-flex items-center gap-1 rounded-md border border-[#d9ded8] bg-[#f3f5f2] px-2 py-1 text-[10px] font-medium text-[#4e5a52]">
             <ShieldAlert className="h-3 w-3" />
@@ -369,13 +373,15 @@ export function DataView({
       <div className="flex items-start gap-2.5 rounded-lg border border-[#efd7ad] bg-[#fdf8ee] p-3 text-[11.5px] leading-relaxed text-[#7a4a12]">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
         <div>
-          <div className="font-semibold">Local demo storage, not a system of record</div>
+          <div className="font-semibold">
+            {mode === 'api'
+              ? 'Shared demo workspace, not a system of record'
+              : 'Local demo storage, not a system of record'}
+          </div>
           <div className="mt-0.5">
-            Records live in this browser&apos;s localStorage. They are not encrypted, not backed
-            up by a server, and can be read or changed by anyone with access to this browser.
-            Do not import live bank credentials, full account numbers or customer data. A full
-            account number is reduced to its last four digits on import. Reset demo data
-            overwrites everything here.
+            {mode === 'api'
+              ? 'Records are stored in the local PostgreSQL demo database through the FastAPI service. The data is synthetic, unencrypted and not backed up like production data. Do not import live bank credentials, full account numbers or customer data. A full account number is reduced to its last four digits on import. Reset demo data overwrites the whole workspace.'
+              : 'Records live in this browser’s localStorage. They are not encrypted, not backed up by a server, and can be read or changed by anyone with access to this browser. Do not import live bank credentials, full account numbers or customer data. A full account number is reduced to its last four digits on import. Reset demo data overwrites everything here.'}
           </div>
         </div>
       </div>
@@ -1006,8 +1012,9 @@ export function DataView({
               </span>
             </Button>
             <p className="mt-2 text-[10px] leading-relaxed text-[#8a938d]">
-              Reset discards imported vendors, invoices, payments and profile changes in this
-              browser. Download a backup first if you need to keep them.
+              {mode === 'api'
+                ? 'Reset discards imported vendors, invoices, payments and profile changes in the PostgreSQL workspace. Download a backup first if you need to keep them.'
+                : 'Reset discards imported vendors, invoices, payments and profile changes in this browser. Download a backup first if you need to keep them.'}
             </p>
           </Card>
         </div>

@@ -120,6 +120,8 @@ export interface Payment {
   attempt: number;
   note?: string;
   rejectionReason?: string;
+  /** Server-issued key used to execute the payment idempotently. */
+  idempotencyKey?: string;
 }
 
 export type AuditActorRole = Role | 'system';

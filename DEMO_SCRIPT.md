@@ -9,14 +9,33 @@ vendor, GST portal or external API is connected.
 
 ## Before the judges arrive
 
+Pick one path and rehearse it end to end.
+
+**Full stack (recommended for the API story):**
+
+```powershell
+docker compose up --build
+# in a second terminal
+npm install --legacy-peer-deps --no-audit --no-fund
+npm run dev
+```
+
+**Browser-only fallback (no Docker, no database):**
+
 ```powershell
 npm install --legacy-peer-deps --no-audit --no-fund
 npm run dev
 ```
 
-Open `http://localhost:3000`. In **Demo controls**, click **Reset demo data** and confirm, so the
-run starts from the seed: 12 vendors, 16 invoices, 10 payment records, 19 audit events,
-Ramesh Patil (owner) acting.
+**Windows without Docker:** follow **README → Quick start → B** (embedded PostgreSQL). Start
+`python -m backend.scripts.dev_postgres` and `uvicorn` before `npm run dev`; the header will show
+**PostgreSQL API**.
+
+Open `http://localhost:3000`. With Docker running, the header shows **PostgreSQL API**; without it,
+the console falls back to **Browser-local** after a short health probe. To force the fallback, open
+`http://localhost:3000/?api=off`. In **Demo controls**, click **Reset demo data** and confirm, so the
+run starts from the seed: 12 vendors, 16 invoices, 10 payment records, 19 audit events, Ramesh Patil
+(owner) acting.
 
 Optional confidence checks:
 
@@ -37,7 +56,8 @@ Say:
 
 > This is LedgerPilot, the payables console for a small Indian electricals and hardware retailer.
 > Everything you see is synthetic, and the demo banner stays on screen: payments are simulated,
-> no money moves.
+> no money moves. The header shows whether we are reading the PostgreSQL API or the browser
+> fallback; both render the same workspace.
 
 ### 0:15 – 0:45 · Show the working capital picture
 
@@ -125,11 +145,13 @@ workspace, so run it after the main story or reset afterwards.
 
 Say:
 
-> The files never leave this browser. Two CSVs are enough to replace the seed: vendors first, then
-> invoice lines. Repeat the vendor GSTIN and invoice number on extra rows to add line items to one
-> invoice. `amount_paid` is an opening balance, not proof that money moved. Bank accounts are treated
-> as verified unless the CSV says `bank_status=verify`, so the screen tells the owner to confirm them
-> with the supplier before paying.
+> In browser-local mode the files never leave this browser. In API mode the preview still runs
+> here, then the validated workspace is sent to the local FastAPI service and stored in PostgreSQL.
+> Two CSVs are enough to replace the seed: vendors first, then invoice lines. Repeat the vendor
+> GSTIN and invoice number on extra rows to add line items to one invoice. `amount_paid` is an
+> opening balance, not proof that money moved. Bank accounts are treated as verified unless the CSV
+> says `bank_status=verify`, so the screen tells the owner to confirm them with the supplier before
+> paying.
 
 To show the safety net:
 
@@ -138,8 +160,10 @@ To show the safety net:
 2. Click **Reset to demo data** and confirm. The seeded ₹3,83,870 payable returns.
 3. Restore the JSON file and confirm. The imported workspace returns.
 
-> Import, backup, restore and reset all run against localStorage. Reset is deliberate and total.
-> This is a demo store, not an encrypted system of record, so do not load live bank credentials.
+> CSV is the interchange format; the JSON backup is the exact workspace, including payments and
+> audit events. In API mode import, backup, restore and reset operate on PostgreSQL through
+> FastAPI. In browser-local mode they operate on localStorage. Reset is deliberate and total. This
+> is a demo store, not an encrypted system of record, so do not load live bank credentials.
 
 ---
 
@@ -197,7 +221,8 @@ No. There is no bank or PSP connection. Execution creates a mock transaction id 
 Four layers: the duplicate check flags the same vendor, invoice number and amount; duplicate copies
 are excluded from payables; the available balance subtracts simulated, pending and approved amounts;
 and execution is idempotent, so replaying an executed payment returns the existing mock transaction
-instead of creating another one.
+instead of creating another one. In API mode the idempotency key is stored on the payment and
+re-checked in the execution transaction; ten parallel executes still produce one success.
 
 **What happens if the vendor changes their bank account?**
 New payment requests are blocked until the owner verifies the account by phone. The approval also
@@ -217,20 +242,26 @@ demonstrates a deliberate ₹135 arithmetic exception.
 
 **Is the role switch only hiding buttons?**
 No. Approval, rejection, execution, retry, revision and bank verification call an owner check in the
-store. A staff role also cannot record a payment. The UI toast is only the visible part.
+store. A staff role also cannot record a payment. In API mode FastAPI enforces the same roles from
+`X-Actor-Id` inside the service layer, so a direct HTTP call with the wrong role receives
+`403 ROLE_NOT_ALLOWED`. The UI toast is only the visible part.
 
 **Is this using AI or Gemini?**
-The demo path does not call any model or external service. It runs entirely in the browser on
-deterministic seed data. The extraction/intake layer is represented by structured invoice records
-and the rendered source document; the checks and controls operate on that structured record.
+The core demo path is deterministic and needs no model key. In API mode FastAPI and PostgreSQL run
+the checks and persistence; in browser-local mode the same rules run in TypeScript. The optional
+Gemini/extractor adapters are not required, and the assistant falls back to rules. A simulated
+invented figure is rejected rather than displayed. The honest framing is “AI-assisted intake and
+explanation, deterministic money controls.”
 
 **Where does the data live?**
-In `localStorage`, so a refresh keeps the session. **Data → Reset demo data** restores the
-deterministic seed. **Data** also imports vendor and invoice CSVs entirely in the browser, exports
-master data as CSV, and writes an exact JSON backup that can be restored. Imported bank accounts are
-treated as verified unless the file says `bank_status=verify`; confirm them with the supplier before
-paying. A production build would use a database, encryption and an append-only audit store, but the
-demo has no backend dependency and no paid services.
+In API mode, in PostgreSQL behind the FastAPI service, so a refresh and an API restart keep the
+session. In browser-local mode, in `localStorage`. **Data → Reset demo data** restores the
+deterministic seed in whichever store is active. **Data** also imports vendor and invoice CSVs,
+exports master data as CSV, and writes an exact JSON backup that can be restored in either mode.
+Imported bank accounts are treated as verified unless the file says `bank_status=verify`; confirm
+them with the supplier before paying. A production build would use authentication, encryption,
+backups and an append-only audit store, but the demo has no paid services and no live bank
+connection.
 
 **Why not auto-pay everything?**
 The product is built around owner control for a small business: the accountant records, the owner
@@ -257,6 +288,16 @@ maker-checker controls already define the contract those integrations would feed
 - **Imported payable looks different from the printed total?** Check `amount_paid`, `gst_rate` and
   `stated_total`. Opening paid amounts reduce the balance; a printed-total mismatch is flagged for
   review.
+- **The header says Browser-local but the API should be running?** Open
+  `http://127.0.0.1:8000/api/health` in a tab. If it does not answer, start the stack or switch to
+  the embedded PostgreSQL path. If the API is on another port, set `VITE_API_URL` before
+  `npm run dev` and restart Vite. Use `?api=off` only when you deliberately want the local demo.
+- **A red "Server sync problem" banner appears?** The last loaded workspace is still on screen, so
+  the demo can continue, but the change was not saved. Check PostgreSQL and the API log, note the
+  error and correlation id, then reload. Re-executing a payment is safe because the stored
+  idempotency key replays the original mock reference instead of paying twice.
+- **Reset fails with `DB_UNAVAILABLE` or `SEED_REQUIRED`?** PostgreSQL is down or migrations have
+  not been applied. Run `python -m backend.scripts.migrate`, confirm `/api/health`, then reset.
 - **The state looks edited from a previous run?** **Demo controls → Reset demo data**. Reset
   overwrites imported data; download a JSON backup first if you need it.
 - **Port 3000 is busy?** Stop the other process or set `PORT` before `npm run dev`.

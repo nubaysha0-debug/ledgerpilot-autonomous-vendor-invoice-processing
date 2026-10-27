@@ -16,6 +16,7 @@ import {
   Money,
   PaymentStatusBadge,
   SectionHeading,
+  SimulatedStamp,
 } from './ui';
 
 function QueueRow({
@@ -110,6 +111,7 @@ export function PaymentsView({
           <p className="mt-1 text-[12.5px] text-[#66706a]">
             {state.payments.length} payment records · simulated only · no bank connection
           </p>
+          <SimulatedStamp className="mt-2" />
         </div>
         <div className="flex flex-wrap items-center gap-4 rounded-lg border border-[#e2e0d8] bg-white px-4 py-2.5">
           <div>

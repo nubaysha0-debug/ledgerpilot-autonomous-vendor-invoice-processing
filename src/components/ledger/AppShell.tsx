@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  AlertTriangle,
   Building2,
   CalendarDays,
   Database,
@@ -66,7 +67,7 @@ function errorMessage(error: unknown): string {
 }
 
 export function AppShell() {
-  const { state, views, totals, actions } = useLedger();
+  const { state, views, totals, actions, mode, apiStatus, apiBaseUrl, syncError } = useLedger();
   const [view, setView] = useState<WorkspaceView>('overview');
   const [invoiceFilter, setInvoiceFilter] = useState('All');
   const [vendorFilter, setVendorFilter] = useState<string | null>(null);
@@ -161,8 +162,8 @@ export function AppShell() {
     );
   };
 
-  const recordPayment = (input: PaymentRequestInput) => {
-    const payment = actions.recordPayment(input);
+  const recordPayment = async (input: PaymentRequestInput) => {
+    const payment = await actions.recordPayment(input);
     setPaymentInvoiceId(null);
     notify(
       'success',
@@ -183,9 +184,9 @@ export function AppShell() {
       detail:
         'The approval is tied to the invoice total and the vendor bank account. If either changes, the approval becomes stale and execution is blocked.',
       confirmLabel: 'Approve payment',
-      onConfirm: () => {
+      onConfirm: async () => {
         try {
-          actions.approvePayment(paymentId);
+          await actions.approvePayment(paymentId);
           notify(
             'success',
             'Payment approved',
@@ -207,9 +208,9 @@ export function AppShell() {
       label: 'Reason for rejection',
       placeholder: 'For example: vendor invoice is under dispute; re-record after the credit note.',
       confirmLabel: 'Reject payment',
-      onConfirm: (text) => {
+      onConfirm: async (text) => {
         try {
-          actions.rejectPayment(paymentId, text);
+          await actions.rejectPayment(paymentId, text);
           notify(
             'info',
             'Payment rejected',
@@ -243,9 +244,9 @@ export function AppShell() {
       detail:
         'No bank connection is used and no money is transferred. Execution is idempotent: replaying the same payment returns the existing mock transaction.',
       confirmLabel: 'Execute simulation',
-      onConfirm: () => {
+      onConfirm: async () => {
         try {
-          const result = actions.executePayment(paymentId);
+          const result = await actions.executePayment(paymentId);
           if (result.replayed) {
             notify(
               'info',
@@ -282,9 +283,9 @@ export function AppShell() {
       detail:
         'Retry moves the payment back to Approved. The owner still has to execute it, so no automatic retry loop can move money.',
       confirmLabel: 'Authorise retry',
-      onConfirm: () => {
+      onConfirm: async () => {
         try {
-          actions.retryPayment(paymentId);
+          await actions.retryPayment(paymentId);
           notify(
             'success',
             'Retry authorised',
@@ -307,9 +308,9 @@ export function AppShell() {
       detail:
         'The invoice total changes, so any existing approval fingerprint no longer matches. Execution will be blocked until the owner re-approves.',
       confirmLabel: 'Add revision',
-      onConfirm: () => {
+      onConfirm: async () => {
         try {
-          const updated = actions.reviseInvoice(invoiceId);
+          const updated = await actions.reviseInvoice(invoiceId);
           notify(
             'info',
             'Invoice revised',
@@ -331,9 +332,9 @@ export function AppShell() {
       body: `Confirm that you called ${vendor.name} on the number already on file and verified ${vendor.bank.accountMasked} before unblocking payments.`,
       detail: `Previous account: ${vendor.bank.previousAccountMasked ?? 'not recorded'}. Never verify a bank change using contact details supplied in the same email.`,
       confirmLabel: 'Verify account',
-      onConfirm: () => {
+      onConfirm: async () => {
         try {
-          actions.verifyVendorBank(vendorId);
+          await actions.verifyVendorBank(vendorId);
           notify('success', 'Vendor bank verified', `Payments to ${vendor.name} are unblocked.`);
         } catch (error) {
           notify('error', 'Verification failed', errorMessage(error));
@@ -347,28 +348,37 @@ export function AppShell() {
     setConfirm({
       title: 'Reset the demo?',
       subtitle: 'Demo reset',
-      body: 'Restore the seeded vendors, invoices, payments and audit events. Anything recorded in this browser session will be discarded.',
+      body: `Restore the seeded vendors, invoices, payments and audit events. Anything recorded in ${
+        mode === 'api' ? 'the PostgreSQL workspace' : 'this browser session'
+      } will be discarded.`,
       detail:
         'The seed is deterministic: 12 vendors, 16 invoices, 10 payment records and 19 audit events as of 27 Oct 2026.',
-      note: 'Reset deletes the workspace saved in this browser. It does not contact any bank or vendor.',
+      note:
+        mode === 'api'
+          ? 'Reset replaces the workspace stored in PostgreSQL through the FastAPI service. It does not contact any bank or vendor.'
+          : 'Reset deletes the workspace saved in this browser. It does not contact any bank or vendor.',
       confirmLabel: 'Reset demo data',
       tone: 'danger',
-      onConfirm: () => {
-        actions.resetDemo();
-        setOpenInvoiceId(null);
-        setPaymentInvoiceId(null);
-        setInvoiceFilter('All');
-        setVendorFilter(null);
-        setDataEpoch((value) => value + 1);
-        notify('info', 'Demo reset', 'Seed data restored. You are acting as Ramesh Patil.');
+      onConfirm: async () => {
+        try {
+          await actions.resetDemo();
+          setOpenInvoiceId(null);
+          setPaymentInvoiceId(null);
+          setInvoiceFilter('All');
+          setVendorFilter(null);
+          setDataEpoch((value) => value + 1);
+          notify('info', 'Demo reset', 'Seed data restored. You are acting as Ramesh Patil.');
+        } catch (error) {
+          notify('error', 'Reset failed', errorMessage(error));
+        }
       },
     });
   };
 
-  const saveProfile = (input: BusinessProfileInput) => {
+  const saveProfile = async (input: BusinessProfileInput) => {
     if (!ensureOwner()) return;
     try {
-      actions.updateBusinessProfile(input);
+      await actions.updateBusinessProfile(input);
       notify(
         'success',
         'Business profile saved',
@@ -393,12 +403,15 @@ export function AppShell() {
           ? `${summary.warningCount} warning${summary.warningCount === 1 ? '' : 's'} appeared in the preview. `
           : ''
       }Vendor bank accounts are treated as verified unless the CSV marks them for verification. Download a JSON backup first if you need to keep the current state.`,
-      note: 'This replaces data stored in this browser. It does not contact any bank or vendor.',
+      note:
+        mode === 'api'
+          ? 'This replaces the workspace stored in PostgreSQL. It does not contact any bank or vendor.'
+          : 'This replaces data stored in this browser. It does not contact any bank or vendor.',
       confirmLabel: 'Import and replace',
       tone: 'danger',
-      onConfirm: () => {
+      onConfirm: async () => {
         try {
-          const result = actions.importWorkspace(input);
+          const result = await actions.importWorkspace(input);
           setOpenInvoiceId(null);
           setPaymentInvoiceId(null);
           setInvoiceFilter('All');
@@ -424,15 +437,17 @@ export function AppShell() {
     setConfirm({
       title: 'Restore this backup?',
       subtitle: 'Workspace restore',
-      body: `Replace everything in this browser with the backup containing ${summary.vendorCount} vendors and ${summary.invoiceCount} invoices.`,
+      body: `Replace ${
+        mode === 'api' ? 'the PostgreSQL workspace' : 'everything in this browser'
+      } with the backup containing ${summary.vendorCount} vendors and ${summary.invoiceCount} invoices.`,
       detail:
         'Payments, audit events and the team stored in the backup are restored. The current acting role is kept so the owner does not silently become a different user.',
       note: 'Only restore a backup you created or trust. Backup files contain vendor and payment data in plain text.',
       confirmLabel: 'Restore backup',
       tone: 'danger',
-      onConfirm: () => {
+      onConfirm: async () => {
         try {
-          const restored = actions.restoreWorkspace(backupJson);
+          const restored = await actions.restoreWorkspace(backupJson);
           const restoredValue = restored.invoices.reduce(
             (total, invoice) => total + invoice.totalPaise,
             0,
@@ -583,9 +598,11 @@ export function AppShell() {
             </button>
           </div>
           <p className="mt-2 px-0.5 text-[9px] leading-relaxed text-[#8a938d]">
-            {importedWorkspace
-              ? 'Local workspace data in this browser. Not connected to any bank, GST portal or vendor.'
-              : 'Synthetic demo data. Not connected to any bank, GST portal or vendor.'}
+            {mode === 'api'
+              ? 'PostgreSQL workspace via the local FastAPI service. Payments are simulated.'
+              : importedWorkspace
+                ? 'Local workspace data in this browser. Not connected to any bank, GST portal or vendor.'
+                : 'Synthetic demo data in this browser. Not connected to any bank, GST portal or vendor.'}
           </p>
         </div>
       </aside>
@@ -628,6 +645,28 @@ export function AppShell() {
               </div>
 
               <div className="flex items-center gap-2">
+                <span
+                  title={
+                    apiStatus === 'connected'
+                      ? `${apiBaseUrl} · PostgreSQL workspace`
+                      : syncError ?? 'Browser localStorage fallback'
+                  }
+                  className={cn(
+                    'hidden items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.07em] sm:inline-flex',
+                    apiStatus === 'connected'
+                      ? 'border-[#c7ddce] bg-[#edf6ef] text-[#1f5c45]'
+                      : apiStatus === 'connecting'
+                        ? 'border-[#d9ded8] bg-[#f3f5f2] text-[#66706a]'
+                        : 'border-[#e7e5dc] bg-[#fafaf7] text-[#8a938d]',
+                  )}
+                >
+                  <Database className="h-3 w-3" />
+                  {apiStatus === 'connected'
+                    ? 'PostgreSQL API'
+                    : apiStatus === 'connecting'
+                      ? 'Connecting'
+                      : 'Browser-local'}
+                </span>
                 <div className="hidden items-center gap-1.5 text-[10px] text-[#66706a] xl:flex">
                   <CalendarDays className="h-3.5 w-3.5 text-[#8a938d]" />
                   As of {formatDateTime(state.business.asOf)} IST
@@ -662,6 +701,16 @@ export function AppShell() {
             </div>
           </header>
         </div>
+
+        {mode === 'api' && syncError ? (
+          <div className="flex items-start gap-2 border-b border-[#efc9c5] bg-[#fbeceb] px-4 py-2 text-[11px] leading-relaxed text-[#a3261f] sm:px-6">
+            <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <span>
+              Server sync problem: {syncError} The last loaded workspace is still shown; retry
+              the action after the API is back.
+            </span>
+          </div>
+        ) : null}
 
         <nav className="flex gap-1 overflow-x-auto border-b border-[#e2e0d8] bg-[#fbfaf7] px-3 py-1.5 no-scrollbar lg:hidden">
           {NAV.map((item) => {
@@ -739,6 +788,7 @@ export function AppShell() {
             <DataView
               key={dataEpoch}
               state={state}
+              mode={mode}
               canEdit={state.role === 'owner'}
               onSaveProfile={saveProfile}
               onImport={requestImport}
@@ -790,15 +840,19 @@ export function AppShell() {
         state={state}
         onClose={() => setControlsOpen(false)}
         onSetRole={setRole}
-        onToggleForceFailure={() => {
-          actions.toggleForceFailure();
-          notify(
-            'info',
-            state.forceNextFailure ? 'Failure path disarmed' : 'Failure path armed',
-            state.forceNextFailure
-              ? 'The next simulated transfer will run normally.'
-              : 'The next execution will be declined once by the mock gateway.',
-          );
+        onToggleForceFailure={async () => {
+          try {
+            const armed = await actions.toggleForceFailure();
+            notify(
+              'info',
+              armed ? 'Failure path armed' : 'Failure path disarmed',
+              armed
+                ? 'The next execution will be declined once by the mock gateway.'
+                : 'The next simulated transfer will run normally.',
+            );
+          } catch (error) {
+            notify('error', 'Failure path not changed', errorMessage(error));
+          }
         }}
         onReset={requestReset}
       />

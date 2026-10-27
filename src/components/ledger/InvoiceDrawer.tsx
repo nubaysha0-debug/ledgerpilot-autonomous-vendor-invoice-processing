@@ -30,6 +30,7 @@ import {
   CheckRow,
   Money,
   PaymentStatusBadge,
+  SimulatedStamp,
   StatusBadge,
   cn,
 } from './ui';
@@ -472,6 +473,7 @@ export function InvoiceDrawer({
                     {view.payments.length} record{view.payments.length === 1 ? '' : 's'}
                   </span>
                 </div>
+                <SimulatedStamp className="mb-2.5" />
                 {view.payments.length === 0 ? (
                   <div className="rounded-md border border-dashed border-[#d9d7ce] px-3 py-5 text-center text-[11px] text-[#8a938d]">
                     No payment recorded against this invoice.

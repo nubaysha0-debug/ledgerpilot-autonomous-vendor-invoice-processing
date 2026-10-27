@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type {
   AuditEvent,
   BusinessProfileInput,
@@ -11,6 +11,7 @@ import type {
   TeamMember,
 } from './types';
 import { buildInitialState } from './seed';
+import { apiBaseUrl, ApiError, createApi, type LedgerApi } from './api';
 import {
   fingerprintFor,
   getInvoiceView,
@@ -145,24 +146,41 @@ export interface ExecuteResult {
   failed: boolean;
 }
 
+/** "api" means PostgreSQL through FastAPI; "local" is the browser fallback. */
+export type LedgerMode = 'api' | 'local';
+
+export type ApiStatus = 'connecting' | 'connected' | 'offline' | 'disabled';
+
+export interface LedgerRuntime {
+  mode: LedgerMode;
+  apiStatus: ApiStatus;
+  apiBaseUrl: string;
+  syncError: string | null;
+}
+
 export interface LedgerActions {
   setRole: (role: Role) => void;
-  updateBusinessProfile: (input: BusinessProfileInput) => void;
-  importWorkspace: (input: WorkspaceImportInput) => ImportPreview;
-  restoreWorkspace: (backupJson: string) => DemoState;
-  recordPayment: (input: PaymentRequestInput) => Payment;
-  approvePayment: (paymentId: string) => Payment;
-  rejectPayment: (paymentId: string, reason: string) => Payment;
-  executePayment: (paymentId: string) => ExecuteResult;
-  retryPayment: (paymentId: string) => Payment;
-  reviseInvoice: (invoiceId: string) => Invoice;
-  verifyVendorBank: (vendorId: string) => void;
-  toggleForceFailure: () => void;
-  resetDemo: () => void;
+  updateBusinessProfile: (input: BusinessProfileInput) => Promise<void>;
+  importWorkspace: (input: WorkspaceImportInput) => Promise<ImportPreview>;
+  restoreWorkspace: (backupJson: string) => Promise<DemoState>;
+  recordPayment: (input: PaymentRequestInput) => Promise<Payment>;
+  approvePayment: (paymentId: string) => Promise<Payment>;
+  rejectPayment: (paymentId: string, reason: string) => Promise<Payment>;
+  executePayment: (paymentId: string) => Promise<ExecuteResult>;
+  retryPayment: (paymentId: string) => Promise<Payment>;
+  reviseInvoice: (invoiceId: string) => Promise<Invoice>;
+  verifyVendorBank: (vendorId: string) => Promise<void>;
+  toggleForceFailure: () => Promise<boolean>;
+  resetDemo: () => Promise<void>;
 }
 
 export function useLedger() {
   const [state, setState] = useState<DemoState>(loadState);
+  const [mode, setMode] = useState<LedgerMode>('local');
+  const [apiStatus, setApiStatus] = useState<ApiStatus>('connecting');
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const modeRef = useRef<LedgerMode>('local');
+  const apiRef = useRef<LedgerApi | null>(null);
 
   useEffect(() => {
     try {
@@ -172,6 +190,94 @@ export function useLedger() {
     }
   }, [state]);
 
+  // Try the FastAPI service once at startup. If it answers, PostgreSQL becomes
+  // the source of truth; otherwise the console keeps the local workspace.
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      setApiStatus('disabled');
+      return;
+    }
+    const override = new URLSearchParams(window.location.search).get('api');
+    if (override === 'off') {
+      modeRef.current = 'local';
+      setMode('local');
+      setApiStatus('disabled');
+      return;
+    }
+
+    let cancelled = false;
+    const api = createApi();
+    apiRef.current = api;
+    setApiStatus('connecting');
+
+    api
+      .bootstrap()
+      .then((boot) => {
+        if (cancelled) return;
+        modeRef.current = 'api';
+        setMode('api');
+        setApiStatus('connected');
+        setSyncError(null);
+        setState((current) => {
+          const roles = new Set(boot.workspace.team.map((member) => member.role));
+          const role = roles.has(current.role) ? current.role : boot.workspace.role;
+          return { ...boot.workspace, role };
+        });
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        modeRef.current = 'local';
+        setMode('local');
+        setApiStatus('offline');
+        setSyncError(
+          error instanceof Error
+            ? error.message
+            : 'The LedgerPilot API is not reachable. Using the browser workspace.',
+        );
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const applyWorkspace = (workspace: DemoState, options: { resetRole?: boolean } = {}) => {
+    setState((current) => {
+      const roles = new Set(workspace.team.map((member) => member.role));
+      const preferred: Role = options.resetRole ? 'owner' : current.role;
+      const role = roles.has(preferred) ? preferred : workspace.role;
+      return { ...workspace, role };
+    });
+  };
+
+  const runApi = async <T,>(work: (api: LedgerApi) => Promise<T>): Promise<T> => {
+    const api = apiRef.current;
+    if (!api) throw new Error('The API client is not ready. Reload the page.');
+    try {
+      const value = await work(api);
+      setSyncError(null);
+      return value;
+    } catch (error) {
+      // Validation, role and stale-approval errors are normal business
+      // responses, not a lost connection. Only surface connectivity and
+      // server faults as a sync banner; the action toast still shows the
+      // specific 4xx message.
+      const syncFault =
+        !(error instanceof ApiError) ||
+        error.unreachable ||
+        error.status >= 500 ||
+        error.code === 'API_BAD_RESPONSE';
+      setSyncError(
+        syncFault
+          ? error instanceof Error
+            ? error.message
+            : 'The API call failed.'
+          : null,
+      );
+      throw error;
+    }
+  };
+
   const views = useMemo(() => getInvoiceViews(state), [state]);
   const totals = useMemo(() => getTotals(state, views), [state, views]);
 
@@ -180,7 +286,14 @@ export function useLedger() {
       setState((current) => ({ ...current, role }));
     },
 
-    updateBusinessProfile(input) {
+    async updateBusinessProfile(input) {
+      assertOwner(state, 'change company settings');
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          await api.updateBusiness(input);
+          applyWorkspace(await api.workspace());
+        });
+      }
       const actor = assertOwner(state, 'change company settings');
       const errors = validateBusinessProfile(input);
       if (errors.length > 0) throw new Error(errors[0]);
@@ -221,8 +334,8 @@ export function useLedger() {
       }));
     },
 
-    importWorkspace(input) {
-      const actor = assertOwner(state, 'import a workspace');
+    async importWorkspace(input) {
+      assertOwner(state, 'import a workspace');
       const at = demoNow(state);
       const preview = previewImport({
         ...input,
@@ -238,6 +351,7 @@ export function useLedger() {
         throw new Error('No valid vendors were found in the CSV.');
       }
 
+      const actor = assertOwner(state, 'import a workspace');
       const audit = makeAudit(
         state,
         actor,
@@ -246,8 +360,28 @@ export function useLedger() {
         'system',
         'workspace-import',
         `Imported ${preview.vendorCount} vendors, ${preview.invoiceCount} invoices and ${preview.openingPaymentCount} opening payments from CSV.`,
-        `Replaced the previous workspace. Invoice value ${formatINR(preview.invoiceValuePaise)}; opening paid ${formatINR(preview.openingPaidPaise)}. Data is stored in this browser only.`,
+        `Replaced the previous workspace. Invoice value ${formatINR(preview.invoiceValuePaise)}; opening paid ${formatINR(preview.openingPaidPaise)}. ${
+          modeRef.current === 'api'
+            ? 'Saved to the shared PostgreSQL workspace.'
+            : 'Data is stored in this browser only.'
+        }`,
       );
+
+      if (modeRef.current === 'api' && apiRef.current) {
+        const next: DemoState = {
+          ...state,
+          vendors: preview.vendors,
+          invoices: preview.invoices,
+          payments: preview.payments,
+          audit: [audit],
+          forceNextFailure: false,
+          seededAt: at,
+        };
+        await runApi(async (api) => {
+          applyWorkspace(await api.replaceWorkspace(next));
+        });
+        return preview;
+      }
 
       setState((current) => ({
         ...current,
@@ -262,7 +396,8 @@ export function useLedger() {
       return preview;
     },
 
-    restoreWorkspace(backupJson) {
+    async restoreWorkspace(backupJson) {
+      assertOwner(state, 'restore a backup');
       const actor = assertOwner(state, 'restore a backup');
       const restored = parseBackup(backupJson);
       const at = demoNow(restored);
@@ -274,7 +409,7 @@ export function useLedger() {
         'system',
         'workspace-restore',
         `${actor.name} restored a workspace backup with ${restored.vendors.length} vendors and ${restored.invoices.length} invoices.`,
-        'The backup replaced the vendors, invoices, payments and audit events stored in this browser.',
+        'The backup replaced the vendors, invoices, payments and audit events stored in this workspace.',
       );
       const next: DemoState = {
         ...restored,
@@ -283,13 +418,28 @@ export function useLedger() {
         audit: [...restored.audit, audit],
         seededAt: at,
       };
+
+      if (modeRef.current === 'api' && apiRef.current) {
+        const workspace = await runApi((api) => api.replaceWorkspace(next));
+        applyWorkspace(workspace);
+        return workspace;
+      }
+
       setState(next);
       return next;
     },
 
-    recordPayment(input) {
+    async recordPayment(input) {
       if (state.role === 'staff') {
         throw new Error('Staff can view invoices but cannot record payments.');
+      }
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          const created = await api.createPayment(input, state.role);
+          const workspace = await api.workspace();
+          applyWorkspace(workspace);
+          return findPayment(workspace, String(created.id));
+        });
       }
       const invoice = findInvoice(state, input.invoiceId);
       const view = getInvoiceView(state, invoice);
@@ -343,7 +493,16 @@ export function useLedger() {
       return payment;
     },
 
-    approvePayment(paymentId) {
+    async approvePayment(paymentId) {
+      assertOwner(state);
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          await api.approvePayment(paymentId);
+          const workspace = await api.workspace();
+          applyWorkspace(workspace);
+          return findPayment(workspace, paymentId);
+        });
+      }
       const actor = assertOwner(state);
       const payment = findPayment(state, paymentId);
       const invoice = findInvoice(state, payment.invoiceId);
@@ -388,7 +547,19 @@ export function useLedger() {
       return updated;
     },
 
-    rejectPayment(paymentId, reason) {
+    async rejectPayment(paymentId, reason) {
+      assertOwner(state);
+      if (!reason.trim()) {
+        throw new Error('Enter a reason for rejecting the payment.');
+      }
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          await api.rejectPayment(paymentId, reason.trim());
+          const workspace = await api.workspace();
+          applyWorkspace(workspace);
+          return findPayment(workspace, paymentId);
+        });
+      }
       const actor = assertOwner(state);
       const payment = findPayment(state, paymentId);
       const invoice = findInvoice(state, payment.invoiceId);
@@ -429,7 +600,21 @@ export function useLedger() {
       return updated;
     },
 
-    executePayment(paymentId) {
+    async executePayment(paymentId) {
+      assertOwner(state);
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          const current = findPayment(state, paymentId);
+          const result = await api.executePayment(current);
+          const workspace = await api.workspace();
+          applyWorkspace(workspace);
+          return {
+            payment: findPayment(workspace, paymentId),
+            replayed: result.replayed,
+            failed: result.failed,
+          };
+        });
+      }
       const actor = assertOwner(state);
       const payment = findPayment(state, paymentId);
       const invoice = findInvoice(state, payment.invoiceId);
@@ -525,7 +710,16 @@ export function useLedger() {
       return { payment: executed, replayed: false, failed: false };
     },
 
-    retryPayment(paymentId) {
+    async retryPayment(paymentId) {
+      assertOwner(state);
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          await api.retryPayment(paymentId);
+          const workspace = await api.workspace();
+          applyWorkspace(workspace);
+          return findPayment(workspace, paymentId);
+        });
+      }
       const actor = assertOwner(state);
       const payment = findPayment(state, paymentId);
       const invoice = findInvoice(state, payment.invoiceId);
@@ -566,7 +760,18 @@ export function useLedger() {
       return updated;
     },
 
-    reviseInvoice(invoiceId) {
+    async reviseInvoice(invoiceId) {
+      assertOwner(state);
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          await api.reviseInvoice(invoiceId);
+          const workspace = await api.workspace();
+          applyWorkspace(workspace);
+          const invoice = workspace.invoices.find((item) => item.id === invoiceId);
+          if (!invoice) throw new Error('The revised invoice was not returned by the workspace.');
+          return invoice;
+        });
+      }
       const actor = assertOwner(state);
       const invoice = findInvoice(state, invoiceId);
       if (invoice.duplicateOf) throw new Error('A duplicate copy cannot be revised.');
@@ -622,7 +827,15 @@ export function useLedger() {
       return updated;
     },
 
-    verifyVendorBank(vendorId) {
+    async verifyVendorBank(vendorId) {
+      assertOwner(state);
+      if (modeRef.current === 'api' && apiRef.current) {
+        await runApi(async (api) => {
+          await api.verifyVendorBank(vendorId);
+          applyWorkspace(await api.workspace());
+        });
+        return;
+      }
       const actor = assertOwner(state);
       const vendor = state.vendors.find((item) => item.id === vendorId);
       if (!vendor) throw new Error('Vendor was not found.');
@@ -656,17 +869,41 @@ export function useLedger() {
       }));
     },
 
-    toggleForceFailure() {
+    async toggleForceFailure() {
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          const armed = await api.toggleForceFailure();
+          applyWorkspace(await api.workspace());
+          return armed;
+        });
+      }
+      const next = !state.forceNextFailure;
       setState((current) => ({
         ...current,
         forceNextFailure: !current.forceNextFailure,
       }));
+      return next;
     },
 
-    resetDemo() {
+    async resetDemo() {
+      if (modeRef.current === 'api' && apiRef.current) {
+        return runApi(async (api) => {
+          const workspace = await api.resetDemo();
+          applyWorkspace(workspace, { resetRole: true });
+        });
+      }
       setState(buildInitialState());
     },
   };
 
-  return { state, views, totals, actions };
+  return {
+    state,
+    views,
+    totals,
+    actions,
+    mode,
+    apiStatus,
+    apiBaseUrl: apiRef.current?.baseUrl ?? apiBaseUrl(),
+    syncError,
+  };
 }

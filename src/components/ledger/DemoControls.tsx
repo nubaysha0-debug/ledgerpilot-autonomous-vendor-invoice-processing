@@ -44,8 +44,8 @@ export function DemoControls({
       <div className="flex items-start gap-2 rounded-lg border border-[#d4e2d8] bg-[#eef5f0] p-3 text-[11px] leading-relaxed text-[#1f5c45]">
         <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         <span>
-          This console runs entirely on synthetic data in your browser. Nothing is sent to a bank,
-          a vendor, or an external API. Seeded as of {formatDateTime(state.business.asOf)} IST.
+          This console runs on synthetic data. Nothing is sent to a bank, a vendor, or an external
+          API. Seeded as of {formatDateTime(state.business.asOf)} IST.
         </span>
       </div>
 

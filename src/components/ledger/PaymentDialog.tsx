@@ -7,7 +7,7 @@ import type {
   PaymentRequestInput,
 } from '../../ledger/types';
 import { formatDate, formatINR, toPaise } from '../../ledger/money';
-import { Button, Modal } from './ui';
+import { Button, Modal, SimulatedStamp } from './ui';
 
 const MODES: PaymentMode[] = ['NEFT', 'UPI', 'RTGS', 'Cheque', 'Cash'];
 
@@ -20,7 +20,7 @@ export function PaymentDialog({
   state: DemoState;
   view: InvoiceView;
   onClose: () => void;
-  onSubmit: (input: PaymentRequestInput) => void;
+  onSubmit: (input: PaymentRequestInput) => void | Promise<void>;
 }) {
   const actorName =
     state.team.find((member) => member.role === state.role)?.name ?? 'Accountant';
@@ -32,11 +32,13 @@ export function PaymentDialog({
   const [requestedDate, setRequestedDate] = useState(state.business.asOf.slice(0, 10));
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const parsedPaise = Math.round(Number(amount.replace(/,/g, '')) * 100);
   const blockedChecks = view.checks.filter((check) => check.status === 'fail');
 
-  const submit = () => {
+  const submit = async () => {
+    if (submitting) return;
     setError('');
     if (!Number.isFinite(parsedPaise) || parsedPaise <= 0) {
       setError('Enter a payment amount greater than zero.');
@@ -55,8 +57,9 @@ export function PaymentDialog({
       return;
     }
 
+    setSubmitting(true);
     try {
-      onSubmit({
+      await onSubmit({
         invoiceId: view.invoice.id,
         amountPaise: parsedPaise,
         mode,
@@ -68,6 +71,8 @@ export function PaymentDialog({
       setError(
         submitError instanceof Error ? submitError.message : 'The payment could not be recorded.',
       );
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -87,9 +92,9 @@ export function PaymentDialog({
             <Button variant="ghost" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={submit} disabled={view.availablePaise <= 0}>
+            <Button onClick={submit} disabled={view.availablePaise <= 0 || submitting}>
               <Wallet className="h-3.5 w-3.5" />
-              Record request
+              {submitting ? 'Recording…' : 'Record request'}
             </Button>
           </div>
         </div>
@@ -231,8 +236,10 @@ export function PaymentDialog({
 
       <div className="mt-3 flex items-start gap-2 text-[10.5px] leading-relaxed text-[#8a938d]">
         <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-        This creates a request only. Ramesh Patil must approve it, then execute the simulated
-        transfer. No money moves.
+        <span>
+          <SimulatedStamp className="mr-1 align-middle" /> This creates a request only. Ramesh Patil
+          must approve it, then execute the simulated transfer. No money moves.
+        </span>
       </div>
     </Modal>
   );
