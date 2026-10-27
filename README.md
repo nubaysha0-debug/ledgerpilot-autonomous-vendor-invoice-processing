@@ -2,6 +2,8 @@
 
 **A simulated accounts-payable console for a small Indian electricals and hardware shop.**
 
+**Live demo:** <https://ledgerpilot-autonomous-vendor-invoi.vercel.app> — Neon PostgreSQL, simulated payments only.
+
 LedgerPilot checks supplier bills, explains exceptions with evidence, keeps a maker-checker
 approval trail, tracks partial payments in paise-exact INR, and executes **simulated** payments.
 There is no bank, UPI, card or payment-gateway connection.
