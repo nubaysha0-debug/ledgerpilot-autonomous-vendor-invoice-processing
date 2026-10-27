@@ -46,3 +46,59 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(112, 94, 70, 0.35);
 }
+
+/* ---- LedgerPilot product console ---------------------------------------- */
+/* Additive tokens for the payables workspace. The original landing palette
+   stays available for the legacy sections retained in src/components/. */
+
+:root {
+  --lp-canvas: #f4f3ee;
+  --lp-surface: #ffffff;
+  --lp-surface-muted: #fafaf7;
+  --lp-ink: #1c2420;
+  --lp-ink-muted: #66706a;
+  --lp-ink-faint: #8a938d;
+  --lp-line: #e2e0d8;
+  --lp-line-soft: #eeede8;
+  --lp-green: #1f5c45;
+  --lp-green-deep: #163c2d;
+  --lp-green-wash: #eef5f0;
+  --lp-amber: #a15c12;
+  --lp-amber-wash: #fdf8ee;
+  --lp-red: #a3261f;
+  --lp-red-wash: #fdf4f3;
+  --lp-blue: #245b89;
+  --lp-blue-wash: #eef5fb;
+}
+
+body {
+  background-color: var(--lp-canvas);
+  color: var(--lp-ink);
+}
+
+.lp-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'cv02' 1;
+}
+
+.lp-grid-lines {
+  background-image: linear-gradient(to right, rgba(28, 36, 32, 0.035) 1px, transparent 1px);
+  background-size: 64px 100%;
+}
+
+::selection {
+  background: #cfe0d4;
+  color: #163c2d;
+}
+
+/* Keep wide data tables readable without ugly native scrollbars. */
+.lp-table-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(112, 94, 70, 0.25) transparent;
+}
+
+@media print {
+  .lp-no-print {
+    display: none !important;
+  }
+}
