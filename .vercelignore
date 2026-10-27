@@ -1,0 +1,12 @@
+# Never upload local secrets or machine-specific state to a Vercel build.
+.git/
+node_modules/
+dist/
+coverage/
+.pytest_cache/
+.vercel/
+.env*
+backend/.pgdata/
+backend/data/
+backend/.pg_url
+**/__pycache__/
