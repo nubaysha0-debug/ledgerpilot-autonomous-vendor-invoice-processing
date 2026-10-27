@@ -193,9 +193,11 @@ deployment origin, so the production console defaults to a same-origin API and n
    ```
 
    The runner is idempotent, so it is safe to repeat after pulling new migrations.
-3. Import the GitHub repository at <https://vercel.com/new>. Use the repository root (no Root
-   Directory override); `vercel.json` declares both services. If the dashboard offers a choice
-   between separate services, keep both `web` and `api`.
+3. Import the GitHub repository at <https://vercel.com/new> and keep **Root Directory** at the
+   repository root (leave it empty, or `.`). If the project already exists, open
+   **Settings → Build & Deployment** and set **Framework Preset** to **Services** (CLI:
+   `vercel project update --framework services`). `vercel.json` declares both services; the build
+   log should show `web` (Vite) and `api` (FastAPI).
 4. Add these Project → Settings → Environment Variables (Production, and Preview if wanted):
 
    | Key | Value |
