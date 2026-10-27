@@ -20,7 +20,9 @@ import type {
 } from './types';
 
 const DEFAULT_BASE_URL = 'http://127.0.0.1:8000';
-const HEALTH_TIMEOUT_MS = 2500;
+// Serverless cold starts (Vercel + a suspended Neon database) can take a few
+// seconds. A short timeout would silently demote the console to local mode.
+const HEALTH_TIMEOUT_MS = 8000;
 const REQUEST_TIMEOUT_MS = 12000;
 
 export interface ApiHealth {
@@ -77,6 +79,13 @@ export class ApiError extends Error {
 export function apiBaseUrl(): string {
   const configured = (import.meta.env.VITE_API_URL as string | undefined)?.trim();
   if (configured) return configured.replace(/\/+$/, '');
+  // On Vercel the console and the FastAPI service share one domain
+  // (see vercel.json), so a production build defaults to same-origin. This
+  // works on every preview URL without rebuilding. Set VITE_API_URL to keep
+  // the API on a separate host instead.
+  if (import.meta.env.PROD && typeof window !== 'undefined') {
+    return window.location.origin;
+  }
   return DEFAULT_BASE_URL;
 }
 

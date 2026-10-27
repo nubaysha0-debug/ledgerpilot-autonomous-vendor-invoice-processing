@@ -49,9 +49,17 @@ class Settings:
             if item.strip()
         ]
     )
+    # Vercel Functions ship a read-only bundle; only /tmp is writable. Original
+    # uploads are therefore ephemeral there (set UPLOAD_DIR to a mounted volume
+    # if you need them to outlive a warm instance).
     upload_dir: Path = field(
         default_factory=lambda: Path(
-            os.getenv("UPLOAD_DIR", str(BACKEND_DIR / "data" / "uploads"))
+            os.getenv("UPLOAD_DIR")
+            or (
+                "/tmp/ledgerpilot/uploads"
+                if os.getenv("VERCEL")
+                else str(BACKEND_DIR / "data" / "uploads")
+            )
         )
     )
     max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "10"))

@@ -158,13 +158,65 @@ credentials, API keys or customer data.
 | `GEMINI_API_KEY` | empty | Optional | Only for optional AI experiments. Never commit it. |
 | `MAX_UPLOAD_MB` | `10` | API | Upload size ceiling. |
 | `MAX_PDF_PAGES` | `5` | API | PDF page ceiling. |
-| `UPLOAD_DIR` | `backend/data/uploads` | API | Original-file storage. Ignored by Git. |
+| `UPLOAD_DIR` | `backend/data/uploads` (`/tmp/ledgerpilot/uploads` on Vercel) | API | Original-file storage. Ignored by Git. |
 | `MOCK_ALLOW_FORCED_FAILURE` | `true` | API | Allows the demo failure toggle. |
-| `VITE_API_URL` | `http://127.0.0.1:8000` | Frontend | API base URL used by the React adapter. |
+| `VITE_API_URL` | `http://127.0.0.1:8000` in dev; same origin in production | Frontend | API base URL used by the React adapter. |
 | `LP_TEST_DATABASE_URL` | unset | Tests | Optional external disposable DB; name must end in `_test`. |
 
 The checked-in `firebase-applet-config.json` is a sanitized AI Studio scaffold file with a
 placeholder API key. The LedgerPilot console does not import Firebase.
+
+---
+
+## Deploy to Vercel
+
+The repository ships [`vercel.json`](vercel.json) using two [Vercel Services](https://vercel.com/docs/services)
+on one domain:
+
+| Service | Root | Role |
+| --- | --- | --- |
+| `web` | `./` | Vite build of the React console (`dist/`) |
+| `api` | `backend/` | FastAPI ASGI app (`app.main:app`, PostgreSQL) |
+
+Requests to `/api/*` are rewritten to `api`; everything else goes to `web`. Both share the
+deployment origin, so the production console defaults to a same-origin API and needs no
+`VITE_API_URL`.
+
+1. Create a free PostgreSQL 16+ database (Neon or Supabase). Copy the pooled connection string,
+   including `?sslmode=require`.
+2. Apply the migrations once from this machine:
+
+   ```powershell
+   $env:DATABASE_URL = "postgresql://USER:PASSWORD@HOST/DB?sslmode=require"
+   python -m pip install -r backend/requirements.txt
+   python -m backend.scripts.migrate
+   ```
+
+   The runner is idempotent, so it is safe to repeat after pulling new migrations.
+3. Import the GitHub repository at <https://vercel.com/new>. Use the repository root (no Root
+   Directory override); `vercel.json` declares both services. If the dashboard offers a choice
+   between separate services, keep both `web` and `api`.
+4. Add these Project → Settings → Environment Variables (Production, and Preview if wanted):
+
+   | Key | Value |
+   | --- | --- |
+   | `DATABASE_URL` | The PostgreSQL connection string from step 1. |
+   | `CORS_ALLOWED_ORIGINS` | Optional. Only needed when the console and API use different origins. |
+   | `UPLOAD_DIR` | Optional. Defaults to `/tmp/ledgerpilot/uploads` on Vercel. |
+   | `VITE_API_URL` | Optional. Only set it when the API lives on another host; then redeploy. |
+
+5. Deploy and verify `https://<project>.vercel.app/api/health` returns `"database": "ok"` and
+   `"migrations": 6`. The console header should show **PostgreSQL API**; `/docs` is the Swagger UI.
+
+Notes:
+
+- Vercel Functions are stateless. Uploaded originals live in `/tmp` and can disappear on a cold
+  start or a different instance. Vendors, invoices, approvals, payments and audit events are in
+  PostgreSQL and persist.
+- For the browser-only demo, import the repository as a plain Vite project and open `/?api=off`.
+  No database or API is required.
+- Free tiers are sufficient for a demo. Neon pauses idle databases, so the first request after a
+  pause can take a few seconds; the console waits up to 8 seconds for `/api/health`.
 
 ---
 
