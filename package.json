@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "check:ledger": "tsx scripts/check-ledger.ts"
+    "check:ledger": "tsx scripts/check-ledger.ts",
+    "check:import": "tsx scripts/check-import.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

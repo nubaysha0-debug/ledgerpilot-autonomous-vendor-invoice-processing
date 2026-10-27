@@ -349,8 +349,10 @@ export function Button({
 
 export interface ConfirmState {
   title: string;
+  subtitle?: string;
   body: string;
   detail?: string;
+  note?: string | null;
   confirmLabel: string;
   tone?: 'primary' | 'danger';
   onConfirm: () => void;
@@ -369,7 +371,7 @@ export function ConfirmDialog({
       open={Boolean(state)}
       onClose={onClose}
       title={state.title}
-      subtitle="Simulated payment control"
+      subtitle={state.subtitle ?? 'Simulated payment control'}
       width="max-w-lg"
       footer={
         <div className="flex items-center justify-end gap-2">
@@ -394,9 +396,11 @@ export function ConfirmDialog({
           {state.detail}
         </div>
       ) : null}
-      <p className="mt-4 rounded-lg border border-[#efd7ad] bg-[#fdf8ee] p-3 text-[11.5px] text-[#7a4a12]">
-        This is a demo. No money will leave any bank account.
-      </p>
+      {state.note === null ? null : (
+        <p className="mt-4 rounded-lg border border-[#efd7ad] bg-[#fdf8ee] p-3 text-[11.5px] text-[#7a4a12]">
+          {state.note ?? 'This is a demo. No money will leave any bank account.'}
+        </p>
+      )}
     </Modal>
   );
 }

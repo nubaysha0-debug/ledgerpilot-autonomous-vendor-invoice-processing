@@ -11,6 +11,7 @@ export function InvoiceDocument({
   business: Business;
 }) {
   const isDuplicate = Boolean(invoice.duplicateOf);
+  const gstRate = invoice.gstRate ?? 18;
 
   return (
     <div className="mx-auto max-w-3xl">
@@ -143,17 +144,17 @@ export function InvoiceDocument({
             {invoice.gstType === 'intra' ? (
               <>
                 <div className="flex justify-between border-b border-[#eeede8] py-1.5">
-                  <span>CGST 9%</span>
+                  <span>CGST {gstRate / 2}%</span>
                   <span className="font-mono text-[#1c2420]">{formatINR(invoice.cgstPaise)}</span>
                 </div>
                 <div className="flex justify-between border-b border-[#eeede8] py-1.5">
-                  <span>SGST 9%</span>
+                  <span>SGST {gstRate / 2}%</span>
                   <span className="font-mono text-[#1c2420]">{formatINR(invoice.sgstPaise)}</span>
                 </div>
               </>
             ) : (
               <div className="flex justify-between border-b border-[#eeede8] py-1.5">
-                <span>IGST 18%</span>
+                <span>IGST {gstRate}%</span>
                 <span className="font-mono text-[#1c2420]">{formatINR(invoice.igstPaise)}</span>
               </div>
             )}
@@ -170,7 +171,9 @@ export function InvoiceDocument({
 
         <div className="mt-6 flex items-end justify-between border-t border-[#e6e4db] pt-4">
           <div className="text-[10px] text-[#8a938d]">
-            Synthetic demo document · not valid for GST filing.
+            {invoice.importedAt
+              ? 'Imported workspace document · not valid for GST filing.'
+              : 'Synthetic demo document · not valid for GST filing.'}
           </div>
           <div className="text-right text-[10.5px] text-[#66706a]">
             <div className="mb-6">For {vendor.name}</div>
@@ -180,8 +183,9 @@ export function InvoiceDocument({
       </div>
 
       <p className="mt-3 text-center text-[10.5px] leading-relaxed text-[#8a938d]">
-        This is the document as printed by the vendor. LedgerPilot extracts the fields separately
-        and flags any difference between the printed total and the line arithmetic.
+        {invoice.importedAt
+          ? 'This document is rendered from CSV fields imported into this browser. Verify the supplier’s original invoice, GSTIN and bank details before paying.'
+          : 'This is the document as printed by the vendor. LedgerPilot extracts the fields separately and flags any difference between the printed total and the line arithmetic.'}
       </p>
     </div>
   );

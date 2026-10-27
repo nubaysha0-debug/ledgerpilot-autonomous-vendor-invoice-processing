@@ -304,6 +304,7 @@ interface InvoiceInput {
   grnNumber?: string;
   placeOfSupply?: string;
   gstType?: 'intra' | 'inter';
+  gstRate?: number;
   lines: InvoiceLine[];
   source?: 'email' | 'upload' | 'manual';
   duplicateOf?: string;
@@ -314,11 +315,12 @@ interface InvoiceInput {
 function makeInvoice(input: InvoiceInput): Invoice {
   const { statedTotalRupees, ...rest } = input;
   const taxablePaise = sumPaise(input.lines.map((item) => item.totalPaise));
-  const gst = computeGst(taxablePaise, input.gstType ?? 'intra');
+  const gst = computeGst(taxablePaise, input.gstType ?? 'intra', input.gstRate ?? 18);
   return {
     ...rest,
     placeOfSupply: input.placeOfSupply ?? 'Maharashtra (27)',
     gstType: input.gstType ?? 'intra',
+    gstRate: input.gstRate ?? 18,
     source: input.source ?? 'email',
     taxablePaise,
     cgstPaise: gst.cgstPaise,

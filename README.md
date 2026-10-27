@@ -18,3 +18,28 @@ View your app in AI Studio: https://ai.studio/apps/37f4fe3e-fa79-4643-a77f-90391
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+---
+
+## LedgerPilot local demo
+
+This repository now runs the LedgerPilot payables console. The AI Studio scaffold above is not
+used by the demo path, and no Gemini key or external service is required.
+
+```powershell
+npm install --legacy-peer-deps --no-audit --no-fund
+npm run dev
+```
+
+Open `http://localhost:3000`. Use **Data** to import vendor and invoice CSVs, download a JSON
+backup, restore it, or reset to the synthetic seed. See `DEMO_SCRIPT.md` for the walkthrough,
+numbers and caveats.
+
+Confidence checks:
+
+```powershell
+npm run check:ledger   # 116 ledger assertions
+npm run check:import   # 77 CSV and round-trip assertions
+npm run lint
+npm run build
+```

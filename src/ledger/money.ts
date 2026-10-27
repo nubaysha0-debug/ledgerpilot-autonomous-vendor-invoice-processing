@@ -23,13 +23,23 @@ export function sumPaise(values: number[]): number {
 }
 
 /**
- * GST is computed in paise. Intra-state splits 9% CGST + 9% SGST.
- * Inter-state uses 18% IGST. The invoice total is rounded to the nearest rupee.
+ * GST is computed in paise. Intra-state splits the rate into equal CGST and
+ * SGST halves; inter-state uses the full rate as IGST. The invoice total is
+ * rounded to the nearest rupee. Rates are held as basis points so 12% and 5%
+ * do not accumulate floating-point drift.
  */
-export function computeGst(taxablePaise: number, gstType: GstType): GstBreakup {
-  const cgstPaise = gstType === 'intra' ? Math.round((taxablePaise * 9) / 100) : 0;
-  const sgstPaise = gstType === 'intra' ? Math.round((taxablePaise * 9) / 100) : 0;
-  const igstPaise = gstType === 'inter' ? Math.round((taxablePaise * 18) / 100) : 0;
+export function computeGst(
+  taxablePaise: number,
+  gstType: GstType,
+  gstRate = 18,
+): GstBreakup {
+  const rateHundredths = Math.round(gstRate * 100);
+  const cgstPaise =
+    gstType === 'intra' ? Math.round((taxablePaise * rateHundredths) / 20000) : 0;
+  const sgstPaise =
+    gstType === 'intra' ? Math.round((taxablePaise * rateHundredths) / 20000) : 0;
+  const igstPaise =
+    gstType === 'inter' ? Math.round((taxablePaise * rateHundredths) / 10000) : 0;
   const totalTaxPaise = cgstPaise + sgstPaise + igstPaise;
   const beforeRound = taxablePaise + totalTaxPaise;
   const totalPaise = Math.round(beforeRound / 100) * 100;

@@ -6,6 +6,7 @@ import {
   Ban,
   Building2,
   CalendarDays,
+  FileSpreadsheet,
   FileText,
   Landmark,
   Plus,
@@ -245,6 +246,12 @@ export function InvoiceDrawer({
                     Rev {view.invoice.version}
                   </span>
                 ) : null}
+                {view.invoice.importedAt ? (
+                  <span className="inline-flex items-center gap-1 rounded border border-[#c9dced] bg-[#eef5fb] px-1.5 py-0.5 text-[9.5px] font-medium text-[#245b89]">
+                    <FileSpreadsheet className="h-2.5 w-2.5" />
+                    Imported
+                  </span>
+                ) : null}
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 <span className="flex items-center gap-1.5 text-[13px] font-semibold text-[#1c2420]">
@@ -257,11 +264,13 @@ export function InvoiceDrawer({
               </div>
               <div className="mt-0.5 text-[10.5px] text-[#66706a]">
                 {dueLabel(view.invoice.dueDate, state.business.asOf)} ·{' '}
-                {view.invoice.source === 'email'
-                  ? 'Received by email'
-                  : view.invoice.source === 'upload'
-                    ? 'Uploaded by the team'
-                    : 'Entered manually'}
+                {view.invoice.importedAt
+                  ? 'Imported from CSV'
+                  : view.invoice.source === 'email'
+                    ? 'Received by email'
+                    : view.invoice.source === 'upload'
+                      ? 'Uploaded by the team'
+                      : 'Entered manually'}
                 {view.invoice.duplicateOf ? ' · duplicate copy' : ''}
               </div>
             </div>
@@ -303,6 +312,21 @@ export function InvoiceDrawer({
         <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
           {tab === 'summary' ? (
             <div className="space-y-4">
+              {view.invoice.importedAt ? (
+                <div className="flex items-start gap-2.5 rounded-lg border border-[#c9dced] bg-[#eef5fb] p-3 text-[11.5px] leading-relaxed text-[#245b89]">
+                  <FileSpreadsheet className="mt-0.5 h-4 w-4 shrink-0" />
+                  <div>
+                    <div className="font-semibold">Imported from CSV</div>
+                    <div className="mt-0.5">
+                      Loaded into this browser on{' '}
+                      {formatDateTime(view.invoice.importedAt)}. The fields were supplied in the
+                      import file, not read from the supplier&apos;s PDF. Check the original
+                      invoice, GSTIN and bank details before paying.
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
               {view.approvalStale ? (
                 <div className="flex items-start gap-2.5 rounded-lg border border-[#efd0b2] bg-[#fdf1e5] p-3 text-[11.5px] leading-relaxed text-[#9a4a0d]">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
@@ -370,7 +394,11 @@ export function InvoiceDrawer({
                   <Detail label="Place of supply" value={view.invoice.placeOfSupply} />
                   <Detail
                     label="Tax split"
-                    value={view.invoice.gstType === 'intra' ? 'CGST 9% + SGST 9%' : 'IGST 18%'}
+                    value={
+                      view.invoice.gstType === 'intra'
+                        ? `CGST ${(view.invoice.gstRate ?? 18) / 2}% + SGST ${(view.invoice.gstRate ?? 18) / 2}%`
+                        : `IGST ${view.invoice.gstRate ?? 18}%`
+                    }
                   />
                   <Detail
                     label="Vendor GSTIN"

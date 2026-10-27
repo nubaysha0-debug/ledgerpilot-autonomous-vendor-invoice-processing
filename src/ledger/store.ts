@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type {
   AuditEvent,
+  BusinessProfileInput,
   DemoState,
   Invoice,
   InvoiceLine,
@@ -18,6 +19,14 @@ import {
   isApprovalCurrent,
 } from './rules';
 import { computeGst, formatINR, sumPaise } from './money';
+import {
+  normalizeAsOf,
+  parseBackup,
+  previewImport,
+  validateBusinessProfile,
+  type ImportPreview,
+  type WorkspaceImportInput,
+} from './importer';
 
 const STORAGE_KEY = 'ledgerpilot.demo.v1';
 const SCHEMA_VERSION = 1;
@@ -40,6 +49,15 @@ function demoNow(state: DemoState): string {
     `${shifted.getUTCFullYear()}-${pad(shifted.getUTCMonth() + 1)}-${pad(shifted.getUTCDate())}` +
     `T${pad(shifted.getUTCHours())}:${pad(shifted.getUTCMinutes())}:${pad(shifted.getUTCSeconds())}+05:30`
   );
+}
+
+function financialYearFor(value: string): string {
+  const [yearText, monthText] = value.slice(0, 10).split('-');
+  const year = Number(yearText);
+  const month = Number(monthText);
+  if (!year || !month) return '';
+  const start = month >= 4 ? year : year - 1;
+  return `${start}-${String((start + 1) % 100).padStart(2, '0')}`;
 }
 
 function loadState(): DemoState {
@@ -93,9 +111,12 @@ function makeAudit(
   };
 }
 
-function assertOwner(state: DemoState): TeamMember {
+function assertOwner(
+  state: DemoState,
+  action = 'approve, reject, or execute payments',
+): TeamMember {
   if (state.role !== 'owner') {
-    throw new Error('Only the owner can approve, reject, or execute payments.');
+    throw new Error(`Only the owner can ${action}.`);
   }
   return actorFor(state, 'owner');
 }
@@ -126,6 +147,9 @@ export interface ExecuteResult {
 
 export interface LedgerActions {
   setRole: (role: Role) => void;
+  updateBusinessProfile: (input: BusinessProfileInput) => void;
+  importWorkspace: (input: WorkspaceImportInput) => ImportPreview;
+  restoreWorkspace: (backupJson: string) => DemoState;
   recordPayment: (input: PaymentRequestInput) => Payment;
   approvePayment: (paymentId: string) => Payment;
   rejectPayment: (paymentId: string, reason: string) => Payment;
@@ -154,6 +178,113 @@ export function useLedger() {
   const actions: LedgerActions = {
     setRole(role) {
       setState((current) => ({ ...current, role }));
+    },
+
+    updateBusinessProfile(input) {
+      const actor = assertOwner(state, 'change company settings');
+      const errors = validateBusinessProfile(input);
+      if (errors.length > 0) throw new Error(errors[0]);
+
+      const normalized = {
+        name: input.name.trim(),
+        gstin: input.gstin.trim().toUpperCase(),
+        address: input.address.trim(),
+        city: input.city.trim(),
+        state: input.state.trim(),
+        pincode: input.pincode.trim(),
+        phone: input.phone.trim(),
+        email: input.email.trim(),
+        asOf: normalizeAsOf(input.asOf),
+      };
+      const nextBusiness = {
+        ...state.business,
+        ...normalized,
+        legalName: normalized.name,
+        fy: input.fy.trim() || financialYearFor(normalized.asOf),
+      };
+      const at = demoNow({ ...state, business: nextBusiness });
+      const audit = makeAudit(
+        state,
+        actor,
+        at,
+        'Business profile updated',
+        'system',
+        'business-profile',
+        `${actor.name} updated the company profile for ${nextBusiness.name}.`,
+        `GSTIN ${nextBusiness.gstin} · ${nextBusiness.city}, ${nextBusiness.state} · as of ${nextBusiness.asOf}. The as-of date changes overdue calculations; the GSTIN state decides intra-state vs inter-state GST for new imports.`,
+      );
+
+      setState((current) => ({
+        ...current,
+        business: nextBusiness,
+        audit: [...current.audit, audit],
+      }));
+    },
+
+    importWorkspace(input) {
+      const actor = assertOwner(state, 'import a workspace');
+      const at = demoNow(state);
+      const preview = previewImport({
+        ...input,
+        business: state.business,
+        importedAt: at,
+      });
+      if (preview.errorCount > 0) {
+        throw new Error(
+          `${preview.errorCount} blocking import error${preview.errorCount === 1 ? '' : 's'}. Fix the CSV and preview again.`,
+        );
+      }
+      if (preview.vendorCount === 0) {
+        throw new Error('No valid vendors were found in the CSV.');
+      }
+
+      const audit = makeAudit(
+        state,
+        actor,
+        at,
+        'Workspace imported',
+        'system',
+        'workspace-import',
+        `Imported ${preview.vendorCount} vendors, ${preview.invoiceCount} invoices and ${preview.openingPaymentCount} opening payments from CSV.`,
+        `Replaced the previous workspace. Invoice value ${formatINR(preview.invoiceValuePaise)}; opening paid ${formatINR(preview.openingPaidPaise)}. Data is stored in this browser only.`,
+      );
+
+      setState((current) => ({
+        ...current,
+        vendors: preview.vendors,
+        invoices: preview.invoices,
+        payments: preview.payments,
+        audit: [audit],
+        forceNextFailure: false,
+        seededAt: at,
+      }));
+
+      return preview;
+    },
+
+    restoreWorkspace(backupJson) {
+      const actor = assertOwner(state, 'restore a backup');
+      const restored = parseBackup(backupJson);
+      const at = demoNow(restored);
+      const audit = makeAudit(
+        restored,
+        actor,
+        at,
+        'Workspace restored from backup',
+        'system',
+        'workspace-restore',
+        `${actor.name} restored a workspace backup with ${restored.vendors.length} vendors and ${restored.invoices.length} invoices.`,
+        'The backup replaced the vendors, invoices, payments and audit events stored in this browser.',
+      );
+      const next: DemoState = {
+        ...restored,
+        role: state.role,
+        forceNextFailure: false,
+        audit: [...restored.audit, audit],
+        seededAt: at,
+      };
+      setState(next);
+      return next;
     },
 
     recordPayment(input) {
@@ -454,7 +585,7 @@ export function useLedger() {
       };
       const lines = [...invoice.lines, revisionLine];
       const taxablePaise = sumPaise(lines.map((item) => item.totalPaise));
-      const gst = computeGst(taxablePaise, invoice.gstType);
+      const gst = computeGst(taxablePaise, invoice.gstType, invoice.gstRate ?? 18);
       const updated: Invoice = {
         ...invoice,
         lines,

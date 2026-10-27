@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Building2,
   CalendarDays,
+  Database,
   FileText,
   LayoutDashboard,
   Lock,
@@ -9,7 +10,8 @@ import {
   Settings2,
   Wallet,
 } from 'lucide-react';
-import type { PaymentRequestInput, Role } from '../../ledger/types';
+import type { BusinessProfileInput, PaymentRequestInput, Role } from '../../ledger/types';
+import type { WorkspaceImportInput } from '../../ledger/importer';
 import { formatDateTime, formatINR } from '../../ledger/money';
 import { useLedger } from '../../ledger/store';
 import {
@@ -32,8 +34,9 @@ import { AuditView } from './AuditView';
 import { InvoiceDrawer } from './InvoiceDrawer';
 import { PaymentDialog } from './PaymentDialog';
 import { DemoControls } from './DemoControls';
+import { DataView } from './DataView';
 
-type WorkspaceView = 'overview' | 'invoices' | 'vendors' | 'payments' | 'audit';
+type WorkspaceView = 'overview' | 'invoices' | 'vendors' | 'payments' | 'audit' | 'data';
 
 const NAV: Array<{
   key: WorkspaceView;
@@ -46,6 +49,7 @@ const NAV: Array<{
   { key: 'vendors', label: 'Vendors', caption: 'Supplier master', icon: Building2 },
   { key: 'payments', label: 'Payments', caption: 'Approval queue', icon: Wallet },
   { key: 'audit', label: 'Audit trail', caption: 'Controls log', icon: ScrollText },
+  { key: 'data', label: 'Data', caption: 'CSV & backups', icon: Database },
 ];
 
 const VIEW_LABEL: Record<WorkspaceView, string> = {
@@ -54,6 +58,7 @@ const VIEW_LABEL: Record<WorkspaceView, string> = {
   vendors: 'Vendors',
   payments: 'Payments',
   audit: 'Audit trail',
+  data: 'Data & backups',
 };
 
 function errorMessage(error: unknown): string {
@@ -68,6 +73,7 @@ export function AppShell() {
   const [openInvoiceId, setOpenInvoiceId] = useState<string | null>(null);
   const [paymentInvoiceId, setPaymentInvoiceId] = useState<string | null>(null);
   const [controlsOpen, setControlsOpen] = useState(false);
+  const [dataEpoch, setDataEpoch] = useState(0);
   const [confirm, setConfirm] = useState<ConfirmState | null>(null);
   const [reason, setReason] = useState<ReasonState | null>(null);
   const [toast, setToast] = useState<ToastData | null>(null);
@@ -94,6 +100,13 @@ export function AppShell() {
   const paymentView = paymentInvoiceId
     ? views.find((item) => item.invoice.id === paymentInvoiceId)
     : undefined;
+  const importedWorkspace =
+    state.invoices.some((invoice) => invoice.importedAt) ||
+    state.audit.some(
+      (event) =>
+        event.action === 'Workspace imported' ||
+        event.action === 'Workspace restored from backup',
+    );
 
   const ensureOwner = () => {
     if (state.role !== 'owner') {
@@ -333,16 +346,110 @@ export function AppShell() {
     setControlsOpen(false);
     setConfirm({
       title: 'Reset the demo?',
+      subtitle: 'Demo reset',
       body: 'Restore the seeded vendors, invoices, payments and audit events. Anything recorded in this browser session will be discarded.',
       detail:
         'The seed is deterministic: 12 vendors, 16 invoices, 10 payment records and 19 audit events as of 27 Oct 2026.',
+      note: 'Reset deletes the workspace saved in this browser. It does not contact any bank or vendor.',
       confirmLabel: 'Reset demo data',
       tone: 'danger',
       onConfirm: () => {
         actions.resetDemo();
         setOpenInvoiceId(null);
         setPaymentInvoiceId(null);
+        setInvoiceFilter('All');
+        setVendorFilter(null);
+        setDataEpoch((value) => value + 1);
         notify('info', 'Demo reset', 'Seed data restored. You are acting as Ramesh Patil.');
+      },
+    });
+  };
+
+  const saveProfile = (input: BusinessProfileInput) => {
+    if (!ensureOwner()) return;
+    try {
+      actions.updateBusinessProfile(input);
+      notify(
+        'success',
+        'Business profile saved',
+        `${input.name} · GSTIN ${input.gstin} · as of ${formatDateTime(input.asOf)} IST.`,
+      );
+    } catch (error) {
+      notify('error', 'Profile not saved', errorMessage(error));
+    }
+  };
+
+  const requestImport = (
+    input: WorkspaceImportInput,
+    summary: { vendorCount: number; invoiceCount: number; warningCount: number },
+  ) => {
+    if (!ensureOwner()) return;
+    setConfirm({
+      title: 'Replace this workspace?',
+      subtitle: 'CSV import',
+      body: `Replace the current vendors, invoices, payments and audit events with ${summary.vendorCount} vendors and ${summary.invoiceCount} invoices from the CSV files.`,
+      detail: `${
+        summary.warningCount > 0
+          ? `${summary.warningCount} warning${summary.warningCount === 1 ? '' : 's'} appeared in the preview. `
+          : ''
+      }Vendor bank accounts are treated as verified unless the CSV marks them for verification. Download a JSON backup first if you need to keep the current state.`,
+      note: 'This replaces data stored in this browser. It does not contact any bank or vendor.',
+      confirmLabel: 'Import and replace',
+      tone: 'danger',
+      onConfirm: () => {
+        try {
+          const result = actions.importWorkspace(input);
+          setOpenInvoiceId(null);
+          setPaymentInvoiceId(null);
+          setInvoiceFilter('All');
+          setVendorFilter(null);
+          setDataEpoch((value) => value + 1);
+          notify(
+            'success',
+            'Workspace imported',
+            `${result.vendorCount} vendors · ${result.invoiceCount} invoices · ${formatINR(result.invoiceValuePaise)} invoice value.`,
+          );
+        } catch (error) {
+          notify('error', 'Import failed', errorMessage(error));
+        }
+      },
+    });
+  };
+
+  const requestRestore = (
+    backupJson: string,
+    summary: { vendorCount: number; invoiceCount: number },
+  ) => {
+    if (!ensureOwner()) return;
+    setConfirm({
+      title: 'Restore this backup?',
+      subtitle: 'Workspace restore',
+      body: `Replace everything in this browser with the backup containing ${summary.vendorCount} vendors and ${summary.invoiceCount} invoices.`,
+      detail:
+        'Payments, audit events and the team stored in the backup are restored. The current acting role is kept so the owner does not silently become a different user.',
+      note: 'Only restore a backup you created or trust. Backup files contain vendor and payment data in plain text.',
+      confirmLabel: 'Restore backup',
+      tone: 'danger',
+      onConfirm: () => {
+        try {
+          const restored = actions.restoreWorkspace(backupJson);
+          const restoredValue = restored.invoices.reduce(
+            (total, invoice) => total + invoice.totalPaise,
+            0,
+          );
+          setOpenInvoiceId(null);
+          setPaymentInvoiceId(null);
+          setInvoiceFilter('All');
+          setVendorFilter(null);
+          setDataEpoch((value) => value + 1);
+          notify(
+            'success',
+            'Backup restored',
+            `${restored.vendors.length} vendors · ${restored.invoices.length} invoices · ${formatINR(restoredValue)} invoice value.`,
+          );
+        } catch (error) {
+          notify('error', 'Restore failed', errorMessage(error));
+        }
       },
     });
   };
@@ -476,7 +583,9 @@ export function AppShell() {
             </button>
           </div>
           <p className="mt-2 px-0.5 text-[9px] leading-relaxed text-[#8a938d]">
-            Synthetic demo data. Not connected to any bank, GST portal or vendor.
+            {importedWorkspace
+              ? 'Local workspace data in this browser. Not connected to any bank, GST portal or vendor.'
+              : 'Synthetic demo data. Not connected to any bank, GST portal or vendor.'}
           </p>
         </div>
       </aside>
@@ -626,9 +735,23 @@ export function AppShell() {
             <AuditView state={state} onOpenInvoice={setOpenInvoiceId} />
           ) : null}
 
+          {view === 'data' ? (
+            <DataView
+              key={dataEpoch}
+              state={state}
+              canEdit={state.role === 'owner'}
+              onSaveProfile={saveProfile}
+              onImport={requestImport}
+              onRestore={requestRestore}
+              onReset={requestReset}
+              onNotify={notify}
+            />
+          ) : null}
+
           <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-[#e2e0d8] pt-3 text-[9.5px] leading-relaxed text-[#8a938d]">
             <span>
-              Synthetic demo data · {state.business.name} · GSTIN{' '}
+              {importedWorkspace ? 'Local workspace data' : 'Synthetic demo data'} ·{' '}
+              {state.business.name} · GSTIN{' '}
               <span className="font-mono">{state.business.gstin}</span>
             </span>
             <span>FY {state.business.fy} · not for GST filing</span>

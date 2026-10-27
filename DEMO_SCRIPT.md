@@ -22,6 +22,7 @@ Optional confidence checks:
 
 ```powershell
 npm run check:ledger   # 116/116 data consistency assertions
+npm run check:import   # 77/77 CSV, GST-rate and round-trip assertions
 npm run lint
 npm run build
 ```
@@ -101,9 +102,44 @@ Optionally click **Re-approve** and confirm to show the approval fingerprint bei
 1. Open **Demo controls**.
 2. Click **Reset demo data**, then confirm **Reset demo data**.
 
-> The seed is restored: 10 payments, 19 audit events, Ramesh acting. The same build passes 116 data
-> consistency checks. The product is deliberately narrow: invoice checks, maker-checker controls,
-> simulated payments and an audit trail for an Indian small business.
+> The seed is restored: 10 payments, 19 audit events, Ramesh acting. The same build passes 116
+> ledger checks and 77 import checks. The product is deliberately narrow: invoice checks,
+> maker-checker controls, simulated payments and an audit trail for an Indian small business.
+
+---
+
+## 90-second add-on: load the judge's own vendor data
+
+Use this only if someone asks whether the product works beyond the seed. It replaces the demo
+workspace, so run it after the main story or reset afterwards.
+
+1. Open **Data** in the sidebar.
+2. Download the **Vendors template** and **Invoices template**. Replace the sample rows in a
+   spreadsheet. Save each sheet as CSV UTF-8.
+3. Upload both files. The preview validates GSTINs, dates, vendor matching, GST rate and opening
+   paid amounts before anything changes. Errors block the whole import; warnings are listed but do
+   not block it.
+4. Point at the preview counts and totals, then click **Import and replace workspace** and confirm.
+5. Go to **Overview**. The payable total is now the imported balance. Open an imported invoice; the
+   drawer says **Imported from CSV**, and the document tab renders the same fields.
+
+Say:
+
+> The files never leave this browser. Two CSVs are enough to replace the seed: vendors first, then
+> invoice lines. Repeat the vendor GSTIN and invoice number on extra rows to add line items to one
+> invoice. `amount_paid` is an opening balance, not proof that money moved. Bank accounts are treated
+> as verified unless the CSV says `bank_status=verify`, so the screen tells the owner to confirm them
+> with the supplier before paying.
+
+To show the safety net:
+
+1. In **Data**, click **Download JSON backup**. This is the exact workspace, including payments and
+   audit events. CSV is only master data; payment history is flattened into opening paid amounts.
+2. Click **Reset to demo data** and confirm. The seeded ₹3,83,870 payable returns.
+3. Restore the JSON file and confirm. The imported workspace returns.
+
+> Import, backup, restore and reset all run against localStorage. Reset is deliberate and total.
+> This is a demo store, not an encrypted system of record, so do not load live bank credentials.
 
 ---
 
@@ -173,9 +209,11 @@ approval stale; **Execute** is replaced by **Re-approve**, and the store also re
 execution.
 
 **How is GST handled?**
-Amounts are integer paise internally. Intra-state invoices split CGST 9% + SGST 9%; inter-state
-invoices use IGST 18%. Totals are rounded to the rupee and shown with Indian digit grouping. The
-Sharma invoice demonstrates a deliberate ₹135 arithmetic exception.
+Amounts are integer paise internally. Intra-state invoices split the rate into equal CGST and SGST
+halves; inter-state invoices use the full rate as IGST. The seed uses 18%; the CSV importer accepts
+0%, 5%, 12%, 18% and 28%, and intra vs inter is derived from the business and vendor GSTIN state
+codes. Totals are rounded to the rupee and shown with Indian digit grouping. The Sharma invoice
+demonstrates a deliberate ₹135 arithmetic exception.
 
 **Is the role switch only hiding buttons?**
 No. Approval, rejection, execution, retry, revision and bank verification call an owner check in the
@@ -187,9 +225,12 @@ deterministic seed data. The extraction/intake layer is represented by structure
 and the rendered source document; the checks and controls operate on that structured record.
 
 **Where does the data live?**
-In `localStorage`, so a refresh keeps the session. **Reset demo data** restores the deterministic
-seed. A production build would use a database and an append-only audit store, but the demo has no
-backend dependency and no paid services.
+In `localStorage`, so a refresh keeps the session. **Data → Reset demo data** restores the
+deterministic seed. **Data** also imports vendor and invoice CSVs entirely in the browser, exports
+master data as CSV, and writes an exact JSON backup that can be restored. Imported bank accounts are
+treated as verified unless the file says `bank_status=verify`; confirm them with the supplier before
+paying. A production build would use a database, encryption and an append-only audit store, but the
+demo has no backend dependency and no paid services.
 
 **Why not auto-pay everything?**
 The product is built around owner control for a small business: the accountant records, the owner
@@ -210,5 +251,12 @@ maker-checker controls already define the contract those integrations would feed
   exception, or has no available balance. The reason is printed under the footer.
 - **Execute is missing on an approved payment?** The approval is stale after a revision or bank
   change. Use **Re-approve**.
-- **The state looks edited from a previous run?** **Demo controls → Reset demo data**.
+- **Import button is disabled?** The preview still has blocking errors, one CSV is missing, the
+  company profile has unsaved changes, or the acting role is not owner. Fix the listed issue and try
+  again.
+- **Imported payable looks different from the printed total?** Check `amount_paid`, `gst_rate` and
+  `stated_total`. Opening paid amounts reduce the balance; a printed-total mismatch is flagged for
+  review.
+- **The state looks edited from a previous run?** **Demo controls → Reset demo data**. Reset
+  overwrites imported data; download a JSON backup first if you need it.
 - **Port 3000 is busy?** Stop the other process or set `PORT` before `npm run dev`.

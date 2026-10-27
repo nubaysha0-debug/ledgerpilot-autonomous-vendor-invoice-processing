@@ -58,7 +58,7 @@ export function getActivePayment(payments: Payment[]): Payment | undefined {
 export function computeChecks(state: DemoState, invoice: Invoice): Check[] {
   const vendor = getVendor(state, invoice.vendorId);
   const linesTotal = sumPaise(invoice.lines.map((item) => item.totalPaise));
-  const expected = computeGst(linesTotal, invoice.gstType);
+  const expected = computeGst(linesTotal, invoice.gstType, invoice.gstRate ?? 18);
   const checks: Check[] = [];
 
   const storedTaxMatches =

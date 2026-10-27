@@ -76,6 +76,7 @@ export interface Invoice {
   grnNumber?: string;
   placeOfSupply: string;
   gstType: GstType;
+  gstRate?: number;
   lines: InvoiceLine[];
   taxablePaise: number;
   cgstPaise: number;
@@ -88,6 +89,7 @@ export interface Invoice {
   source: 'email' | 'upload' | 'manual';
   duplicateOf?: string;
   notes?: string;
+  importedAt?: string;
 }
 
 export type PaymentMode = 'NEFT' | 'UPI' | 'RTGS' | 'Cheque' | 'Cash';
@@ -211,4 +213,17 @@ export interface PaymentRequestInput {
   reference: string;
   requestedDate: string;
   note?: string;
+}
+
+export interface BusinessProfileInput {
+  name: string;
+  gstin: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+  phone: string;
+  email: string;
+  fy: string;
+  asOf: string;
 }
