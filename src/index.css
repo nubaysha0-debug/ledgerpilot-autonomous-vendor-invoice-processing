@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+:root {
+  --color-canvas: #f5f4f0;
+  --color-primary: #422701;
+  --color-accent: #d6b588;
+  --color-secondary: #705e46;
+  --color-selection: #5d674f;
+  --color-border: #e6e2d9;
+}
+
+body {
+  background-color: #f5f4f0;
+  color: #422701;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom subtle scrollbar styling for tables and drawers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(112, 94, 70, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(112, 94, 70, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(112, 94, 70, 0.35);
+}

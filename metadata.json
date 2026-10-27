@@ -1,0 +1,6 @@
+{
+  "name": "LedgerPilot - Autonomous Vendor Invoice Processing",
+  "description": "Autonomous vendor invoice processing platform for finance teams: intake, structured extraction, exception validation, and accounts payable workflow tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

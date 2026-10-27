@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated accounts payable user profile",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "photoURL": { "type": "string", "maxLength": 512 },
+        "role": { "type": "string", "enum": ["controller", "auditor", "viewer"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "email"]
+    },
+    "InvoiceRecord": {
+      "title": "InvoiceRecord",
+      "description": "Persisted vendor invoice document and extraction status",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "invoiceNumber": { "type": "string", "maxLength": 64 },
+        "vendor": { "type": "string", "maxLength": 128 },
+        "vendorCategory": { "type": "string", "maxLength": 64 },
+        "amount": { "type": "number" },
+        "subtotal": { "type": "number" },
+        "tax": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 8 },
+        "status": {
+          "type": "string",
+          "enum": ["Received", "Processing", "Pending Review", "Needs Attention", "Approved", "Processed"]
+        },
+        "currentStage": { "type": "string", "enum": ["intake", "extraction", "validation", "review", "completed"] },
+        "issueDate": { "type": "string", "maxLength": 32 },
+        "dueDate": { "type": "string", "maxLength": 32 },
+        "poNumber": { "type": "string", "maxLength": 64 },
+        "paymentTerms": { "type": "string", "maxLength": 64 },
+        "extractionConfidence": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "invoiceNumber", "vendor", "amount", "status"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Multi-turn Gemini AP Copilot messages",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["user", "model", "system"] },
+        "content": { "type": "string", "maxLength": 4096 },
+        "model": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "role", "content"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Private user profile records accessed strictly by the authenticated user"
+    },
+    "/users/{userId}/invoices/{invoiceId}": {
+      "schema": "InvoiceRecord",
+      "description": "Personalized vendor invoice documents saved by the user"
+    },
+    "/users/{userId}/messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "History of multi-turn assistant conversations for the user"
+    }
+  }
+}
