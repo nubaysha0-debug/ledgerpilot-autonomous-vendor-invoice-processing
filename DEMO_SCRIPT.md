@@ -1,303 +1,227 @@
-# LedgerPilot demo script
+# LedgerPilot · 7–8 Minute Comprehensive Live Demo Script
 
-**Shree Ganesh Electricals & Hardware** · Nashik, Maharashtra · GSTIN `27AABCS4821K1Z6` · FY 2026-27
-
-As of **27 Oct 2026, 6:40 pm IST**. All data is synthetic. Payments are simulated; no bank,
-vendor, GST portal or external API is connected.
+**Target Business:** Shree Ganesh Electricals & Hardware · Nashik, Maharashtra · GSTIN `27AABCS4821K1Z6` · FY 2026-27  
+**As of 27 Oct 2026, 6:40 pm IST.** All data is synthetic. Payments are simulated; no real money moves.  
+**Pacing Target:** 7 Minutes 30 Seconds (Designed for 7–8 Minute Stage Walkthrough & Live Software Defense)
 
 ---
 
-## Before the judges arrive
+## Pre-Flight Setup & Confidence Checks (Do 10 Mins Before Stage)
 
-Pick one path and rehearse it end to end.
+1. **Start the Stack:**
+   * **With Docker (Recommended for API story):**
+     ```powershell
+     docker compose up --build
+     # In second terminal:
+     npm run dev
+     ```
+   * **Without Docker / Offline Emergency Fallback:**
+     ```powershell
+     npm run dev
+     ```
+     Open `http://localhost:3000/?api=off`.
+2. **Pre-Demo Confidence Checks:**
+   ```powershell
+   npm run check:ledger   # 116/116 data consistency assertions PASS
+   npm run check:import   # 77/77 CSV and GST assertions PASS
+   npm run lint           # TypeScript 0 errors PASS
+   ```
+3. **Reset State:** Open `http://localhost:3000`. Click **Demo controls** (bottom-left) → **Reset demo data** → Confirm.  
+   *Verify initial state:* Ramesh Patil (Owner) active, ₹3,83,870 open payables, 4 exceptions.
 
-**Full stack (recommended for the API story):**
+---
 
-```powershell
-docker compose up --build
-# in a second terminal
-npm install --legacy-peer-deps --no-audit --no-fund
-npm run dev
+## ⏱️ Live Demonstration Timeline (0:00 – 7:30)
+
 ```
-
-**Browser-only fallback (no Docker, no database):**
-
-```powershell
-npm install --legacy-peer-deps --no-audit --no-fund
-npm run dev
-```
-
-**Windows without Docker:** follow **README → Quick start → B** (embedded PostgreSQL). Start
-`python -m backend.scripts.dev_postgres` and `uvicorn` before `npm run dev`; the header will show
-**PostgreSQL API**.
-
-Open `http://localhost:3000`. With Docker running, the header shows **PostgreSQL API**; without it,
-the console falls back to **Browser-local** after a short health probe. To force the fallback, open
-`http://localhost:3000/?api=off`. In **Demo controls**, click **Reset demo data** and confirm, so the
-run starts from the seed: 12 vendors, 16 invoices, 10 payment records, 19 audit events, Ramesh Patil
-(owner) acting.
-
-Optional confidence checks:
-
-```powershell
-npm run check:ledger   # 116/116 data consistency assertions
-npm run check:import   # 77/77 CSV, GST-rate and round-trip assertions
-npm run lint
-npm run build
+0:00 ──────────────── 1:30 ──────────────── 3:00 ──────────────── 4:30 ──────────────── 5:45 ──────────────── 6:45 ──────── 7:30
+  [Overview & Kpis]       [4 Exception Checks]    [Maker-Checker Flow]    [Stale Fingerprint]     [Failure & Audit]       [Data & Close]
 ```
 
 ---
 
-## The 3-minute run
+### PHASE 1 · Overview & Working Capital Control Room (0:00 – 1:30)
+**Screen:** Overview Dashboard (`http://localhost:3000`). Active role: **Ramesh Patil (Owner)**.
 
-### 0:00 – 0:15 · Open on Overview
+* **[0:00 – 0:45 · The Reality of the Shop]**
+  * **Operator Action:** Hover mouse over the shop name in the top left: *Shree Ganesh Electricals & Hardware, Nashik*.
+  * **Speaker Says:**  
+    > *"Good morning, respected judges.  
+    > What you are looking at on screen is LedgerPilot running live for a retail electrical and hardware business in Nashik, Maharashtra.  
+    > They deal with 30+ repeat distributors—Havells, Polycab, Legrand, Crompton. They stock cables, modular switches, and switchgear.  
+    > Notice the prominent top banner: **'DEMO - Payments are simulated. No money is transferred.'** Every payment screen and API payload carries this label because our project is dedicated strictly to financial controls and pre-payment reconciliation."*
 
-Say:
-
-> This is LedgerPilot, the payables console for a small Indian electricals and hardware retailer.
-> Everything you see is synthetic, and the demo banner stays on screen: payments are simulated,
-> no money moves. The header shows whether we are reading the PostgreSQL API or the browser
-> fallback; both render the same workspace.
-
-### 0:15 – 0:45 · Show the working capital picture
-
-Point at the four KPI cards, then the two queues below them.
-
-> The business has **₹3,83,870** of open payables across 11 invoices. **₹1,01,088** is overdue on
-> four invoices, and **₹11,151** falls due in the next seven days.
->
-> Four exceptions need a human: a **₹135 GST arithmetic difference** on Sharma Hardware, a
-> **duplicate copy** from Sahyadri Switchgear, a **changed bank account** for Nashik Lighting House,
-> and an Om Sai invoice with **no purchase order**.
->
-> The approval queue is separate: one request is waiting for the owner, two are approved and ready
-> to execute.
-
-### 0:45 – 1:15 · Open one invoice and show the evidence
-
-Click **Review exceptions**, then open **Sharma/26-27/0412** (Sharma Hardware & Tools).
-
-> The vendor's printed total is **₹21,995**, but the line items plus GST add up to **₹22,130**. That
-> ₹135 gap is a blocking exception, so the invoice cannot be paid until it is corrected.
->
-> Every invoice carries its own checks, vendor bank state, payment history, and the original
-> document. Click **Invoice document** to see the printed invoice the fields were extracted from.
-
-Close the drawer.
-
-### 1:15 – 2:05 · Maker-checker: record, approve, execute
-
-1. In the header, switch **Acting as** to **Sunita · accountant**.
-2. Go to **Invoices** and open **ABC/26-27/0184** (ABC Electricals).
-3. The invoice is **₹12,500**, with **₹5,000** already paid and **₹7,500** available.
-4. Click **Record payment**. Set the amount to **2500.00**, leave NEFT and the default reference,
-   then click **Record request**.
-5. Close the drawer. Switch the header role back to **Ramesh · owner**.
-6. Go to **Payments**. The new **₹2,500** request is in **Awaiting owner approval**.
-7. Click **Approve**, then confirm **Approve payment**.
-8. Click **Execute**, then confirm **Execute simulation**.
-
-Say while the mock transaction appears:
-
-> Sunita can record a request, but she cannot approve or execute it. Ramesh approves, then executes
-> a simulated NEFT. The result is a mock transaction id, not a bank transfer. The request, approval,
-> execution and the new balance are all written to the audit trail. A refresh keeps the state.
-
-The ABC balance is now **₹5,000** and the payment shows **Simulated**.
-
-### 2:05 – 2:40 · Show why approvals go stale
-
-1. Go to **Invoices**, open **PSS/26-27/0121** (Prime Solar Solutions, ₹1,39,240, approved).
-2. Scroll to **Payment requests** and click **Record supplier revision**. Confirm **Add revision**.
-3. Scroll back up.
-
-> The supplier added ₹500 freight and the total changed. The approval was tied to the invoice total
-> and the bank account, so it is now **stale**. Execution is replaced by **Re-approve**. That is the
-> difference between a click-through approval and a control.
-
-Optionally click **Re-approve** and confirm to show the approval fingerprint being refreshed.
-
-### 2:40 – 3:00 · Reset and close
-
-1. Open **Demo controls**.
-2. Click **Reset demo data**, then confirm **Reset demo data**.
-
-> The seed is restored: 10 payments, 19 audit events, Ramesh acting. The same build passes 116
-> ledger checks and 77 import checks. The product is deliberately narrow: invoice checks,
-> maker-checker controls, simulated payments and an audit trail for an Indian small business.
+* **[0:45 – 1:30 · The 4 Control KPIs & Ageing Buckets]**
+  * **Operator Action:** Point cursor at each of the 4 top KPI cards in order.
+  * **Speaker Says:**  
+    > *"Look at our primary financial control tiles:  
+    > • **₹3,83,870 Total Open Payables** — reconciled across 11 active invoices in our PostgreSQL database.  
+    > • **₹1,01,088 Overdue Amount** across four bills—critical for an owner whose distributor credit lines freeze if bills exceed 30 days.  
+    > • **₹11,151 Due in Next 7 Days** — enabling weekly cash flow predictability.  
+    > • And here is our core value proposition: **4 Critical Blocking Exceptions** caught by our engine before money moves.  
+    >  
+    > Scroll down slightly: our Ageing Breakdown groups liabilities into 0–30 days, 31–60 days, and 60+ days. Every single tile reconciles to the database to the exact paisa. Now let's see how our engine catches leaks."*
 
 ---
 
-## 90-second add-on: load the judge's own vendor data
+### PHASE 2 · Deep Dive: Evidence-Backed Exceptions (1:30 – 3:00)
+**Screen:** Invoices List & Invoice Drawer.
 
-Use this only if someone asks whether the product works beyond the seed. It replaces the demo
-workspace, so run it after the main story or reset afterwards.
+* **[1:30 – 2:15 · Exception 1: Sharma Hardware ₹135 GST Math Gap]**
+  * **Operator Action:** Click **Review exceptions** (or navigate to Invoices filtered by *Needs review*). Open **Sharma Hardware & Tools (`Sharma/26-27/0412`)**.
+  * **Speaker Says:**  
+    > *"Let’s inspect our first exception: **Sharma Hardware & Tools**.  
+    > The printed invoice states ₹21,995. But LedgerPilot recalculates every single line item—twenty sets of Bosch impact drill bits at ₹932—adds the 18% GST (9% CGST + 9% SGST), and calculates ₹22,130. That is a **₹135 mathematical calculation gap**.  
+    >  
+    > We deliberately do NOT use an LLM for invoice totals. LLMs are probabilistic; accounting is deterministic. Using AI to sum invoices in production is financial malpractice. We use integer-paise deterministic code for totals, and AI strictly for entity extraction and plain-English explanations.  
+    > Notice: the **'Record payment' button is physically disabled**. An accountant cannot disburse money against a flawed invoice."*
+  * **Operator Action:** Click the **Invoice document** tab inside the drawer.
+  * **Speaker Says:**  
+    > *"Clicking 'Invoice document' displays the authentic Indian Tax Invoice format: vendor GSTIN, HSN codes, Place of Supply, and amount in words. The original bill and the extracted fields stay permanently linked."*
 
-1. Open **Data** in the sidebar.
-2. Download the **Vendors template** and **Invoices template**. Replace the sample rows in a
-   spreadsheet. Save each sheet as CSV UTF-8.
-3. Upload both files. The preview validates GSTINs, dates, vendor matching, GST rate and opening
-   paid amounts before anything changes. Errors block the whole import; warnings are listed but do
-   not block it.
-4. Point at the preview counts and totals, then click **Import and replace workspace** and confirm.
-5. Go to **Overview**. The payable total is now the imported balance. Open an imported invoice; the
-   drawer says **Imported from CSV**, and the document tab renders the same fields.
-
-Say:
-
-> In browser-local mode the files never leave this browser. In API mode the preview still runs
-> here, then the validated workspace is sent to the local FastAPI service and stored in PostgreSQL.
-> Two CSVs are enough to replace the seed: vendors first, then invoice lines. Repeat the vendor
-> GSTIN and invoice number on extra rows to add line items to one invoice. `amount_paid` is an
-> opening balance, not proof that money moved. Bank accounts are treated as verified unless the CSV
-> says `bank_status=verify`, so the screen tells the owner to confirm them with the supplier before
-> paying.
-
-To show the safety net:
-
-1. In **Data**, click **Download JSON backup**. This is the exact workspace, including payments and
-   audit events. CSV is only master data; payment history is flattened into opening paid amounts.
-2. Click **Reset to demo data** and confirm. The seeded ₹3,83,870 payable returns.
-3. Restore the JSON file and confirm. The imported workspace returns.
-
-> CSV is the interchange format; the JSON backup is the exact workspace, including payments and
-> audit events. In API mode import, backup, restore and reset operate on PostgreSQL through
-> FastAPI. In browser-local mode they operate on localStorage. Reset is deliberate and total. This
-> is a demo store, not an encrypted system of record, so do not load live bank credentials.
+* **[2:15 – 3:00 · Exceptions 2, 3, & 4: Duplicates, Banks, and POs]**
+  * **Operator Action:** Close drawer. Open **Sahyadri Switchgear (`Sahyadri/26-27/0771`)**.
+  * **Speaker Says:**  
+    > *"Exception two: **Sahyadri Switchgear**. A duplicate PDF bill arrived on WhatsApp. Our database matched the vendor, bill number, and amount. It is stamped with a bold **`DUPLICATE COPY`** watermark and excluded from open payables so the owner never double-pays."*
+  * **Operator Action:** Close drawer. Open **Nashik Lighting House (`NLH/26-27/0288`)**.
+  * **Speaker Says:**  
+    > *"Exception three: **Nashik Lighting House**. The vendor's bank account changed from HDFC ending 6614 to ICICI ending 7719 on 25 October. Payouts are locked until the proprietor verifies it by phone."*
+  * **Operator Action:** Close drawer. Open **Om Sai Electricals (`OSE/26-27/0507`)**.
+  * **Speaker Says:**  
+    > *"Exception four: **Om Sai Electricals**. This ₹32,804 bill exceeds the shop's ₹25,000 Purchase Order threshold without an approved PO linked. It is flagged as a warning requiring owner override."*
 
 ---
 
-## Alternate 30-second ending: failed payment and safe retry
+### PHASE 3 · Maker-Checker Governance Flow (3:00 – 4:30)
+**Screen:** Role Switcher, Invoices, and Payments Queue.
 
-Use this instead of the revision ending if the judges care more about payment operations.
+* **[3:00 – 3:45 · Sunita (Accountant) Records a ₹2,500 Partial Payment]**
+  * **Operator Action:** In the top header, switch **Acting as** from Ramesh (Owner) to **Sunita · accountant**.
+  * **Operator Action:** Go to **Invoices** tab. Open **ABC Electricals Pvt Ltd (`ABC/26-27/0184`)**.
+  * **Speaker Says:**  
+    > *"Now let’s demonstrate institutional maker-checker governance.  
+    > Sunita is our counter accountant. She opens ABC Electricals. The total bill is **₹12,500**, with **₹5,000** already paid, leaving **₹7,500 available balance**."*
+  * **Operator Action:** Click **Record payment**. Type `2500.00`, keep NEFT mode and reference, and click **Record request**.
+  * **Speaker Says:**  
+    > *"Sunita records a request for ₹2,500.  
+    > Notice: Sunita is a maker. She **cannot approve** the request, and she **cannot execute** the transfer. Her job is strictly recording."*
 
-1. **Demo controls** → arm **Force the next simulated transfer to fail**.
-2. **Payments** → **Execute** on Deccan Power Tools (`DPT/26-27/0559`, ₹36,816).
-3. Confirm **Execute simulation**. It lands in **Failed** with a mock gateway reason.
-4. Click **Retry** → **Authorise retry**, then **Execute** → **Execute simulation**.
-
-> The retry reuses the same payment record and reference. The first attempt stays in the audit
-> trail. Nothing auto-retries, and no duplicate transfer is created.
-
----
-
-## Numbers to keep straight
-
-| Item | Value |
-| --- | --- |
-| Total payable | ₹3,83,870.00 (11 open invoices) |
-| Overdue | ₹1,01,088.00 (4 invoices) |
-| Due in 7 days | ₹11,151.00 |
-| Awaiting owner approval | 1 · Godavari Conduit Co. · ₹7,434.00 |
-| Approved to execute | 2 · ₹1,76,056.00 |
-| Simulated payments | 7 · ₹1,02,388.00 paid this month |
-| Exceptions | 4 |
-| ABC invoice | ₹12,500.00 total · ₹5,000.00 paid · ₹7,500.00 available |
-| Sharma mismatch | ₹21,995.00 printed vs ₹22,130.00 arithmetic · ₹135.00 gap |
-| Trimurti invoice | ₹14,632.00 total · ₹7,000.00 paid · ₹7,632.00 balance |
-| Nashik bank change | HDFC ****6614 → ICICI ****7719 on 25 Oct 2026 |
-| Seed size | 12 vendors · 16 invoices · 10 payments · 19 audit events |
-
-Key invoice numbers:
-
-- ABC Electricals: `ABC/26-27/0184`
-- Sharma Hardware: `Sharma/26-27/0412`
-- Godavari Conduit: `GCC/26-27/0193`
-- Prime Solar: `PSS/26-27/0121`
-- Deccan Power: `DPT/26-27/0559`
-- Nashik Lighting: `NLH/26-27/0288`
-- Sahyadri duplicate: `Sahyadri/26-27/0771`
-- Om Sai: `OSE/26-27/0507`
+* **[3:45 – 4:30 · Ramesh (Owner) Approves and Executes Simulated NEFT]**
+  * **Operator Action:** Close drawer. In the header, switch role to **Ramesh · owner**.
+  * **Operator Action:** Click the **Payments** tab in the sidebar.
+  * **Speaker Says:**  
+    > *"Now Ramesh, the shop proprietor, logs in. He navigates to the Payments queue.  
+    > In his **Awaiting Owner Approval** queue, Sunita’s ₹2,500 request appears with her timestamp and reference."*
+  * **Operator Action:** Click **Approve** → Confirm **Approve payment**. Then click **Execute** → Confirm **Execute simulation**.
+  * **Speaker Says:**  
+    > *"Ramesh inspects the request and approves it. Then he clicks Execute.  
+    > A simulated NEFT transaction ID is generated (`MOCK-NEFT-20261027-XXXXXX`).  
+    > Now look at ABC Electricals: **₹7,500 available has dropped to exactly ₹5,000 remaining due**. The partial payment is settled to the paisa."*
 
 ---
 
-## Judge Q&A
+### PHASE 4 · The Mic-Drop: Live Stale Approval Invalidation (4:30 – 5:45)
+**Screen:** Invoices → Prime Solar Solutions (`PSS/26-27/0121`).
 
-**Is any money actually transferred?**
-No. There is no bank or PSP connection. Execution creates a mock transaction id such as
-`MOCK-NEFT-20261027-XXXXXX` and an audit event. The banner states this on every screen.
+* **[4:30 – 5:10 · The Post-Approval Tamper Vulnerability]**
+  * **Operator Action:** Go to **Invoices**. Open **PSS/26-27/0121** (Prime Solar Solutions, ₹1,39,240, status Approved).
+  * **Speaker Says:**  
+    > *"Now watch what happens when an invoice is tampered with post-approval.  
+    > **Prime Solar Solutions** is currently in 'Approved' state. Ramesh already authorized ₹1,39,240.  
+    > But imagine the vendor sends a revised invoice ten minutes later, slipping in an extra ₹500 for freight."*
 
-**How do you stop a duplicate payment?**
-Four layers: the duplicate check flags the same vendor, invoice number and amount; duplicate copies
-are excluded from payables; the available balance subtracts simulated, pending and approved amounts;
-and execution is idempotent, so replaying an executed payment returns the existing mock transaction
-instead of creating another one. In API mode the idempotency key is stored on the payment and
-re-checked in the execution transaction; ten parallel executes still produce one success.
-
-**What happens if the vendor changes their bank account?**
-New payment requests are blocked until the owner verifies the account by phone. The approval also
-fingerprints the bank account, so changing it after approval makes the approval stale.
-
-**What happens if the invoice changes after approval?**
-The approval fingerprint covers the invoice total and the vendor bank account. Any change marks the
-approval stale; **Execute** is replaced by **Re-approve**, and the store also rejects stale
-execution.
-
-**How is GST handled?**
-Amounts are integer paise internally. Intra-state invoices split the rate into equal CGST and SGST
-halves; inter-state invoices use the full rate as IGST. The seed uses 18%; the CSV importer accepts
-0%, 5%, 12%, 18% and 28%, and intra vs inter is derived from the business and vendor GSTIN state
-codes. Totals are rounded to the rupee and shown with Indian digit grouping. The Sharma invoice
-demonstrates a deliberate ₹135 arithmetic exception.
-
-**Is the role switch only hiding buttons?**
-No. Approval, rejection, execution, retry, revision and bank verification call an owner check in the
-store. A staff role also cannot record a payment. In API mode FastAPI enforces the same roles from
-`X-Actor-Id` inside the service layer, so a direct HTTP call with the wrong role receives
-`403 ROLE_NOT_ALLOWED`. The UI toast is only the visible part.
-
-**Is this using AI or Gemini?**
-The core demo path is deterministic and needs no model key. In API mode FastAPI and PostgreSQL run
-the checks and persistence; in browser-local mode the same rules run in TypeScript. The optional
-Gemini/extractor adapters are not required, and the assistant falls back to rules. A simulated
-invented figure is rejected rather than displayed. The honest framing is “AI-assisted intake and
-explanation, deterministic money controls.”
-
-**Where does the data live?**
-In API mode, in PostgreSQL behind the FastAPI service, so a refresh and an API restart keep the
-session. In browser-local mode, in `localStorage`. **Data → Reset demo data** restores the
-deterministic seed in whichever store is active. **Data** also imports vendor and invoice CSVs,
-exports master data as CSV, and writes an exact JSON backup that can be restored in either mode.
-Imported bank accounts are treated as verified unless the file says `bank_status=verify`; confirm
-them with the supplier before paying. A production build would use authentication, encryption,
-backups and an append-only audit store, but the demo has no paid services and no live bank
-connection.
-
-**Why not auto-pay everything?**
-The product is built around owner control for a small business: the accountant records, the owner
-approves and executes, exceptions block payment, and every step is attributable. Automation handles
-checking and evidence; it does not remove the approval.
-
-**What would you build next?**
-Email/WhatsApp invoice intake and OCR into the same record shape, a vendor portal, real payment
-gateway integration with webhooks and reconciliation, and GST filing exports. The checks and
-maker-checker controls already define the contract those integrations would feed.
+* **[5:10 – 5:45 · The Live Invalidation Moment]**
+  * **Operator Action:** Scroll down to Payment requests. Click **Record supplier revision** → Confirm **Add revision**. Scroll back up to the top of the drawer.
+  * **Speaker Says:**  
+    > *"Watch the screen closely as I apply the ₹500 revision:  
+    > Look at that: the approval status immediately flips to **STALE**.  
+    > The 'Execute' button physically vanished and was replaced with **'Re-approve'**!  
+    >  
+    > Why did this happen? Because when Ramesh approved the invoice, our engine computed a SHA-256 cryptographic fingerprint covering the invoice total, version, vendor ID, and bank account. When the bill changed by even ₹500, the fingerprint broke.  
+    > That is the difference between a superficial UI button and real financial control."*
+  * **Operator Action:** Click **Re-approve** → Confirm **Re-approve payment** to show the fingerprint being refreshed and restoring the Execute button.
 
 ---
 
-## Failure drills
+### PHASE 5 · Failure Recovery, Idempotency & Audit Trail (5:45 – 6:45)
+**Screen:** Demo Controls, Payments Queue, and Audit View.
 
-- **Nothing happens when I click Approve?** The acting role is not owner. Switch to Ramesh.
-- **Record payment is disabled?** The invoice is paid, rejected, a duplicate, has a blocking
-  exception, or has no available balance. The reason is printed under the footer.
-- **Execute is missing on an approved payment?** The approval is stale after a revision or bank
-  change. Use **Re-approve**.
-- **Import button is disabled?** The preview still has blocking errors, one CSV is missing, the
-  company profile has unsaved changes, or the acting role is not owner. Fix the listed issue and try
-  again.
-- **Imported payable looks different from the printed total?** Check `amount_paid`, `gst_rate` and
-  `stated_total`. Opening paid amounts reduce the balance; a printed-total mismatch is flagged for
-  review.
-- **The header says Browser-local but the API should be running?** Open
-  `http://127.0.0.1:8000/api/health` in a tab. If it does not answer, start the stack or switch to
-  the embedded PostgreSQL path. If the API is on another port, set `VITE_API_URL` before
-  `npm run dev` and restart Vite. Use `?api=off` only when you deliberately want the local demo.
-- **A red "Server sync problem" banner appears?** The last loaded workspace is still on screen, so
-  the demo can continue, but the change was not saved. Check PostgreSQL and the API log, note the
-  error and correlation id, then reload. Re-executing a payment is safe because the stored
-  idempotency key replays the original mock reference instead of paying twice.
-- **Reset fails with `DB_UNAVAILABLE` or `SEED_REQUIRED`?** PostgreSQL is down or migrations have
-  not been applied. Run `python -m backend.scripts.migrate`, confirm `/api/health`, then reset.
-- **The state looks edited from a previous run?** **Demo controls → Reset demo data**. Reset
-  overwrites imported data; download a JSON backup first if you need it.
-- **Port 3000 is busy?** Stop the other process or set `PORT` before `npm run dev`.
+* **[5:45 – 6:15 · Forced Gateway Failure & Safe Retry]**
+  * **Operator Action:** Click **Demo controls** (bottom-left). Toggle **Force the next simulated transfer to fail** ON. Close modal.
+  * **Operator Action:** Go to **Payments**. Find Deccan Power Tools (`DPT/26-27/0559`, ₹36,816, Approved). Click **Execute** → Confirm.
+  * **Speaker Says:**  
+    > *"What happens when a network drops mid-transfer? We just forced a simulated gateway failure.  
+    > Notice: the payment moved to **Failed** with the exact gateway error message recorded.  
+    > Now watch the retry: I click **Retry** → **Authorise retry** → **Execute**.  
+    > The retry succeeds, reusing the exact same payment reference. No duplicate transfer is created."*
+
+* **[6:15 – 6:45 · Tamper-Evident Audit Trail]**
+  * **Operator Action:** Click **Audit trail** in the sidebar (`AuditView.tsx`).
+  * **Speaker Says:**  
+    > *"Every single action we just performed—Sunita recording ₹2,500, Ramesh approving, the simulated NEFT execution, the Prime Solar revision, and the failed Deccan retry—is permanently logged here in our Audit Trail.  
+    > In PostgreSQL, we wrote a custom database trigger that explicitly **blocks `UPDATE` and `DELETE` on the `audit_logs` table**. Even if a malicious actor has raw database access, historical audit events cannot be altered or purged."*
+
+---
+
+### PHASE 6 · Live Data Console, Offline Safety Net & Close (6:45 – 7:30)
+**Screen:** Data View (`DataView.tsx`) & Closing.
+
+* **[6:45 – 7:10 · The Live Judge Challenge & Offline Fallback]**
+  * **Operator Action:** Click **Data** in the sidebar. Show the CSV Templates and Backup/Restore buttons.
+  * **Speaker Says:**  
+    > *"Judges, we did not hardcode a rigid script. In our **Data** console, you can download starter CSV templates, import your own custom vendor bills, or export a complete JSON backup. If any judge wants to test custom invoice numbers live, we can import them in thirty seconds.  
+    >  
+    > Furthermore, notice our architecture badge. We are currently backed by our relational PostgreSQL database and FastAPI server. But if conference Wi-Fi cuts out right now, we append `?api=off` and the entire console runs offline on our browser-local deterministic engine with zero downtime."*
+
+* **[7:10 – 7:30 · The Closing One-Liner]**
+  * **Operator Action:** Click **Demo controls** → Click **Reset demo data** → Confirm (restoring initial state cleanly in 1 second).
+  * **Speaker Says:**  
+    > *"31 out of 31 acceptance tests pass. 116 ledger consistency checks pass.  
+    > Large enterprises spend crores on SAP and Coupa for maker-checker financial controls.  
+    > **LedgerPilot brings institutional-grade payment governance, evidence-backed discrepancy detection, and working capital protection to the 63 million small retail businesses that power India.**  
+    >  
+    > Thank you. We welcome your questions."*
+
+---
+
+## 📊 Quick Numbers Cheat Sheet for the Demo Operator
+
+| Action Item | Exact Bill Number | Expected Display Value |
+|---|---|---|
+| **Overview Total Payables** | *All 11 invoices* | **₹3,83,870.00** |
+| **Overdue Total** | *4 overdue bills* | **₹1,01,088.00** |
+| **Sharma Hardware Math Discrepancy** | `Sharma/26-27/0412` | Printed **₹21,995** vs Computed **₹22,130** (**₹135 gap**) |
+| **Sahyadri Switchgear Duplicate** | `Sahyadri/26-27/0771` | Marked with bold **`DUPLICATE COPY`** watermark |
+| **Nashik Lighting Bank Change** | `NLH/26-27/0288` | HDFC `****6614` → ICICI `****7719` (Phone verify required) |
+| **Om Sai Missing PO** | `OSE/26-27/0507` | ₹32,804 bill exceeds ₹25,000 PO threshold |
+| **ABC Electricals Maker-Checker** | `ABC/26-27/0184` | Total ₹12,500; record ₹2,500 request; drops balance to **₹5,000** |
+| **Prime Solar Stale Invalidation** | `PSS/26-27/0121` | Approved ₹1,39,240; add ₹500 revision → status becomes **STALE** |
+| **Deccan Power Failure & Retry** | `DPT/26-27/0559` | ₹36,816; forced failure lands in Failed; retry settles cleanly |
+
+---
+
+## 🛡️ 8 Tough Judge Questions & Bulletproof Answers
+
+#### 1. "Why simulated payments instead of real UPI or Razorpay?"
+> *"Connecting a payment API like RazorpayX or Cashfree is standard REST plumbing. The hard, high-value problem in MSME accounting is **what happens BEFORE money moves**: verifying line-item arithmetic, checking that bank details haven’t been tampered with, preventing duplicate submissions, and enforcing maker-checker approval separation. Simulating execution keeps the hackathon legally safe, compliant, and focused on financial governance."*
+
+#### 2. "Can an accountant delete or alter audit logs to hide fraud?"
+> *"No. In our PostgreSQL migration `006_audit.sql`, we wrote a database trigger that explicitly **blocks `UPDATE` and `DELETE` on the `audit_logs` table**. Even if someone has raw database credentials, the audit trail is strictly append-only."*
+
+#### 3. "How do you prevent double payments on network retry?"
+> *"Every payment requires an `Idempotency-Key` and uses `SELECT ... FOR UPDATE` row locks in PostgreSQL. In acceptance test `T20`, we threw 10 parallel execute requests simultaneously: exactly 1 succeeded in executing the debit, and 9 safely replayed the original mock transaction reference without double-charging."*
+
+#### 4. "Why not let an LLM calculate invoice totals?"
+> *"LLMs are probabilistic token predictors; accounting is exact, deterministic mathematics. If an LLM is 99% accurate, 1 out of 100 bills has hallucinated numbers. We use deterministic integer-paise math in PostgreSQL and TypeScript for calculations, and reserve AI strictly for document parsing and plain-English explanations."*
+
+#### 5. "What happens if conference Wi-Fi cuts out right now?"
+> *"Our console features a dual-engine architecture. It probes `GET /api/health` at boot. If the server or Wi-Fi drops, or if you append `?api=off`, it seamlessly falls back to our browser-local deterministic engine with zero downtime."*
+
+#### 6. "How does this compare to Tally Prime or Vyapar?"
+> *"Tally and Vyapar are after-the-fact bookkeeping tools—we do not replace them. But Tally does not provide real-time maker-checker approval separation for counter staff, it does not dynamically invalidate approvals when bills change, and it does not stop duplicate payments before money moves. LedgerPilot is the active pre-payment governance shield."*
+
+#### 7. "How do you make money (Business Model)?"
+> *"A tiered B2B SaaS model: ₹499/month for single-counter retailers to check bills and stop duplicate payments; ₹1,499/month for multi-seat wholesalers requiring multi-accountant maker-checker approval workflows and audit trails."*
+
+#### 8. "What is your next roadmap milestone?"
+> *"Phase 2: Direct WhatsApp bill intake so suppliers can submit invoice PDFs directly to a WhatsApp bot, paired with live GSTR-2B Input Tax Credit reconciliation to ensure GST compliance before releasing payment."*

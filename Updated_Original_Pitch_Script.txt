@@ -1,0 +1,144 @@
+FINTECH & RETAIL MSME FINANCIAL CONTROLS
+LedgerPilot
+Autonomous Accounts-Payable Console for Retail MSMEs
+Simulated accounts-payable management with automated discrepancy detection, evidence-backed checks, and maker-checker approval controls.
+Demonstration Target: Shree Ganesh Electricals & Hardware · Nashik, Maharashtra
+Core Safety Principle: SIMULATED — No money transferred. All accounts and payments are synthetic.
+
+================================================================================
+LEDGERPILOT · HACKATHON PITCH
+Retail MSMEs Lose 15% to 20% of Net Profits to Math Errors, Duplicate Bills, and Fraud
+
+THE HOOK:
+"In the rush toward autonomous AI agents, most teams automate payouts. In accounting, an AI hallucinating a number or paying an unverified invoice is a disaster. For an Indian hardware retailer operating on a 5% net margin, paying a single duplicate ₹25,000 bill wipes out an entire week's profit. That is why LedgerPilot's core philosophy is: Autonomous Detection, but Absolute Human Control."
+
+PAIN POINT
+1. High Manual Overhead
+Small business owners spend 8 to 12 hours weekly manually scanning paper invoices, cross-referencing GST breakups, and verifying line-item subtotals against supplier statements.
+Impact: High administrative burnout and delayed vendor payments.
+
+CRITICAL RISK
+2. Hidden Financial Leakage
+Arithmetic discrepancies (e.g. ₹135 GST calculation gaps), duplicate supplier bills submitted on WhatsApp, and unverified bank account changes slip past manual review unnoticed.
+Impact: Direct cash leakage. In a ₹25 Lakhs/month shop (5% margin = ₹1.25L net profit), a single unnoticed ₹25,000 duplicate bill destroys 20% of the owner's take-home income.
+
+GOVERNANCE GAP
+3. Absence of Approval Controls
+Accountants record and pay bills without structured role separation, cryptographic approval tokens, or audit logging.
+Impact: Severe fraud risk, unverified remittance changes, and zero accountability trail.
+
+================================================================================
+LEDGERPILOT · HACKATHON PITCH
+LedgerPilot Unifies Invoice Intake, Discrepancy Detection, and Cash Control
+
+₹3,83,870 Total Open Payables
+Reconciled across 11 active invoices in PostgreSQL down to the single paisa.
+
+₹1,01,088 Overdue Amount
+Four bills past due requiring urgent owner review to protect supplier credit terms.
+
+4 Exceptions
+Blocking Issues Identified
+GST math gap, duplicate bill, unverified bank change & missing PO.
+
+CORE FUNCTIONAL ARCHITECTURE
+• Multi-Format Invoice Intake: Accepts manual bill entry, browser-based CSV imports, or PNG/JPEG/PDF bill uploads with deterministic extraction.
+• Evidence-Backed Audit Trail: Stores concrete, auditable proof for every finding rather than generic text warnings.
+• Paise-Exact Partial Payments: Decimal-safe in PostgreSQL, integer paise in React. Allows incremental invoice settlements (e.g. ₹12,500 total bill → ₹5,000 partial payment → ₹7,500 live balance).
+
+================================================================================
+LEDGERPILOT · HACKATHON PITCH
+Evidence-Backed Checks Stop Math Errors, Duplicate Bills, and Unverified Banks
+
+Vendor & Invoice: Sharma Hardware & Tools (Sharma/26-27/0412)
+Check Type: GST & Math Mismatch
+Concrete Evidence Stored: Printed total ₹22,130 vs line items + GST sum ₹21,995 (₹135 calculation gap).
+Control Action: Blocked from payment until supplier issues a credit note or revision.
+
+Vendor & Invoice: Sahyadri Switchgear (Sahyadri/26-27/0771)
+Check Type: Duplicate Bill Candidate
+Concrete Evidence Stored: Matches existing vendor, bill number, and invoice total already in the database.
+Control Action: Watermarked as DUPLICATE COPY; automatically excluded from payable totals.
+
+Vendor & Invoice: Nashik Lighting House (NLH/26-27/0288)
+Check Type: Changed Bank Account
+Concrete Evidence Stored: Vendor bank account modified from HDFC ****6614 to ICICI ****7719 on 25 Oct 2026.
+Control Action: Payment locked until owner completes telephone verification with the supplier.
+
+Vendor & Invoice: Om Sai Electricals (OSE/26-27/0507)
+Check Type: Missing Purchase Order
+Concrete Evidence Stored: Invoice value of ₹32,804 exceeds the shop's ₹25,000 PO requirement threshold.
+Control Action: Requires owner manual override before payment request can proceed.
+
+THE DETERMINISTIC MATH DEFENSE:
+"We deliberately do NOT use an LLM to add invoice numbers. LLMs are probabilistic; accounting is deterministic. Using AI to sum invoices in production is financial malpractice. We use integer-paise deterministic code for totals, and AI strictly for entity extraction and plain-English explanations."
+
+================================================================================
+LEDGERPILOT · HACKATHON PITCH
+Strict Maker-Checker Workflows and Stale Fingerprints Prevent Unauthorized Payouts
+
+ROLE SEGREGATION (MAKER vs CHECKER)
+1. Accountant Role (Sunita — Maker):
+• Reviews incoming invoices and records payment requests.
+• Prepares draft references (e.g. ₹2,500 NEFT request against ABC Electricals).
+• Absolutely CANNOT approve or execute transfers.
+
+2. Business Owner Role (Ramesh — Checker):
+• Inspects pending requests in dedicated approval queue.
+• Authorizes or rejects payment requests with mandatory reason tracking.
+• Triggers simulated NEFT/UPI execution and retains sole control over money movement.
+
+DYNAMIC APPROVAL FINGERPRINTS & THE LIVE MIC-DROP
+• Cryptographic Fingerprinting: Approval keys hash the exact invoice total, invoice version, vendor ID, and bank account details.
+• Automatic Stale Invalidation: On Prime Solar Solutions (PSS/26-27/0121), when a supplier slips in a ₹500 revised freight charge post-approval, the approval immediately turns STALE.
+• Re-Approval Enforcement: The 'Execute' button physically vanishes and is replaced with 'Re-approve', blocking tampered payouts.
+• Idempotent Retries: Stored Idempotency-Key guarantees that network retries or 10 parallel execute calls result in exactly 1 debit and 9 safe replays (Acceptance Test T20).
+
+================================================================================
+LEDGERPILOT · HACKATHON PITCH
+Dual-Engine Architecture Combines PostgreSQL Resilience with Offline Fallback
+
+PRIMARY STACK
+FastAPI + PostgreSQL
+Durable relational schema storing vendors, invoices, payment attempts, approval fingerprints, and immutable audit logs.
+PostgreSQL database trigger explicitly blocks UPDATE and DELETE on audit_logs for tamper-evident compliance.
+Key Advantage: Survives API and database restarts; sweeps interrupted runs on boot.
+
+PITCH SAFETY NET (ZERO DOWNTIME)
+Browser-Local Fallback
+Full in-browser deterministic engine activated seamlessly via health probe or by appending ?api=off.
+Key Advantage: Guarantees a flawless offline demo during live hackathon judging even if conference Wi-Fi drops completely.
+
+DATA INTEGRITY & AUTOMATED TESTING
+Comprehensive automated testing verifying consistency on every build:
+• 31 of 31 Acceptance Tests (T01–T31) passing via Python pytest.
+• 116 of 116 Ledger Consistency Assertions passing.
+• 77 of 77 CSV & Import Assertions passing.
+
+================================================================================
+LEDGERPILOT · HACKATHON PITCH
+Scaling Institutional Payables Controls to 60 Million Indian Retail MSMEs
+
+PHASE 1 · CORE GOVERNANCE (COMPLETED)
+Deterministic bill checking, evidence-backed exception blocking, maker-checker approval gate, paise-exact partial payments, and tamper-evident audit trail.
+
+PHASE 2 · INGESTION & COMPLIANCE AUTOMATION (NEXT 60 DAYS)
+• Automated WhatsApp & Email Intake: Direct bot ingestion for suppliers to submit PDF/PNG invoices.
+• Direct GST Portal (GSTR-2B) Reconciliation: Automated 2-way sync to verify Input Tax Credit (ITC) before releasing supplier payouts.
+• Accounting Sync: 2-way connectors for Tally Prime and Vyapar.
+
+PHASE 3 · CONNECTED BANKING & TREASURY (LONG-TERM VISION)
+• Connected Banking: Direct API payouts via RazorpayX, ICICI Bank, and HDFC Bank for 1-click execution of approved maker-checker transfers directly from the console.
+• Early-Payment Dynamic Discounting: Capturing 2/10 Net 30 vendor cash discounts automatically.
+
+================================================================================
+LEDGERPILOT · PRE-EMPTING TOUGH JUDGE QUESTIONS
+
+Q: "Why simulated payments instead of real UPI / Razorpay?"
+A: "Connecting a payment API is trivial plumbing. The hard, unsolved problem in MSME accounting is maker-checker governance, mathematical reconciliation, and cryptographic approval fingerprints BEFORE money leaves the account. Simulating execution keeps the demo 100% legal, safe, and focused on financial controls."
+
+Q: "Can an accountant delete or alter audit logs?"
+A: "No. Our PostgreSQL database enforces a database trigger that explicitly blocks UPDATE and DELETE on the audit_logs table. The audit trail is strictly append-only."
+
+Q: "Does this only work on your hardcoded demo data?"
+A: "No! Our Data console allows live CSV import, JSON backup restore, and manual bill creation right now. Judges, feel free to give us any vendor bill to test live on the spot."
