@@ -41,7 +41,7 @@ export function DemoControls({
         </div>
       }
     >
-      <div className="flex items-start gap-2 rounded-lg border border-[#d4e2d8] bg-[#eef5f0] p-3 text-[11px] leading-relaxed text-[#1f5c45]">
+      <div className="flex items-start gap-2 rounded-lg border border-lp-success-border bg-lp-success-wash p-3 text-[11px] leading-relaxed text-lp-primary">
         <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         <span>
           This console runs on synthetic data. Nothing is sent to a bank, a vendor, or an external
@@ -50,11 +50,11 @@ export function DemoControls({
       </div>
 
       <div className="mt-5">
-        <div className="flex items-center gap-2 text-[12px] font-semibold text-[#1c2420]">
-          <Users className="h-3.5 w-3.5 text-[#1f5c45]" />
+        <div className="flex items-center gap-2 text-[12px] font-semibold text-lp-ink">
+          <Users className="h-3.5 w-3.5 text-lp-primary" />
           Acting as
         </div>
-        <p className="mt-0.5 text-[11px] text-[#66706a]">
+        <p className="mt-0.5 text-[11px] text-lp-ink-muted">
           The role is enforced in the payment actions, not just hidden in the UI.
         </p>
         <div className="mt-2 space-y-1.5">
@@ -68,31 +68,31 @@ export function DemoControls({
                 className={cn(
                   'flex w-full items-center gap-3 rounded-lg border p-2.5 text-left transition-colors',
                   active
-                    ? 'border-[#1f5c45] bg-[#f2f8f4]'
-                    : 'border-[#e7e5dc] bg-white hover:border-[#c8c6bb] hover:bg-[#fafaf7]',
+                    ? 'border-lp-primary bg-lp-success-wash'
+                    : 'border-lp-line bg-white hover:border-lp-line-strong hover:bg-lp-surface-muted',
                 )}
               >
                 <span
                   className={cn(
                     'flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold',
-                    active ? 'bg-[#1f5c45] text-white' : 'bg-[#f1f0ea] text-[#4e5a52]',
+                    active ? 'bg-lp-primary text-white' : 'bg-lp-surface-sunken text-lp-ink-muted',
                   )}
                 >
                   {member.initials}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex flex-wrap items-center gap-1.5">
-                    <span className="text-[12px] font-semibold text-[#1c2420]">{member.name}</span>
-                    <span className="rounded bg-white px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.06em] text-[#66706a]">
+                    <span className="text-[12px] font-semibold text-lp-ink">{member.name}</span>
+                    <span className="rounded bg-white px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.06em] text-lp-ink-muted">
                       {member.role}
                     </span>
                   </span>
-                  <span className="mt-0.5 block text-[10.5px] text-[#66706a]">
+                  <span className="mt-0.5 block text-[10.5px] text-lp-ink-muted">
                     {ROLE_PERMISSIONS[member.role]}
                   </span>
                 </span>
                 {active ? (
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#1f5c45] text-white">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-lp-primary text-white">
                     <Check className="h-3 w-3" />
                   </span>
                 ) : null}
@@ -103,17 +103,17 @@ export function DemoControls({
       </div>
 
       <div className="mt-5">
-        <div className="flex items-center gap-2 text-[12px] font-semibold text-[#1c2420]">
-          <AlertTriangle className="h-3.5 w-3.5 text-[#a15c12]" />
+        <div className="flex items-center gap-2 text-[12px] font-semibold text-lp-ink">
+          <AlertTriangle className="h-3.5 w-3.5 text-lp-warning" />
           Failure path
         </div>
-        <div className="mt-2 rounded-lg border border-[#e7e5dc] bg-white p-3">
+        <div className="mt-2 rounded-lg border border-lp-line bg-white p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <div className="text-[11.5px] font-medium text-[#1c2420]">
+              <div className="text-[11.5px] font-medium text-lp-ink">
                 Force the next simulated transfer to fail
               </div>
-              <div className="mt-0.5 text-[10.5px] leading-relaxed text-[#66706a]">
+              <div className="mt-0.5 text-[10.5px] leading-relaxed text-lp-ink-muted">
                 The payment lands in Failed with a mock gateway reason. Retry reuses the same
                 payment record and writes both attempts to the audit trail.
               </div>
@@ -126,7 +126,7 @@ export function DemoControls({
               onClick={onToggleForceFailure}
               className={cn(
                 'relative h-5 w-9 shrink-0 rounded-full transition-colors',
-                state.forceNextFailure ? 'bg-[#a15c12]' : 'bg-[#d9d7ce]',
+                state.forceNextFailure ? 'bg-lp-warning' : 'bg-lp-line-strong',
               )}
             >
               <span
@@ -138,7 +138,7 @@ export function DemoControls({
             </button>
           </div>
           {state.forceNextFailure ? (
-            <div className="mt-2 flex items-center gap-1.5 rounded-md border border-[#efd7ad] bg-[#fdf8ee] px-2 py-1 text-[10.5px] font-medium text-[#8a4d0c]">
+            <div className="mt-2 flex items-center gap-1.5 rounded-md border border-lp-warning-border bg-lp-warning-wash px-2 py-1 text-[10.5px] font-medium text-lp-warning">
               <AlertTriangle className="h-3 w-3" />
               Armed: the next execution by the owner will be declined once.
             </div>
@@ -146,8 +146,8 @@ export function DemoControls({
         </div>
       </div>
 
-      <div className="mt-4 rounded-lg border border-[#e7e5dc] bg-[#fafaf7] p-3 text-[10.5px] leading-relaxed text-[#66706a]">
-        <div className="font-semibold text-[#3e4742]">Try this in the demo</div>
+      <div className="mt-4 rounded-lg border border-lp-line bg-lp-surface-muted p-3 text-[10.5px] leading-relaxed text-lp-ink-muted">
+        <div className="font-semibold text-lp-ink">Try this in the demo</div>
         <ol className="mt-1 list-decimal space-y-0.5 pl-4">
           <li>Switch to Sunita, record a part-payment on an invoice with a clean balance.</li>
           <li>Switch to Ramesh, approve it, then execute the simulated transfer.</li>

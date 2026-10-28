@@ -24,7 +24,7 @@ export function SimulatedStamp({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-md border border-[#d9ded8] bg-[#f3f5f2] px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.08em] text-[#52605a]',
+        'inline-flex items-center gap-1 rounded-md border border-lp-neutral-border bg-lp-neutral-wash px-2 py-0.5 text-[9.5px] font-semibold uppercase tracking-[0.08em] text-lp-neutral',
         className,
       )}
     >
@@ -51,27 +51,27 @@ export function Money({
 }
 
 const INVOICE_STATUS_STYLES: Record<InvoiceStatus, string> = {
-  'Needs review': 'border-[#efd7ad] bg-[#fdf4e5] text-[#8a4d0c]',
-  'Ready for approval': 'border-[#d9ded8] bg-[#f3f5f2] text-[#4e5a52]',
-  'Pending approval': 'border-[#c9dced] bg-[#eef5fb] text-[#245b89]',
-  Approved: 'border-[#c7ddce] bg-[#edf6ef] text-[#1f5c45]',
-  'Part-paid': 'border-[#c7dedc] bg-[#edf7f5] text-[#17645c]',
-  Paid: 'border-[#d9ded8] bg-[#f3f5f2] text-[#52605a]',
-  Rejected: 'border-[#efc9c5] bg-[#fbeceb] text-[#a3261f]',
-  'Payment failed': 'border-[#efc9c5] bg-[#fbeceb] text-[#a3261f]',
-  'Approval stale': 'border-[#efd0b2] bg-[#fdf1e5] text-[#9a4a0d]',
+  'Needs review': 'border-lp-warning-border bg-lp-warning-wash text-lp-warning',
+  'Ready for approval': 'border-lp-neutral-border bg-lp-neutral-wash text-lp-ink-muted',
+  'Pending approval': 'border-lp-info-border bg-lp-info-wash text-lp-info',
+  Approved: 'border-lp-success-border bg-lp-success-wash text-lp-primary',
+  'Part-paid': 'border-lp-teal-border bg-lp-teal-wash text-lp-teal',
+  Paid: 'border-lp-neutral-border bg-lp-neutral-wash text-lp-neutral',
+  Rejected: 'border-lp-danger-border bg-lp-danger-wash text-lp-danger',
+  'Payment failed': 'border-lp-danger-border bg-lp-danger-wash text-lp-danger',
+  'Approval stale': 'border-lp-warning-border bg-lp-warning-wash text-lp-warning',
 };
 
 const INVOICE_STATUS_DOTS: Record<InvoiceStatus, string> = {
-  'Needs review': 'bg-[#c57a1c]',
-  'Ready for approval': 'bg-[#7b8780]',
-  'Pending approval': 'bg-[#2b6fa8]',
-  Approved: 'bg-[#1f7a56]',
-  'Part-paid': 'bg-[#177a70]',
-  Paid: 'bg-[#68756e]',
-  Rejected: 'bg-[#b3261e]',
-  'Payment failed': 'bg-[#b3261e]',
-  'Approval stale': 'bg-[#b85c12]',
+  'Needs review': 'bg-lp-warning',
+  'Ready for approval': 'bg-lp-neutral',
+  'Pending approval': 'bg-lp-info',
+  Approved: 'bg-lp-success',
+  'Part-paid': 'bg-lp-teal',
+  Paid: 'bg-lp-neutral',
+  Rejected: 'bg-lp-danger',
+  'Payment failed': 'bg-lp-danger',
+  'Approval stale': 'bg-lp-warning',
 };
 
 export function StatusBadge({ status }: { status: InvoiceStatus }) {
@@ -89,11 +89,11 @@ export function StatusBadge({ status }: { status: InvoiceStatus }) {
 }
 
 const PAYMENT_STATUS_STYLES: Record<PaymentStatus, string> = {
-  pending_approval: 'border-[#c9dced] bg-[#eef5fb] text-[#245b89]',
-  approved: 'border-[#c7ddce] bg-[#edf6ef] text-[#1f5c45]',
-  failed: 'border-[#efc9c5] bg-[#fbeceb] text-[#a3261f]',
-  simulated: 'border-[#d9ded8] bg-[#f3f5f2] text-[#52605a]',
-  rejected: 'border-[#efc9c5] bg-[#fbeceb] text-[#a3261f]',
+  pending_approval: 'border-lp-info-border bg-lp-info-wash text-lp-info',
+  approved: 'border-lp-success-border bg-lp-success-wash text-lp-primary',
+  failed: 'border-lp-danger-border bg-lp-danger-wash text-lp-danger',
+  simulated: 'border-lp-neutral-border bg-lp-neutral-wash text-lp-neutral',
+  rejected: 'border-lp-danger-border bg-lp-danger-wash text-lp-danger',
 };
 
 export function paymentStatusLabel(status: PaymentStatus): string {
@@ -126,16 +126,16 @@ export function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
 
 const CHECK_STYLES: Record<CheckStatus, { wrap: string; icon: ReactNode }> = {
   pass: {
-    wrap: 'border-[#dbe6dd] bg-[#f7faf7] text-[#315b42]',
-    icon: <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#2f7a54]" />,
+    wrap: 'border-lp-success-border bg-lp-success-wash text-lp-success',
+    icon: <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-lp-success" />,
   },
   warn: {
-    wrap: 'border-[#efd7ad] bg-[#fdf8ee] text-[#7a4a12]',
-    icon: <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#b26a12]" />,
+    wrap: 'border-lp-warning-border bg-lp-warning-wash text-lp-warning',
+    icon: <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-lp-warning" />,
   },
   fail: {
-    wrap: 'border-[#efc9c5] bg-[#fdf4f3] text-[#8f2a23]',
-    icon: <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#b3261e]" />,
+    wrap: 'border-lp-danger-border bg-lp-danger-wash text-lp-danger',
+    icon: <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-lp-danger" />,
   },
 };
 
@@ -157,7 +157,7 @@ export function CheckSummary({ checks }: { checks: Check[] }) {
   const warnings = checks.filter((check) => check.status === 'warn').length;
   if (failures > 0) {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#a3261f]">
+      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-lp-danger">
         <XCircle className="h-3.5 w-3.5" />
         {failures} blocking
       </span>
@@ -165,14 +165,14 @@ export function CheckSummary({ checks }: { checks: Check[] }) {
   }
   if (warnings > 0) {
     return (
-      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#9a4a0d]">
+      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-lp-warning">
         <AlertTriangle className="h-3.5 w-3.5" />
         {warnings} warning
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#2f7a54]">
+    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-lp-success">
       <CheckCircle2 className="h-3.5 w-3.5" />
       Checks pass
     </span>
@@ -189,7 +189,7 @@ export function Card({
   return (
     <div
       className={cn(
-        'rounded-xl border border-[#e2e0d8] bg-white shadow-[0_1px_2px_rgba(28,36,32,0.04)]',
+        'rounded-xl border border-lp-line bg-white shadow-[0_1px_2px_rgba(28,36,32,0.04)]',
         className,
       )}
     >
@@ -210,8 +210,8 @@ export function SectionHeading({
   return (
     <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h2 className="text-[15px] font-semibold tracking-tight text-[#1c2420]">{title}</h2>
-        {subtitle ? <p className="mt-0.5 text-[12px] text-[#66706a]">{subtitle}</p> : null}
+        <h2 className="text-[15px] font-semibold tracking-tight text-lp-ink">{title}</h2>
+        {subtitle ? <p className="mt-0.5 text-[12px] text-lp-ink-muted">{subtitle}</p> : null}
       </div>
       {action}
     </div>
@@ -229,11 +229,11 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
-      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-[#f3f2ed] text-[#66706a]">
+      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-lp-surface-sunken text-lp-ink-muted">
         <Info className="h-5 w-5" />
       </div>
-      <p className="text-[13px] font-semibold text-[#1c2420]">{title}</p>
-      <p className="mt-1 max-w-sm text-[12px] leading-relaxed text-[#66706a]">{description}</p>
+      <p className="text-[13px] font-semibold text-lp-ink">{title}</p>
+      <p className="mt-1 max-w-sm text-[12px] leading-relaxed text-lp-ink-muted">{description}</p>
       {action ? <div className="mt-4">{action}</div> : null}
     </div>
   );
@@ -252,7 +252,7 @@ export function Avatar({
     <span
       title={name}
       className={cn(
-        'inline-flex items-center justify-center rounded-full bg-[#1f5c45] font-semibold text-white',
+        'inline-flex items-center justify-center rounded-full bg-lp-primary font-semibold text-white',
         size === 'sm' ? 'h-6 w-6 text-[9px]' : 'h-8 w-8 text-[11px]',
       )}
     >
@@ -294,33 +294,33 @@ export function Modal({
       role="dialog"
       aria-modal="true"
       aria-label={title}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#101512]/45 p-3 backdrop-blur-[2px] sm:p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-lp-overlay/45 p-3 backdrop-blur-[2px] sm:p-6"
       onMouseDown={onClose}
     >
       <div
         onMouseDown={(event) => event.stopPropagation()}
         className={cn(
-          'flex max-h-[92vh] w-full flex-col overflow-hidden rounded-xl border border-[#e2e0d8] bg-white shadow-[0_18px_60px_rgba(15,23,18,0.22)]',
+          'flex max-h-[92vh] w-full flex-col overflow-hidden rounded-xl border border-lp-line bg-white shadow-[0_18px_60px_rgba(15,23,18,0.22)]',
           width,
         )}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[#eeede8] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-lp-line-soft px-5 py-4">
           <div>
-            <h3 className="text-[15px] font-semibold text-[#1c2420]">{title}</h3>
-            {subtitle ? <p className="mt-0.5 text-[12px] text-[#66706a]">{subtitle}</p> : null}
+            <h3 className="text-[15px] font-semibold text-lp-ink">{title}</h3>
+            {subtitle ? <p className="mt-0.5 text-[12px] text-lp-ink-muted">{subtitle}</p> : null}
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="rounded-md p-1.5 text-[#66706a] transition-colors hover:bg-[#f3f2ed] hover:text-[#1c2420]"
+            className="rounded-md p-1.5 text-lp-ink-muted transition-colors hover:bg-lp-surface-sunken hover:text-lp-ink"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
         {footer ? (
-          <div className="border-t border-[#eeede8] bg-[#fafaf7] px-5 py-3.5">{footer}</div>
+          <div className="border-t border-lp-line-soft bg-lp-surface-muted px-5 py-3.5">{footer}</div>
         ) : null}
       </div>
     </div>
@@ -338,13 +338,13 @@ export function Button({
   size?: 'sm' | 'md';
 }) {
   const base =
-    'inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1f5c45] focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50';
+    'inline-flex items-center justify-center gap-1.5 rounded-lg font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lp-primary focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50';
   const variants = {
-    primary: 'bg-[#1f5c45] text-white hover:bg-[#184a37]',
+    primary: 'bg-lp-primary text-white hover:bg-lp-primary-hover',
     secondary:
-      'border border-[#d9d7ce] bg-white text-[#1c2420] hover:border-[#b9b7ac] hover:bg-[#f8f7f3]',
-    ghost: 'text-[#4e5a52] hover:bg-[#f0efe9] hover:text-[#1c2420]',
-    danger: 'bg-[#a3261f] text-white hover:bg-[#8b201a]',
+      'border border-lp-line-strong bg-white text-lp-ink hover:border-lp-line-strong hover:bg-lp-surface-muted',
+    ghost: 'text-lp-ink-muted hover:bg-lp-surface-sunken hover:text-lp-ink',
+    danger: 'bg-lp-danger text-white hover:bg-lp-danger',
   } as const;
   const sizes = {
     sm: 'px-2.5 py-1.5 text-[11.5px]',
@@ -405,14 +405,14 @@ export function ConfirmDialog({
         </div>
       }
     >
-      <p className="text-[13px] leading-relaxed text-[#3e4742]">{state.body}</p>
+      <p className="text-[13px] leading-relaxed text-lp-ink">{state.body}</p>
       {state.detail ? (
-        <div className="mt-3 rounded-lg border border-[#e7e5dc] bg-[#fafaf7] p-3 text-[11.5px] leading-relaxed text-[#66706a]">
+        <div className="mt-3 rounded-lg border border-lp-line bg-lp-surface-muted p-3 text-[11.5px] leading-relaxed text-lp-ink-muted">
           {state.detail}
         </div>
       ) : null}
       {state.note === null ? null : (
-        <p className="mt-4 rounded-lg border border-[#efd7ad] bg-[#fdf8ee] p-3 text-[11.5px] text-[#7a4a12]">
+        <p className="mt-4 rounded-lg border border-lp-warning-border bg-lp-warning-wash p-3 text-[11.5px] text-lp-warning">
           {state.note ?? 'This is a demo. No money will leave any bank account.'}
         </p>
       )}
@@ -475,7 +475,7 @@ export function ReasonDialog({
         </div>
       }
     >
-      <label className="block text-[12px] font-medium text-[#3e4742]" htmlFor="reject-reason">
+      <label className="block text-[12px] font-medium text-lp-ink" htmlFor="reject-reason">
         {state.label}
       </label>
       <textarea
@@ -487,9 +487,9 @@ export function ReasonDialog({
         }}
         placeholder={state.placeholder}
         rows={4}
-        className="mt-1.5 w-full resize-none rounded-lg border border-[#d9d7ce] bg-white px-3 py-2 text-[12.5px] text-[#1c2420] outline-none focus:border-[#1f5c45] focus:ring-1 focus:ring-[#1f5c45]"
+        className="mt-1.5 w-full resize-none rounded-lg border border-lp-line-strong bg-white px-3 py-2 text-[12.5px] text-lp-ink outline-none focus:border-lp-primary focus:ring-1 focus:ring-lp-primary"
       />
-      {error ? <p className="mt-1 text-[11.5px] text-[#a3261f]">{error}</p> : null}
+      {error ? <p className="mt-1 text-[11.5px] text-lp-danger">{error}</p> : null}
     </Modal>
   );
 }
@@ -507,10 +507,10 @@ export function ToastView({ toast }: { toast: ToastData | null }) {
   if (!toast) return null;
   const tone =
     toast.tone === 'error'
-      ? 'border-[#efc9c5] bg-[#fdf4f3] text-[#8f2a23]'
+      ? 'border-lp-danger-border bg-lp-danger-wash text-lp-danger'
       : toast.tone === 'success'
-        ? 'border-[#c7ddce] bg-[#f2f9f4] text-[#1f5c45]'
-        : 'border-[#c9dced] bg-[#eef5fb] text-[#245b89]';
+        ? 'border-lp-success-border bg-lp-success-wash text-lp-primary'
+        : 'border-lp-info-border bg-lp-info-wash text-lp-info';
   return (
     <div className="pointer-events-none fixed bottom-5 right-5 z-[60] max-w-sm">
       <div className={cn('rounded-lg border px-4 py-3 shadow-lg', tone)}>

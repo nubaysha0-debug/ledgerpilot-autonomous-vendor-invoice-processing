@@ -42,30 +42,30 @@ function KpiCard({
   onClick?: () => void;
 }) {
   const tones = {
-    ink: 'bg-[#eef1ee] text-[#1f5c45]',
-    amber: 'bg-[#fdf1e2] text-[#a15c12]',
-    blue: 'bg-[#eef5fb] text-[#245b89]',
-    red: 'bg-[#fbeceb] text-[#a3261f]',
+    ink: 'bg-lp-success-wash text-lp-primary',
+    amber: 'bg-lp-warning-wash text-lp-warning',
+    blue: 'bg-lp-info-wash text-lp-info',
+    red: 'bg-lp-danger-wash text-lp-danger',
   } as const;
 
   return (
     <button
       type="button"
       onClick={onClick}
-      className="rounded-xl border border-[#e2e0d8] bg-white p-4 text-left shadow-[0_1px_2px_rgba(28,36,32,0.04)] transition-colors hover:border-[#c8c6bb] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1f5c45]"
+      className="rounded-xl border border-lp-line bg-white p-4 text-left shadow-[0_1px_2px_rgba(28,36,32,0.04)] transition-colors hover:border-lp-line-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-lp-primary"
     >
       <div className="flex items-start justify-between gap-3">
-        <span className="text-[11px] font-medium uppercase tracking-[0.07em] text-[#66706a]">
+        <span className="text-[11px] font-medium uppercase tracking-[0.07em] text-lp-ink-muted">
           {label}
         </span>
         <span className={`flex h-7 w-7 items-center justify-center rounded-md ${tones[tone]}`}>
           {icon}
         </span>
       </div>
-      <div className="mt-3 font-mono text-[22px] font-semibold tracking-tight text-[#1c2420] tabular-nums">
+      <div className="mt-3 font-mono text-[22px] font-semibold tracking-tight text-lp-ink tabular-nums">
         {value}
       </div>
-      <div className="mt-1 text-[11px] leading-relaxed text-[#66706a]">{hint}</div>
+      <div className="mt-1 text-[11px] leading-relaxed text-lp-ink-muted">{hint}</div>
     </button>
   );
 }
@@ -135,13 +135,13 @@ export function OverviewView({
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <div className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#1f5c45]">
+          <div className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-lp-primary">
             Payables workspace
           </div>
-          <h1 className="mt-1 text-[26px] font-semibold tracking-tight text-[#1c2420]">
+          <h1 className="mt-1 text-[26px] font-semibold tracking-tight text-lp-ink">
             Overview
           </h1>
-          <p className="mt-1 text-[12.5px] text-[#66706a]">
+          <p className="mt-1 text-[12.5px] text-lp-ink-muted">
             As of {formatDateTime(state.business.asOf)} IST · {state.invoices.length} invoices ·{' '}
             {state.vendors.length} vendors · synthetic data
           </p>
@@ -194,7 +194,7 @@ export function OverviewView({
 
       <div className="grid gap-5 xl:grid-cols-2">
         <Card className="flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between border-b border-[#eeede8] px-4 py-3">
+          <div className="flex items-center justify-between border-b border-lp-line-soft px-4 py-3">
             <SectionHeading
               title="Needs your approval"
               subtitle="Only the owner can approve a payment"
@@ -202,14 +202,14 @@ export function OverviewView({
             <button
               type="button"
               onClick={onGoToPayments}
-              className="text-[11px] font-medium text-[#1f5c45] hover:underline"
+              className="text-[11px] font-medium text-lp-primary hover:underline"
             >
               View all
             </button>
           </div>
-          <div className="flex-1 divide-y divide-[#f2f1ec]">
+          <div className="flex-1 divide-y divide-lp-line-soft">
             {pendingPayments.length === 0 ? (
-              <div className="px-4 py-8 text-center text-[12px] text-[#66706a]">
+              <div className="px-4 py-8 text-center text-[12px] text-lp-ink-muted">
                 No payments waiting for approval.
               </div>
             ) : (
@@ -221,23 +221,23 @@ export function OverviewView({
                     key={payment.id}
                     type="button"
                     onClick={() => onOpenInvoice(view.invoice.id)}
-                    className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-[#fafaf7]"
+                    className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-lp-surface-muted"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="truncate text-[12.5px] font-medium text-[#1c2420]">
+                        <span className="truncate text-[12.5px] font-medium text-lp-ink">
                           {view.vendor.name}
                         </span>
                         <PaymentStatusBadge status={payment.status} />
                       </div>
-                      <div className="mt-0.5 truncate text-[11px] text-[#66706a]">
+                      <div className="mt-0.5 truncate text-[11px] text-lp-ink-muted">
                         {view.invoice.invoiceNumber} · {payment.mode} ·{' '}
                         {dueLabel(view.invoice.dueDate, state.business.asOf)}
                       </div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <Money paise={payment.amountPaise} className="text-[12.5px] font-semibold text-[#1c2420]" />
-                      <div className="mt-0.5 text-[10.5px] text-[#8a938d]">
+                      <Money paise={payment.amountPaise} className="text-[12.5px] font-semibold text-lp-ink" />
+                      <div className="mt-0.5 text-[10.5px] text-lp-ink-faint">
                         {payment.status === 'approved' ? 'Ready to execute' : 'Awaiting approval'}
                       </div>
                     </div>
@@ -246,15 +246,15 @@ export function OverviewView({
               })
             )}
           </div>
-          <div className="flex items-start gap-2 border-t border-[#eeede8] bg-[#fafaf7] px-4 py-2.5 text-[10.5px] leading-relaxed text-[#66706a]">
-            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#8a938d]" />
+          <div className="flex items-start gap-2 border-t border-lp-line-soft bg-lp-surface-muted px-4 py-2.5 text-[10.5px] leading-relaxed text-lp-ink-muted">
+            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-lp-ink-faint" />
             Sunita records requests. Ramesh approves and executes. Execution writes a mock
             transaction id, never a bank transfer.
           </div>
         </Card>
 
         <Card className="overflow-hidden">
-          <div className="flex items-center justify-between border-b border-[#eeede8] px-4 py-3">
+          <div className="flex items-center justify-between border-b border-lp-line-soft px-4 py-3">
             <SectionHeading
               title="Exceptions to review"
               subtitle="Evidence is shown before any payment"
@@ -262,12 +262,12 @@ export function OverviewView({
             <button
               type="button"
               onClick={() => onGoToInvoices('Needs review')}
-              className="text-[11px] font-medium text-[#1f5c45] hover:underline"
+              className="text-[11px] font-medium text-lp-primary hover:underline"
             >
               View all
             </button>
           </div>
-          <div className="divide-y divide-[#f2f1ec]">
+          <div className="divide-y divide-lp-line-soft">
             {exceptions.map((view) => {
               const issue = view.checks.find((check) => check.status !== 'pass');
               return (
@@ -275,22 +275,22 @@ export function OverviewView({
                   key={view.invoice.id}
                   type="button"
                   onClick={() => onOpenInvoice(view.invoice.id)}
-                  className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-[#fafaf7]"
+                  className="flex w-full items-start justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-lp-surface-muted"
                 >
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="truncate text-[12.5px] font-medium text-[#1c2420]">
+                      <span className="truncate text-[12.5px] font-medium text-lp-ink">
                         {view.vendor.name}
                       </span>
                       <StatusBadge status={view.status} />
                     </div>
-                    <div className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-[#66706a]">
+                    <div className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-lp-ink-muted">
                       {issue?.label}: {issue?.evidence}
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
-                    <Money paise={view.outstandingPaise} className="text-[12.5px] font-semibold text-[#1c2420]" />
-                    <div className="mt-0.5 text-[10.5px] text-[#8a938d]">
+                    <Money paise={view.outstandingPaise} className="text-[12.5px] font-semibold text-lp-ink" />
+                    <div className="mt-0.5 text-[10.5px] text-lp-ink-faint">
                       {view.invoice.invoiceNumber}
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export function OverviewView({
 
       <div className="grid gap-5 xl:grid-cols-3">
         <Card className="xl:col-span-2">
-          <div className="border-b border-[#eeede8] px-4 py-3">
+          <div className="border-b border-lp-line-soft px-4 py-3">
             <SectionHeading
               title="Payables ageing"
               subtitle="Outstanding amount by days past due"
@@ -314,20 +314,20 @@ export function OverviewView({
               {ageing.map((bucket, index) => (
                 <div key={bucket.label}>
                   <div className="mb-1 flex items-center justify-between text-[11px]">
-                    <span className="text-[#4e5a52]">
+                    <span className="text-lp-ink-muted">
                       {bucket.label}
-                      <span className="ml-1.5 text-[#8a938d]">({bucket.count})</span>
+                      <span className="ml-1.5 text-lp-ink-faint">({bucket.count})</span>
                     </span>
-                    <Money paise={bucket.amountPaise} className="text-[#1c2420]" />
+                    <Money paise={bucket.amountPaise} className="text-lp-ink" />
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-[#f1f0ea]">
+                  <div className="h-2 overflow-hidden rounded-full bg-lp-surface-sunken">
                     <div
                       className={
                         index === 0
-                          ? 'h-full rounded-full bg-[#1f5c45]'
+                          ? 'h-full rounded-full bg-lp-primary'
                           : index === 1
-                            ? 'h-full rounded-full bg-[#c57a1c]'
-                            : 'h-full rounded-full bg-[#a3261f]'
+                            ? 'h-full rounded-full bg-lp-warning'
+                            : 'h-full rounded-full bg-lp-danger'
                       }
                       style={{ width: `${Math.max(2, (bucket.amountPaise / ageingMax) * 100)}%` }}
                     />
@@ -335,30 +335,30 @@ export function OverviewView({
                 </div>
               ))}
             </div>
-            <div className="mt-5 grid grid-cols-2 gap-3 border-t border-[#eeede8] pt-4 sm:grid-cols-4">
+            <div className="mt-5 grid grid-cols-2 gap-3 border-t border-lp-line-soft pt-4 sm:grid-cols-4">
               <div>
-                <div className="text-[10px] uppercase tracking-[0.08em] text-[#8a938d]">
+                <div className="text-[10px] uppercase tracking-[0.08em] text-lp-ink-faint">
                   Due in 7 days
                 </div>
                 <Money paise={totals.dueSoonPaise} className="mt-0.5 block text-[12px] font-semibold" />
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-[0.08em] text-[#8a938d]">
+                <div className="text-[10px] uppercase tracking-[0.08em] text-lp-ink-faint">
                   Approved to pay
                 </div>
                 <Money paise={totals.approvedToPayPaise} className="mt-0.5 block text-[12px] font-semibold" />
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-[0.08em] text-[#8a938d]">
+                <div className="text-[10px] uppercase tracking-[0.08em] text-lp-ink-faint">
                   Paid this month
                 </div>
                 <Money paise={totals.paidThisMonthPaise} className="mt-0.5 block text-[12px] font-semibold" />
               </div>
               <div>
-                <div className="text-[10px] uppercase tracking-[0.08em] text-[#8a938d]">
+                <div className="text-[10px] uppercase tracking-[0.08em] text-lp-ink-faint">
                   Simulated transfers
                 </div>
-                <div className="mt-0.5 text-[12px] font-semibold text-[#1c2420]">
+                <div className="mt-0.5 text-[12px] font-semibold text-lp-ink">
                   {totals.simulatedPaymentCount}
                 </div>
               </div>
@@ -367,24 +367,24 @@ export function OverviewView({
         </Card>
 
         <Card>
-          <div className="border-b border-[#eeede8] px-4 py-3">
+          <div className="border-b border-lp-line-soft px-4 py-3">
             <SectionHeading title="Top vendor balances" subtitle="Open payables by supplier" />
           </div>
-          <div className="divide-y divide-[#f2f1ec]">
+          <div className="divide-y divide-lp-line-soft">
             {vendorOutstanding.map((item) => (
               <button
                 key={item.vendor.id}
                 type="button"
                 onClick={onGoToVendors}
-                className="block w-full px-4 py-3 text-left transition-colors hover:bg-[#fafaf7]"
+                className="block w-full px-4 py-3 text-left transition-colors hover:bg-lp-surface-muted"
               >
                 <div className="flex items-center justify-between gap-2 text-[11.5px]">
-                  <span className="truncate font-medium text-[#1c2420]">{item.vendor.name}</span>
-                  <Money paise={item.amountPaise} className="shrink-0 text-[#1c2420]" />
+                  <span className="truncate font-medium text-lp-ink">{item.vendor.name}</span>
+                  <Money paise={item.amountPaise} className="shrink-0 text-lp-ink" />
                 </div>
-                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#f1f0ea]">
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-lp-surface-sunken">
                   <div
-                    className="h-full rounded-full bg-[#1f5c45]/70"
+                    className="h-full rounded-full bg-lp-primary/70"
                     style={{ width: `${Math.max(3, (item.amountPaise / vendorMax) * 100)}%` }}
                   />
                 </div>
@@ -395,7 +395,7 @@ export function OverviewView({
       </div>
 
       <Card className="overflow-hidden">
-        <div className="flex items-center justify-between border-b border-[#eeede8] px-4 py-3">
+        <div className="flex items-center justify-between border-b border-lp-line-soft px-4 py-3">
           <SectionHeading
             title="Recent activity"
             subtitle="Every action is written to the audit trail"
@@ -404,17 +404,17 @@ export function OverviewView({
             Payments
           </Button>
         </div>
-        <div className="divide-y divide-[#f2f1ec]">
+        <div className="divide-y divide-lp-line-soft">
           {recent.map((event) => (
             <div key={event.id} className="flex items-start gap-3 px-4 py-3">
-              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f1f0ea] text-[9px] font-semibold text-[#4e5a52]">
+              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-lp-surface-sunken text-[9px] font-semibold text-lp-ink-muted">
                 {event.actorRole === 'system' ? 'SYS' : event.actor.split(' ').map((part) => part[0]).slice(0, 2).join('')}
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[12px] font-medium text-[#1c2420]">{event.summary}</span>
+                  <span className="text-[12px] font-medium text-lp-ink">{event.summary}</span>
                 </div>
-                <div className="mt-0.5 text-[10.5px] text-[#8a938d]">
+                <div className="mt-0.5 text-[10.5px] text-lp-ink-faint">
                   {event.actor} · {event.action} · {formatDateTime(event.at)}
                 </div>
               </div>

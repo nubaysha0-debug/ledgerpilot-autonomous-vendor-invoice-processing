@@ -122,16 +122,8 @@ export function stateNameForGstin(gstin: string): string | undefined {
   return STATE_BY_CODE.get(gstin.trim().slice(0, 2));
 }
 
-export function stateCodeForName(name: string): string | undefined {
-  return STATE_BY_KEY.get(stateKey(name))?.code;
-}
-
 function resolveStateName(value: string): string | undefined {
   return STATE_BY_KEY.get(stateKey(value))?.name;
-}
-
-export function isValidGstin(value: string): boolean {
-  return GSTIN_PATTERN.test(value.trim().toUpperCase());
 }
 
 export function normalizeAsOf(value: string): string {

@@ -144,17 +144,17 @@ export function InvoicesView({
     <div className="space-y-5">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <div className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#1f5c45]">
+          <div className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-lp-primary">
             Payables
           </div>
-          <h1 className="mt-1 text-[26px] font-semibold tracking-tight text-[#1c2420]">
+          <h1 className="mt-1 text-[26px] font-semibold tracking-tight text-lp-ink">
             Invoices
           </h1>
-          <p className="mt-1 text-[12.5px] text-[#66706a]">
+          <p className="mt-1 text-[12.5px] text-lp-ink-muted">
             {views.length} invoices · {formatINR(payablePaise)} open payable · GST included
           </p>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-[#66706a]">
+        <div className="flex items-center gap-2 text-[11px] text-lp-ink-muted">
           <SlidersHorizontal className="h-3.5 w-3.5" />
           Click a row to inspect checks, payments and the document
         </div>
@@ -162,13 +162,13 @@ export function InvoicesView({
 
       {vendor && (
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#d4e2d8] bg-[#eef5f0] px-2.5 py-1 text-[11px] font-medium text-[#1f5c45]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-lp-success-border bg-lp-success-wash px-2.5 py-1 text-[11px] font-medium text-lp-primary">
             Vendor: {vendor.name}
             <button
               type="button"
               onClick={onClearVendorFilter}
               aria-label="Clear vendor filter"
-              className="rounded-full p-0.5 hover:bg-[#dbe9df]"
+              className="rounded-full p-0.5 hover:bg-lp-success-border"
             >
               <X className="h-3 w-3" />
             </button>
@@ -177,14 +177,14 @@ export function InvoicesView({
       )}
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-[#eeede8] p-3.5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 border-b border-lp-line-soft p-3.5 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative w-full lg:max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8a938d]" />
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-lp-ink-faint" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search vendor, invoice number, GSTIN or PO"
-              className="w-full rounded-lg border border-[#d9d7ce] bg-[#fafaf7] py-2 pl-9 pr-3 text-[12px] text-[#1c2420] outline-none placeholder:text-[#8a938d] focus:border-[#1f5c45] focus:bg-white focus:ring-1 focus:ring-[#1f5c45]"
+              className="w-full rounded-lg border border-lp-line-strong bg-lp-surface-muted py-2 pl-9 pr-3 text-[12px] text-lp-ink outline-none placeholder:text-lp-ink-faint focus:border-lp-primary focus:bg-white focus:ring-1 focus:ring-lp-primary"
             />
           </div>
           <div className="flex gap-1 overflow-x-auto pb-0.5 no-scrollbar">
@@ -196,15 +196,15 @@ export function InvoicesView({
                 className={cn(
                   'shrink-0 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
                   filter === key
-                    ? 'bg-[#1f5c45] text-white'
-                    : 'bg-[#f5f4ef] text-[#5c665f] hover:bg-[#eae9e2] hover:text-[#1c2420]',
+                    ? 'bg-lp-primary text-white'
+                    : 'bg-lp-surface-sunken text-lp-ink-muted hover:bg-lp-surface-sunken hover:text-lp-ink',
                 )}
               >
                 {key}
                 <span
                   className={cn(
                     'ml-1.5 rounded px-1 py-0.5 text-[9.5px]',
-                    filter === key ? 'bg-white/15 text-white' : 'bg-white text-[#8a938d]',
+                    filter === key ? 'bg-white/15 text-white' : 'bg-white text-lp-ink-faint',
                   )}
                 >
                   {counts[key] ?? 0}
@@ -236,7 +236,7 @@ export function InvoicesView({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[980px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-[#eeede8] bg-[#fafaf7] text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8a938d]">
+                <tr className="border-b border-lp-line-soft bg-lp-surface-muted text-[10px] font-semibold uppercase tracking-[0.08em] text-lp-ink-faint">
                   <th className="px-3.5 py-2.5">Invoice</th>
                   <th className="px-3.5 py-2.5">
                     <button type="button" className="inline-flex items-center gap-1" onClick={() => toggleSort('vendor')}>
@@ -258,42 +258,42 @@ export function InvoicesView({
                   <th className="px-3.5 py-2.5">Checks</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f2f1ec]">
+              <tbody className="divide-y divide-lp-line-soft">
                 {filtered.map((view) => (
                   <tr
                     key={view.invoice.id}
                     onClick={() => onOpenInvoice(view.invoice.id)}
-                    className="cursor-pointer transition-colors hover:bg-[#fafaf7]"
+                    className="cursor-pointer transition-colors hover:bg-lp-surface-muted"
                   >
                     <td className="px-3.5 py-3">
-                      <div className="flex items-center gap-1.5 font-mono text-[11.5px] font-medium text-[#1c2420]">
-                        <FileText className="h-3.5 w-3.5 text-[#1f5c45]/70" />
+                      <div className="flex items-center gap-1.5 font-mono text-[11.5px] font-medium text-lp-ink">
+                        <FileText className="h-3.5 w-3.5 text-lp-primary/70" />
                         {view.invoice.invoiceNumber}
                       </div>
-                      <div className="mt-0.5 text-[10px] text-[#8a938d]">
+                      <div className="mt-0.5 text-[10px] text-lp-ink-faint">
                         {view.invoice.source} · {view.invoice.poNumber ?? 'No PO'}
                         {view.invoice.duplicateOf ? ' · duplicate copy' : ''}
                       </div>
                     </td>
                     <td className="px-3.5 py-3">
-                      <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#1c2420]">
-                        <Building2 className="h-3.5 w-3.5 text-[#8a938d]" />
+                      <div className="flex items-center gap-1.5 text-[12px] font-medium text-lp-ink">
+                        <Building2 className="h-3.5 w-3.5 text-lp-ink-faint" />
                         <span className="max-w-[190px] truncate">{view.vendor.name}</span>
                       </div>
-                      <div className="mt-0.5 font-mono text-[9.5px] text-[#8a938d]">{view.vendor.gstin}</div>
+                      <div className="mt-0.5 font-mono text-[9.5px] text-lp-ink-faint">{view.vendor.gstin}</div>
                     </td>
                     <td className="px-3.5 py-3">
-                      <div className="text-[11.5px] text-[#3e4742]">{formatDate(view.invoice.dueDate)}</div>
+                      <div className="text-[11.5px] text-lp-ink">{formatDate(view.invoice.dueDate)}</div>
                       <div
                         className={cn(
                           'mt-0.5 text-[10px]',
                           view.status === 'Paid'
-                            ? 'text-[#8a938d]'
+                            ? 'text-lp-ink-faint'
                             : view.overdueDays > 0
-                              ? 'font-medium text-[#a3261f]'
+                              ? 'font-medium text-lp-danger'
                               : view.dueInDays <= 7
-                                ? 'font-medium text-[#9a4a0d]'
-                                : 'text-[#8a938d]',
+                                ? 'font-medium text-lp-warning'
+                                : 'text-lp-ink-faint',
                         )}
                       >
                         {view.status === 'Paid'
@@ -302,8 +302,8 @@ export function InvoicesView({
                       </div>
                     </td>
                     <td className="px-3.5 py-3 text-right">
-                      <Money paise={view.invoice.totalPaise} className="text-[12px] font-semibold text-[#1c2420]" />
-                      <div className="mt-0.5 text-[10px] text-[#8a938d]">
+                      <Money paise={view.invoice.totalPaise} className="text-[12px] font-semibold text-lp-ink" />
+                      <div className="mt-0.5 text-[10px] text-lp-ink-faint">
                         {view.invoice.gstType === 'intra' ? 'CGST + SGST' : 'IGST'}
                       </div>
                     </td>
@@ -312,10 +312,10 @@ export function InvoicesView({
                         paise={view.outstandingPaise}
                         className={cn(
                           'text-[12px] font-semibold',
-                          view.outstandingPaise === 0 ? 'text-[#8a938d]' : 'text-[#1c2420]',
+                          view.outstandingPaise === 0 ? 'text-lp-ink-faint' : 'text-lp-ink',
                         )}
                       />
-                      <div className="mt-0.5 text-[10px] text-[#8a938d]">
+                      <div className="mt-0.5 text-[10px] text-lp-ink-faint">
                         {view.paidPaise > 0 ? `${formatINR(view.paidPaise)} paid` : 'Unpaid'}
                       </div>
                     </td>
@@ -324,7 +324,7 @@ export function InvoicesView({
                     </td>
                     <td className="px-3.5 py-3">
                       {view.status === 'Paid' ? (
-                        <span className="text-[11px] text-[#8a938d]">Closed</span>
+                        <span className="text-[11px] text-lp-ink-faint">Closed</span>
                       ) : (
                         <CheckSummary checks={view.checks} />
                       )}
@@ -336,10 +336,10 @@ export function InvoicesView({
           </div>
         )}
 
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#eeede8] bg-[#fafaf7] px-3.5 py-2.5 text-[11px] text-[#66706a]">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-lp-line-soft bg-lp-surface-muted px-3.5 py-2.5 text-[11px] text-lp-ink-muted">
           <span>
-            Showing <strong className="text-[#1c2420]">{filtered.length}</strong> of{' '}
-            <strong className="text-[#1c2420]">{views.length}</strong> invoices
+            Showing <strong className="text-lp-ink">{filtered.length}</strong> of{' '}
+            <strong className="text-lp-ink">{views.length}</strong> invoices
           </span>
           <span>Click a row to inspect the invoice, checks, payments and document.</span>
         </div>

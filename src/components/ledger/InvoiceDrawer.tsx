@@ -40,10 +40,10 @@ type DrawerTab = 'summary' | 'document' | 'activity';
 function Detail({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div>
-      <div className="text-[9.5px] font-semibold uppercase tracking-[0.09em] text-[#8a938d]">
+      <div className="text-[9.5px] font-semibold uppercase tracking-[0.09em] text-lp-ink-faint">
         {label}
       </div>
-      <div className="mt-0.5 text-[11.5px] leading-relaxed text-[#3e4742]">{value}</div>
+      <div className="mt-0.5 text-[11.5px] leading-relaxed text-lp-ink">{value}</div>
     </div>
   );
 }
@@ -66,25 +66,25 @@ function PaymentCard({
   const stale = payment.status === 'approved' && view.approvalStale && view.activePayment?.id === payment.id;
 
   return (
-    <div className="rounded-lg border border-[#e7e5dc] bg-white p-3">
+    <div className="rounded-lg border border-lp-line bg-white p-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <Money paise={payment.amountPaise} className="text-[14px] font-semibold text-[#1c2420]" />
-            <span className="text-[10.5px] text-[#8a938d]">{payment.mode}</span>
+            <Money paise={payment.amountPaise} className="text-[14px] font-semibold text-lp-ink" />
+            <span className="text-[10.5px] text-lp-ink-faint">{payment.mode}</span>
             <PaymentStatusBadge status={payment.status} />
             {stale ? (
-              <span className="rounded border border-[#efd0b2] bg-[#fdf1e5] px-1.5 py-0.5 text-[9.5px] font-medium text-[#9a4a0d]">
+              <span className="rounded border border-lp-warning-border bg-lp-warning-wash px-1.5 py-0.5 text-[9.5px] font-medium text-lp-warning">
                 stale approval
               </span>
             ) : null}
           </div>
-          <div className="mt-1 font-mono text-[10.5px] text-[#66706a]">{payment.reference}</div>
+          <div className="mt-1 font-mono text-[10.5px] text-lp-ink-muted">{payment.reference}</div>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
           {payment.status === 'pending_approval' ? (
             <>
-              <Button size="sm" variant="secondary" className="text-[#8f2a23]" onClick={() => onReject(payment.id)}>
+              <Button size="sm" variant="secondary" className="text-lp-danger" onClick={() => onReject(payment.id)}>
                 Reject
               </Button>
               <Button size="sm" onClick={() => onApprove(payment.id)}>
@@ -98,7 +98,7 @@ function PaymentCard({
               <Button
                 size="sm"
                 variant="secondary"
-                className="text-[#8f2a23]"
+                className="text-lp-danger"
                 onClick={() => onReject(payment.id)}
               >
                 Reject
@@ -125,7 +125,7 @@ function PaymentCard({
         </div>
       </div>
 
-      <div className="mt-2 grid gap-x-4 gap-y-1 border-t border-[#f2f1ec] pt-2 text-[10.5px] text-[#66706a] sm:grid-cols-2">
+      <div className="mt-2 grid gap-x-4 gap-y-1 border-t border-lp-line-soft pt-2 text-[10.5px] text-lp-ink-muted sm:grid-cols-2">
         <div>
           Recorded by {payment.recordedBy} · {formatDateTime(payment.recordedAt)}
         </div>
@@ -135,17 +135,17 @@ function PaymentCard({
             : 'Not approved yet'}
         </div>
         {payment.executedAt ? (
-          <div className="text-[#2f7a54]">
+          <div className="text-lp-success">
             Simulated {formatDateTime(payment.executedAt)}
             {payment.mockTxnId ? ` · ${payment.mockTxnId}` : ''}
           </div>
         ) : null}
         {payment.note ? <div className="sm:col-span-2">Note: {payment.note}</div> : null}
         {payment.failureReason ? (
-          <div className="text-[#a3261f] sm:col-span-2">{payment.failureReason}</div>
+          <div className="text-lp-danger sm:col-span-2">{payment.failureReason}</div>
         ) : null}
         {payment.rejectionReason ? (
-          <div className="text-[#a3261f] sm:col-span-2">Rejected: {payment.rejectionReason}</div>
+          <div className="text-lp-danger sm:col-span-2">Rejected: {payment.rejectionReason}</div>
         ) : null}
       </div>
     </div>
@@ -221,49 +221,49 @@ export function InvoiceDrawer({
 
   return (
     <div
-      className="fixed inset-0 z-40 flex justify-end bg-[#101512]/40 backdrop-blur-[2px]"
+      className="fixed inset-0 z-40 flex justify-end bg-lp-overlay/40 backdrop-blur-[2px]"
       onMouseDown={onClose}
       role="dialog"
       aria-modal="true"
       aria-label={`Invoice ${view.invoice.invoiceNumber}`}
     >
       <div
-        className="flex h-full w-full max-w-3xl flex-col border-l border-[#e2e0d8] bg-[#f7f6f1] shadow-[-12px_0_40px_rgba(15,23,18,0.18)]"
+        className="flex h-full w-full max-w-3xl flex-col border-l border-lp-line bg-lp-canvas shadow-[-12px_0_40px_rgba(15,23,18,0.18)]"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="border-b border-[#e2e0d8] bg-[#fbfaf7]">
+        <div className="border-b border-lp-line bg-lp-surface-muted">
           <div className="flex items-start justify-between gap-4 px-4 py-3.5 sm:px-5">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#8a938d]">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-lp-ink-faint">
                   Invoice
                 </span>
-                <span className="font-mono text-[11.5px] font-semibold text-[#1c2420]">
+                <span className="font-mono text-[11.5px] font-semibold text-lp-ink">
                   {view.invoice.invoiceNumber}
                 </span>
                 <StatusBadge status={view.status} />
                 {view.invoice.version > 1 ? (
-                  <span className="rounded border border-[#e7e5dc] bg-white px-1.5 py-0.5 text-[9.5px] font-medium text-[#8a938d]">
+                  <span className="rounded border border-lp-line bg-white px-1.5 py-0.5 text-[9.5px] font-medium text-lp-ink-faint">
                     Rev {view.invoice.version}
                   </span>
                 ) : null}
                 {view.invoice.importedAt ? (
-                  <span className="inline-flex items-center gap-1 rounded border border-[#c9dced] bg-[#eef5fb] px-1.5 py-0.5 text-[9.5px] font-medium text-[#245b89]">
+                  <span className="inline-flex items-center gap-1 rounded border border-lp-info-border bg-lp-info-wash px-1.5 py-0.5 text-[9.5px] font-medium text-lp-info">
                     <FileSpreadsheet className="h-2.5 w-2.5" />
                     Imported
                   </span>
                 ) : null}
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                <span className="flex items-center gap-1.5 text-[13px] font-semibold text-[#1c2420]">
-                  <Building2 className="h-3.5 w-3.5 text-[#8a938d]" />
+                <span className="flex items-center gap-1.5 text-[13px] font-semibold text-lp-ink">
+                  <Building2 className="h-3.5 w-3.5 text-lp-ink-faint" />
                   {view.vendor.name}
                 </span>
-                <span className="text-[10.5px] text-[#8a938d]">
+                <span className="text-[10.5px] text-lp-ink-faint">
                   {view.vendor.category} · {view.vendor.city}
                 </span>
               </div>
-              <div className="mt-0.5 text-[10.5px] text-[#66706a]">
+              <div className="mt-0.5 text-[10.5px] text-lp-ink-muted">
                 {dueLabel(view.invoice.dueDate, state.business.asOf)} ·{' '}
                 {view.invoice.importedAt
                   ? 'Imported from CSV'
@@ -279,7 +279,7 @@ export function InvoiceDrawer({
               type="button"
               onClick={onClose}
               aria-label="Close invoice"
-              className="rounded-md p-1.5 text-[#66706a] transition-colors hover:bg-[#f0efe9] hover:text-[#1c2420]"
+              className="rounded-md p-1.5 text-lp-ink-muted transition-colors hover:bg-lp-surface-sunken hover:text-lp-ink"
             >
               <X className="h-4 w-4" />
             </button>
@@ -300,8 +300,8 @@ export function InvoiceDrawer({
                 className={cn(
                   'border-b-2 px-3 py-2 text-[11.5px] font-medium transition-colors',
                   tab === key
-                    ? 'border-[#1f5c45] text-[#1f5c45]'
-                    : 'border-transparent text-[#66706a] hover:text-[#1c2420]',
+                    ? 'border-lp-primary text-lp-primary'
+                    : 'border-transparent text-lp-ink-muted hover:text-lp-ink',
                 )}
               >
                 {label}
@@ -314,7 +314,7 @@ export function InvoiceDrawer({
           {tab === 'summary' ? (
             <div className="space-y-4">
               {view.invoice.importedAt ? (
-                <div className="flex items-start gap-2.5 rounded-lg border border-[#c9dced] bg-[#eef5fb] p-3 text-[11.5px] leading-relaxed text-[#245b89]">
+                <div className="flex items-start gap-2.5 rounded-lg border border-lp-info-border bg-lp-info-wash p-3 text-[11.5px] leading-relaxed text-lp-info">
                   <FileSpreadsheet className="mt-0.5 h-4 w-4 shrink-0" />
                   <div>
                     <div className="font-semibold">Imported from CSV</div>
@@ -329,7 +329,7 @@ export function InvoiceDrawer({
               ) : null}
 
               {view.approvalStale ? (
-                <div className="flex items-start gap-2.5 rounded-lg border border-[#efd0b2] bg-[#fdf1e5] p-3 text-[11.5px] leading-relaxed text-[#9a4a0d]">
+                <div className="flex items-start gap-2.5 rounded-lg border border-lp-warning-border bg-lp-warning-wash p-3 text-[11.5px] leading-relaxed text-lp-warning">
                   <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                   <div>
                     <div className="font-semibold">Approval no longer matches the invoice</div>
@@ -342,7 +342,7 @@ export function InvoiceDrawer({
               ) : null}
 
               {view.invoice.duplicateOf ? (
-                <div className="flex items-start gap-2.5 rounded-lg border border-[#efc9c5] bg-[#fdf4f3] p-3 text-[11.5px] leading-relaxed text-[#8f2a23]">
+                <div className="flex items-start gap-2.5 rounded-lg border border-lp-danger-border bg-lp-danger-wash p-3 text-[11.5px] leading-relaxed text-lp-danger">
                   <Ban className="mt-0.5 h-4 w-4 shrink-0" />
                   <div>
                     <div className="font-semibold">Duplicate copy excluded from payables</div>
@@ -355,27 +355,27 @@ export function InvoiceDrawer({
               ) : null}
 
               <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5">
-                  <div className="text-[9px] uppercase tracking-[0.08em] text-[#8a938d]">Invoice total</div>
-                  <Money paise={view.invoice.totalPaise} className="mt-0.5 block text-[13px] font-semibold text-[#1c2420]" />
+                <div className="rounded-lg border border-lp-line bg-white p-2.5">
+                  <div className="text-[9px] uppercase tracking-[0.08em] text-lp-ink-faint">Invoice total</div>
+                  <Money paise={view.invoice.totalPaise} className="mt-0.5 block text-[13px] font-semibold text-lp-ink" />
                 </div>
-                <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5">
-                  <div className="text-[9px] uppercase tracking-[0.08em] text-[#8a938d]">Paid</div>
-                  <Money paise={view.paidPaise} className="mt-0.5 block text-[13px] font-semibold text-[#2f7a54]" />
+                <div className="rounded-lg border border-lp-line bg-white p-2.5">
+                  <div className="text-[9px] uppercase tracking-[0.08em] text-lp-ink-faint">Paid</div>
+                  <Money paise={view.paidPaise} className="mt-0.5 block text-[13px] font-semibold text-lp-success" />
                 </div>
-                <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5">
-                  <div className="text-[9px] uppercase tracking-[0.08em] text-[#8a938d]">In approval</div>
-                  <Money paise={view.reservedPaise} className="mt-0.5 block text-[13px] font-semibold text-[#245b89]" />
+                <div className="rounded-lg border border-lp-line bg-white p-2.5">
+                  <div className="text-[9px] uppercase tracking-[0.08em] text-lp-ink-faint">In approval</div>
+                  <Money paise={view.reservedPaise} className="mt-0.5 block text-[13px] font-semibold text-lp-info" />
                 </div>
-                <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5">
-                  <div className="text-[9px] uppercase tracking-[0.08em] text-[#8a938d]">Available</div>
-                  <Money paise={view.availablePaise} className="mt-0.5 block text-[13px] font-semibold text-[#1f5c45]" />
+                <div className="rounded-lg border border-lp-line bg-white p-2.5">
+                  <div className="text-[9px] uppercase tracking-[0.08em] text-lp-ink-faint">Available</div>
+                  <Money paise={view.availablePaise} className="mt-0.5 block text-[13px] font-semibold text-lp-primary" />
                 </div>
               </div>
 
-              <div className="rounded-lg border border-[#e7e5dc] bg-white p-3.5">
-                <div className="flex items-center gap-2 text-[12px] font-semibold text-[#1c2420]">
-                  <FileText className="h-3.5 w-3.5 text-[#1f5c45]" />
+              <div className="rounded-lg border border-lp-line bg-white p-3.5">
+                <div className="flex items-center gap-2 text-[12px] font-semibold text-lp-ink">
+                  <FileText className="h-3.5 w-3.5 text-lp-primary" />
                   Invoice details
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
@@ -384,7 +384,7 @@ export function InvoiceDrawer({
                   <Detail
                     label="Due date"
                     value={
-                      <span className={view.overdueDays > 0 ? 'font-medium text-[#a3261f]' : ''}>
+                      <span className={view.overdueDays > 0 ? 'font-medium text-lp-danger' : ''}>
                         {formatDate(view.invoice.dueDate)}
                       </span>
                     }
@@ -410,16 +410,16 @@ export function InvoiceDrawer({
                   )}
                 </div>
                 {view.invoice.notes ? (
-                  <p className="mt-3 rounded-md bg-[#fafaf7] p-2 text-[10.5px] leading-relaxed text-[#66706a]">
+                  <p className="mt-3 rounded-md bg-lp-surface-muted p-2 text-[10.5px] leading-relaxed text-lp-ink-muted">
                     {view.invoice.notes}
                   </p>
                 ) : null}
               </div>
 
-              <div className="rounded-lg border border-[#e7e5dc] bg-white p-3.5">
+              <div className="rounded-lg border border-lp-line bg-white p-3.5">
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2 text-[12px] font-semibold text-[#1c2420]">
-                    <Landmark className="h-3.5 w-3.5 text-[#1f5c45]" />
+                  <div className="flex items-center gap-2 text-[12px] font-semibold text-lp-ink">
+                    <Landmark className="h-3.5 w-3.5 text-lp-primary" />
                     Vendor bank account
                   </div>
                   {view.vendor.bank.status === 'changed' ? (
@@ -428,7 +428,7 @@ export function InvoiceDrawer({
                       Verify by phone
                     </Button>
                   ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-[#2f7a54]">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-lp-success">
                       <ShieldCheck className="h-3 w-3" />
                       Verified
                     </span>
@@ -440,7 +440,7 @@ export function InvoiceDrawer({
                   <Detail label="IFSC" value={<span className="font-mono">{view.vendor.bank.ifsc}</span>} />
                 </div>
                 {view.vendor.bank.status === 'changed' ? (
-                  <p className="mt-2 rounded-md border border-[#efd7ad] bg-[#fdf8ee] p-2 text-[10.5px] leading-relaxed text-[#7a4a12]">
+                  <p className="mt-2 rounded-md border border-lp-warning-border bg-lp-warning-wash p-2 text-[10.5px] leading-relaxed text-lp-warning">
                     Changed from {view.vendor.bank.previousAccountMasked} on{' '}
                     {formatDate(view.vendor.bank.changedAt ?? view.invoice.receivedDate)}. Call the
                     vendor on the number already on file before unblocking payment.
@@ -448,13 +448,13 @@ export function InvoiceDrawer({
                 ) : null}
               </div>
 
-              <div className="rounded-lg border border-[#e7e5dc] bg-white p-3.5">
+              <div className="rounded-lg border border-lp-line bg-white p-3.5">
                 <div className="mb-2.5 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[12px] font-semibold text-[#1c2420]">
-                    <ShieldCheck className="h-3.5 w-3.5 text-[#1f5c45]" />
+                  <div className="flex items-center gap-2 text-[12px] font-semibold text-lp-ink">
+                    <ShieldCheck className="h-3.5 w-3.5 text-lp-primary" />
                     Deterministic checks
                   </div>
-                  <span className="text-[10px] text-[#8a938d]">{view.checks.length} checks run</span>
+                  <span className="text-[10px] text-lp-ink-faint">{view.checks.length} checks run</span>
                 </div>
                 <div className="space-y-2">
                   {view.checks.map((check) => (
@@ -463,19 +463,19 @@ export function InvoiceDrawer({
                 </div>
               </div>
 
-              <div className="rounded-lg border border-[#e7e5dc] bg-white p-3.5">
+              <div className="rounded-lg border border-lp-line bg-white p-3.5">
                 <div className="mb-2.5 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-[12px] font-semibold text-[#1c2420]">
-                    <ReceiptText className="h-3.5 w-3.5 text-[#1f5c45]" />
+                  <div className="flex items-center gap-2 text-[12px] font-semibold text-lp-ink">
+                    <ReceiptText className="h-3.5 w-3.5 text-lp-primary" />
                     Payment requests
                   </div>
-                  <span className="text-[10px] text-[#8a938d]">
+                  <span className="text-[10px] text-lp-ink-faint">
                     {view.payments.length} record{view.payments.length === 1 ? '' : 's'}
                   </span>
                 </div>
                 <SimulatedStamp className="mb-2.5" />
                 {view.payments.length === 0 ? (
-                  <div className="rounded-md border border-dashed border-[#d9d7ce] px-3 py-5 text-center text-[11px] text-[#8a938d]">
+                  <div className="rounded-md border border-dashed border-lp-line-strong px-3 py-5 text-center text-[11px] text-lp-ink-faint">
                     No payment recorded against this invoice.
                   </div>
                 ) : (
@@ -493,15 +493,15 @@ export function InvoiceDrawer({
                     ))}
                   </div>
                 )}
-                <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-[#f2f1ec] pt-2">
-                  <span className="text-[10px] text-[#8a938d]">
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-lp-line-soft pt-2">
+                  <span className="text-[10px] text-lp-ink-faint">
                     Maker-checker: recording, approving and executing are separate actions.
                   </span>
                   {!view.invoice.duplicateOf && view.invoice.version < 4 ? (
                     <button
                       type="button"
                       onClick={onRevise}
-                      className="text-[10.5px] font-medium text-[#8a5a1f] hover:underline"
+                      className="text-[10.5px] font-medium text-lp-link hover:underline"
                     >
                       Record supplier revision
                     </button>
@@ -510,28 +510,28 @@ export function InvoiceDrawer({
               </div>
 
               <div className="grid gap-2.5 sm:grid-cols-3">
-                <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5 text-[10.5px] leading-relaxed text-[#66706a]">
-                  <CalendarDays className="mb-1 h-3.5 w-3.5 text-[#8a938d]" />
+                <div className="rounded-lg border border-lp-line bg-white p-2.5 text-[10.5px] leading-relaxed text-lp-ink-muted">
+                  <CalendarDays className="mb-1 h-3.5 w-3.5 text-lp-ink-faint" />
                   Invoice {formatDate(view.invoice.issueDate)}
                   <br />
                   Due {formatDate(view.invoice.dueDate)}
                   <br />
-                  <span className={view.overdueDays > 0 ? 'text-[#a3261f]' : ''}>
+                  <span className={view.overdueDays > 0 ? 'text-lp-danger' : ''}>
                     {dueLabel(view.invoice.dueDate, state.business.asOf)}
                   </span>
                 </div>
-                <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5 text-[10.5px] leading-relaxed text-[#66706a]">
-                  <Wallet className="mb-1 h-3.5 w-3.5 text-[#8a938d]" />
+                <div className="rounded-lg border border-lp-line bg-white p-2.5 text-[10.5px] leading-relaxed text-lp-ink-muted">
+                  <Wallet className="mb-1 h-3.5 w-3.5 text-lp-ink-faint" />
                   Open balance
                   <br />
-                  <span className="font-mono text-[12px] font-semibold text-[#1c2420]">
+                  <span className="font-mono text-[12px] font-semibold text-lp-ink">
                     {formatINR(view.outstandingPaise)}
                   </span>
                   <br />
                   {view.paidPaise > 0 ? `${formatINR(view.paidPaise)} already paid` : 'No payments yet'}
                 </div>
-                <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5 text-[10.5px] leading-relaxed text-[#66706a]">
-                  <ShieldCheck className="mb-1 h-3.5 w-3.5 text-[#8a938d]" />
+                <div className="rounded-lg border border-lp-line bg-white p-2.5 text-[10.5px] leading-relaxed text-lp-ink-muted">
+                  <ShieldCheck className="mb-1 h-3.5 w-3.5 text-lp-ink-faint" />
                   Audit coverage
                   <br />
                   {activity.length} linked events
@@ -551,34 +551,34 @@ export function InvoiceDrawer({
           ) : null}
 
           {tab === 'activity' ? (
-            <div className="rounded-lg border border-[#e7e5dc] bg-white">
+            <div className="rounded-lg border border-lp-line bg-white">
               {activity.length === 0 ? (
-                <div className="px-4 py-8 text-center text-[11.5px] text-[#8a938d]">
+                <div className="px-4 py-8 text-center text-[11.5px] text-lp-ink-faint">
                   No activity recorded for this invoice.
                 </div>
               ) : (
-                <ol className="divide-y divide-[#f2f1ec]">
+                <ol className="divide-y divide-lp-line-soft">
                   {activity.map((event) => (
                     <li key={event.id} className="flex items-start gap-3 px-3.5 py-3">
-                      <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-[#1f5c45]/60" />
+                      <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-lp-primary/60" />
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[11.5px] font-semibold text-[#1c2420]">
+                          <span className="text-[11.5px] font-semibold text-lp-ink">
                             {event.action}
                           </span>
-                          <span className="text-[10px] text-[#8a938d]">
+                          <span className="text-[10px] text-lp-ink-faint">
                             {formatDateTime(event.at)}
                           </span>
                         </div>
-                        <p className="mt-0.5 text-[11px] leading-relaxed text-[#4e5a52]">
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-lp-ink-muted">
                           {event.summary}
                         </p>
                         {event.detail ? (
-                          <p className="mt-0.5 text-[10px] leading-relaxed text-[#8a938d]">
+                          <p className="mt-0.5 text-[10px] leading-relaxed text-lp-ink-faint">
                             {event.detail}
                           </p>
                         ) : null}
-                        <div className="mt-0.5 text-[9.5px] text-[#8a938d]">
+                        <div className="mt-0.5 text-[9.5px] text-lp-ink-faint">
                           {event.actor} · {event.actorRole}
                         </div>
                       </div>
@@ -590,16 +590,16 @@ export function InvoiceDrawer({
           ) : null}
         </div>
 
-        <div className="border-t border-[#e2e0d8] bg-[#fbfaf7] px-4 py-3 sm:px-5">
+        <div className="border-t border-lp-line bg-lp-surface-muted px-4 py-3 sm:px-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <div className="text-[9.5px] uppercase tracking-[0.08em] text-[#8a938d]">
+              <div className="text-[9.5px] uppercase tracking-[0.08em] text-lp-ink-faint">
                 Available to pay
               </div>
-              <div className="text-[13px] font-semibold text-[#1c2420]">
+              <div className="text-[13px] font-semibold text-lp-ink">
                 {formatINR(view.availablePaise)}
                 {view.reservedPaise > 0 ? (
-                  <span className="ml-2 text-[10px] font-normal text-[#245b89]">
+                  <span className="ml-2 text-[10px] font-normal text-lp-info">
                     {formatINR(view.reservedPaise)} in approval
                   </span>
                 ) : null}
@@ -624,7 +624,7 @@ export function InvoiceDrawer({
             </div>
           </div>
           {recordReason ? (
-            <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-[#8a938d]">
+            <div className="mt-1.5 flex items-center gap-1.5 text-[10px] text-lp-ink-faint">
               <AlertTriangle className="h-3 w-3" />
               {recordReason}
             </div>

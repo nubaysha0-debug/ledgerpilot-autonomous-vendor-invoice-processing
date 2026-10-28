@@ -151,13 +151,6 @@ export type LedgerMode = 'api' | 'local';
 
 export type ApiStatus = 'connecting' | 'connected' | 'offline' | 'disabled';
 
-export interface LedgerRuntime {
-  mode: LedgerMode;
-  apiStatus: ApiStatus;
-  apiBaseUrl: string;
-  syncError: string | null;
-}
-
 export interface LedgerActions {
   setRole: (role: Role) => void;
   updateBusinessProfile: (input: BusinessProfileInput) => Promise<void>;

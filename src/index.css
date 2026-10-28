@@ -1,5 +1,56 @@
 @import "tailwindcss";
 
+@theme {
+  /* LedgerPilot product console palette. Muted forest/cream identity. */
+  --color-lp-canvas: #f4f3ee;
+  --color-lp-surface: #ffffff;
+  --color-lp-surface-muted: #fafaf7;
+  --color-lp-surface-sunken: #f1f0ea;
+
+  --color-lp-ink: #1c2420;
+  --color-lp-ink-muted: #66706a;
+  --color-lp-ink-faint: #5f6a63;
+
+  --color-lp-line: #e2e0d8;
+  --color-lp-line-strong: #d9d7ce;
+  --color-lp-line-soft: #eeede8;
+
+  --color-lp-primary: #1f5c45;
+  --color-lp-primary-hover: #184a37;
+  --color-lp-primary-deep: #163c2d;
+  --color-lp-selection: #cfe0d4;
+  --color-lp-amber-badge: #d9a441;
+  --color-lp-link: #8a5a1f;
+  --color-lp-overlay: #101512;
+  --color-lp-on-deep: #dfe9e2;
+  --color-lp-on-deep-muted: #b9cdc0;
+  --color-lp-on-amber: #2b1c04;
+
+  --color-lp-success: #1f7a56;
+  --color-lp-success-wash: #edf6ef;
+  --color-lp-success-border: #c7ddce;
+
+  --color-lp-warning: #a15c12;
+  --color-lp-warning-wash: #fdf8ee;
+  --color-lp-warning-border: #efd7ad;
+
+  --color-lp-danger: #a3261f;
+  --color-lp-danger-wash: #fdf4f3;
+  --color-lp-danger-border: #efc9c5;
+
+  --color-lp-info: #245b89;
+  --color-lp-info-wash: #eef5fb;
+  --color-lp-info-border: #c9dced;
+
+  --color-lp-neutral: #52605a;
+  --color-lp-neutral-wash: #f3f5f2;
+  --color-lp-neutral-border: #d9ded8;
+
+  --color-lp-teal: #17645c;
+  --color-lp-teal-wash: #edf7f5;
+  --color-lp-teal-border: #c7dedc;
+}
+
 @layer utilities {
   /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
@@ -12,18 +63,9 @@
   }
 }
 
-:root {
-  --color-canvas: #f5f4f0;
-  --color-primary: #422701;
-  --color-accent: #d6b588;
-  --color-secondary: #705e46;
-  --color-selection: #5d674f;
-  --color-border: #e6e2d9;
-}
-
 body {
-  background-color: #f5f4f0;
-  color: #422701;
+  background-color: var(--color-lp-canvas);
+  color: var(--color-lp-ink);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
 }
@@ -35,45 +77,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(112, 94, 70, 0.05);
+  background: rgba(28, 36, 32, 0.04);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(112, 94, 70, 0.2);
+  background: rgba(28, 36, 32, 0.18);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(112, 94, 70, 0.35);
-}
-
-/* ---- LedgerPilot product console ---------------------------------------- */
-/* Additive tokens for the payables workspace. The original landing palette
-   stays available for the legacy sections retained in src/components/. */
-
-:root {
-  --lp-canvas: #f4f3ee;
-  --lp-surface: #ffffff;
-  --lp-surface-muted: #fafaf7;
-  --lp-ink: #1c2420;
-  --lp-ink-muted: #66706a;
-  --lp-ink-faint: #8a938d;
-  --lp-line: #e2e0d8;
-  --lp-line-soft: #eeede8;
-  --lp-green: #1f5c45;
-  --lp-green-deep: #163c2d;
-  --lp-green-wash: #eef5f0;
-  --lp-amber: #a15c12;
-  --lp-amber-wash: #fdf8ee;
-  --lp-red: #a3261f;
-  --lp-red-wash: #fdf4f3;
-  --lp-blue: #245b89;
-  --lp-blue-wash: #eef5fb;
-}
-
-body {
-  background-color: var(--lp-canvas);
-  color: var(--lp-ink);
+  background: rgba(28, 36, 32, 0.3);
 }
 
 .lp-num {
@@ -81,24 +94,7 @@ body {
   font-feature-settings: 'tnum' 1, 'cv02' 1;
 }
 
-.lp-grid-lines {
-  background-image: linear-gradient(to right, rgba(28, 36, 32, 0.035) 1px, transparent 1px);
-  background-size: 64px 100%;
-}
-
 ::selection {
-  background: #cfe0d4;
-  color: #163c2d;
-}
-
-/* Keep wide data tables readable without ugly native scrollbars. */
-.lp-table-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(112, 94, 70, 0.25) transparent;
-}
-
-@media print {
-  .lp-no-print {
-    display: none !important;
-  }
+  background: var(--color-lp-selection);
+  color: var(--color-lp-primary-deep);
 }

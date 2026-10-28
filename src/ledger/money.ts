@@ -14,10 +14,6 @@ export function toPaise(rupees: number): number {
   return Math.round(rupees * 100);
 }
 
-export function fromPaise(paise: number): number {
-  return paise / 100;
-}
-
 export function sumPaise(values: number[]): number {
   return values.reduce((total, value) => total + value, 0);
 }
@@ -62,10 +58,6 @@ export function formatINR(paise: number, decimals: 0 | 2 = 2): string {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(paise / 100);
-}
-
-export function formatPlainNumber(value: number): string {
-  return new Intl.NumberFormat('en-IN').format(value);
 }
 
 function asDate(value: string): Date {
@@ -126,14 +118,6 @@ export function dueLabel(dueDate: string, asOf: string): string {
   if (days > 1) return `Due in ${days} days`;
   if (days === -1) return '1 day overdue';
   return `${Math.abs(days)} days overdue`;
-}
-
-export function monthLabel(value: string): string {
-  return new Intl.DateTimeFormat('en-IN', {
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'Asia/Kolkata',
-  }).format(asDate(value));
 }
 
 const ONES = [

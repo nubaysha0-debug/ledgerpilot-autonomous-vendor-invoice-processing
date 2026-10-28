@@ -55,9 +55,9 @@ interface DataViewProps {
   onNotify: (tone: ToastTone, message: string, detail?: string) => void;
 }
 
-const labelClass = 'block text-[10.5px] font-medium text-[#4e5a52]';
+const labelClass = 'block text-[10.5px] font-medium text-lp-ink-muted';
 const inputClass =
-  'mt-1 w-full rounded-lg border border-[#d9d7ce] bg-white px-2.5 py-1.5 text-[12px] text-[#1c2420] outline-none transition-colors focus:border-[#1f5c45] focus:ring-1 focus:ring-[#1f5c45] disabled:cursor-not-allowed disabled:bg-[#f5f4ef] disabled:text-[#66706a]';
+  'mt-1 w-full rounded-lg border border-lp-line-strong bg-white px-2.5 py-1.5 text-[12px] text-lp-ink outline-none transition-colors focus:border-lp-primary focus:ring-1 focus:ring-lp-primary disabled:cursor-not-allowed disabled:bg-lp-surface-sunken disabled:text-lp-ink-muted';
 
 function toDateTimeInput(value: string): string {
   const date = new Date(value);
@@ -107,9 +107,9 @@ function dateStamp(): string {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-[#e7e5dc] bg-[#fafaf7] px-2.5 py-2">
-      <div className="text-[9px] uppercase tracking-[0.08em] text-[#8a938d]">{label}</div>
-      <div className="mt-0.5 lp-num text-[13px] font-semibold tabular-nums text-[#1c2420]">
+    <div className="rounded-lg border border-lp-line bg-lp-surface-muted px-2.5 py-2">
+      <div className="text-[9px] uppercase tracking-[0.08em] text-lp-ink-faint">{label}</div>
+      <div className="mt-0.5 lp-num text-[13px] font-semibold tabular-nums text-lp-ink">
         {value}
       </div>
     </div>
@@ -123,8 +123,8 @@ function IssueRow({ issue }: { issue: ImportPreview['issues'][number] }) {
       className={cn(
         'flex items-start gap-2 rounded-md border px-2.5 py-2 text-[11px] leading-relaxed',
         error
-          ? 'border-[#efc9c5] bg-[#fdf4f3] text-[#8f2a23]'
-          : 'border-[#efd7ad] bg-[#fdf8ee] text-[#7a4a12]',
+          ? 'border-lp-danger-border bg-lp-danger-wash text-lp-danger'
+          : 'border-lp-warning-border bg-lp-warning-wash text-lp-warning',
       )}
     >
       {error ? (
@@ -168,8 +168,8 @@ function FileDrop({
       className={cn(
         'block rounded-lg border border-dashed px-3 py-3 transition-colors',
         disabled
-          ? 'cursor-not-allowed border-[#e2e0d8] bg-[#fafaf7] opacity-70'
-          : 'cursor-pointer border-[#cfcdc3] bg-white hover:border-[#1f5c45] hover:bg-[#f8faf8]',
+          ? 'cursor-not-allowed border-lp-line bg-lp-surface-muted opacity-70'
+          : 'cursor-pointer border-lp-line-strong bg-white hover:border-lp-primary hover:bg-lp-surface-muted',
       )}
     >
       <input
@@ -181,14 +181,14 @@ function FileDrop({
         onChange={onChange}
       />
       <div className="flex items-start gap-2.5">
-        <FileSpreadsheet className="mt-0.5 h-4 w-4 shrink-0 text-[#1f5c45]" />
+        <FileSpreadsheet className="mt-0.5 h-4 w-4 shrink-0 text-lp-primary" />
         <div className="min-w-0 flex-1">
-          <div className="text-[11.5px] font-semibold text-[#1c2420]">{title}</div>
-          <div className="mt-0.5 truncate text-[10px] text-[#66706a]" title={fileName || hint}>
+          <div className="text-[11.5px] font-semibold text-lp-ink">{title}</div>
+          <div className="mt-0.5 truncate text-[10px] text-lp-ink-muted" title={fileName || hint}>
             {fileName || hint}
           </div>
         </div>
-        <span className="shrink-0 rounded-md border border-[#d9d7ce] bg-[#fafaf7] px-1.5 py-0.5 text-[9.5px] font-medium text-[#4e5a52]">
+        <span className="shrink-0 rounded-md border border-lp-line-strong bg-lp-surface-muted px-1.5 py-0.5 text-[9.5px] font-medium text-lp-ink-muted">
           Browse
         </span>
       </div>
@@ -336,21 +336,21 @@ export function DataView({
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-[19px] font-semibold tracking-tight text-[#1c2420]">
+          <h1 className="text-[19px] font-semibold tracking-tight text-lp-ink">
             Data &amp; backups
           </h1>
-          <p className="mt-1 max-w-2xl text-[12.5px] leading-relaxed text-[#66706a]">
+          <p className="mt-1 max-w-2xl text-[12.5px] leading-relaxed text-lp-ink-muted">
             {mode === 'api'
               ? 'Load vendors and invoices from CSV into the PostgreSQL workspace. The FastAPI service validates and stores each import.'
               : 'Load your own vendors and invoices from CSV. Files are read in this browser and nothing is uploaded to a server.'}
           </p>
         </div>
         <div className="flex flex-wrap gap-1.5">
-          <span className="inline-flex items-center gap-1 rounded-md border border-[#d9ded8] bg-[#f3f5f2] px-2 py-1 text-[10px] font-medium text-[#4e5a52]">
+          <span className="inline-flex items-center gap-1 rounded-md border border-lp-neutral-border bg-lp-neutral-wash px-2 py-1 text-[10px] font-medium text-lp-ink-muted">
             <Database className="h-3 w-3" />
             {mode === 'api' ? 'PostgreSQL API' : 'Local only'}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-md border border-[#d9ded8] bg-[#f3f5f2] px-2 py-1 text-[10px] font-medium text-[#4e5a52]">
+          <span className="inline-flex items-center gap-1 rounded-md border border-lp-neutral-border bg-lp-neutral-wash px-2 py-1 text-[10px] font-medium text-lp-ink-muted">
             <ShieldAlert className="h-3 w-3" />
             Owner only
           </span>
@@ -358,7 +358,7 @@ export function DataView({
       </div>
 
       {!canEdit ? (
-        <div className="flex items-start gap-2.5 rounded-lg border border-[#c9dced] bg-[#eef5fb] p-3 text-[11.5px] leading-relaxed text-[#245b89]">
+        <div className="flex items-start gap-2.5 rounded-lg border border-lp-info-border bg-lp-info-wash p-3 text-[11.5px] leading-relaxed text-lp-info">
           <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <div className="font-semibold">Read-only for this role</div>
@@ -370,7 +370,7 @@ export function DataView({
         </div>
       ) : null}
 
-      <div className="flex items-start gap-2.5 rounded-lg border border-[#efd7ad] bg-[#fdf8ee] p-3 text-[11.5px] leading-relaxed text-[#7a4a12]">
+      <div className="flex items-start gap-2.5 rounded-lg border border-lp-warning-border bg-lp-warning-wash p-3 text-[11.5px] leading-relaxed text-lp-warning">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
         <div>
           <div className="font-semibold">
@@ -393,17 +393,17 @@ export function DataView({
               title="Import vendors & invoices"
               subtitle="Two CSV files. Preview every row before the current workspace is replaced."
               action={
-                <span className="rounded-md border border-[#e7e5dc] bg-[#fafaf7] px-2 py-1 text-[9.5px] font-medium text-[#66706a]">
+                <span className="rounded-md border border-lp-line bg-lp-surface-muted px-2 py-1 text-[9.5px] font-medium text-lp-ink-muted">
                   Replaces current data
                 </span>
               }
             />
 
-            <div className="rounded-lg border border-[#e7e5dc] bg-[#fafaf7] p-3">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8a938d]">
+            <div className="rounded-lg border border-lp-line bg-lp-surface-muted p-3">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lp-ink-faint">
                 Step 1 · Start from a template
               </div>
-              <p className="mt-1 text-[11px] leading-relaxed text-[#66706a]">
+              <p className="mt-1 text-[11px] leading-relaxed text-lp-ink-muted">
                 Download the starter files, replace the sample rows, then upload them below.
                 You can also download the current workspace as CSV to edit what is already here.
               </p>
@@ -460,7 +460,7 @@ export function DataView({
             <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
               <div>
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8a938d]">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-lp-ink-faint">
                     Step 2 · Vendors CSV
                   </span>
                   {vendorsName ? (
@@ -470,7 +470,7 @@ export function DataView({
                         setVendorsText('');
                         setVendorsName('');
                       }}
-                      className="text-[9.5px] font-medium text-[#8a5a1f] hover:underline"
+                      className="text-[9.5px] font-medium text-lp-link hover:underline"
                     >
                       Remove
                     </button>
@@ -487,7 +487,7 @@ export function DataView({
               </div>
               <div>
                 <div className="mb-1 flex items-center justify-between">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8a938d]">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-lp-ink-faint">
                     Invoices CSV
                   </span>
                   {invoicesName ? (
@@ -497,7 +497,7 @@ export function DataView({
                         setInvoicesText('');
                         setInvoicesName('');
                       }}
-                      className="text-[9.5px] font-medium text-[#8a5a1f] hover:underline"
+                      className="text-[9.5px] font-medium text-lp-link hover:underline"
                     >
                       Remove
                     </button>
@@ -515,18 +515,18 @@ export function DataView({
             </div>
 
             <div className="mt-4">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8a938d]">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-lp-ink-faint">
                 Step 3 · Preview
               </div>
 
               {previewResult.crash ? (
-                <div className="mt-2 rounded-lg border border-[#efc9c5] bg-[#fdf4f3] p-3 text-[11.5px] text-[#8f2a23]">
+                <div className="mt-2 rounded-lg border border-lp-danger-border bg-lp-danger-wash p-3 text-[11.5px] text-lp-danger">
                   {previewResult.crash}
                 </div>
               ) : null}
 
               {!preview && !previewResult.crash ? (
-                <div className="mt-2 rounded-lg border border-dashed border-[#d9d7ce] px-3 py-6 text-center text-[11px] leading-relaxed text-[#8a938d]">
+                <div className="mt-2 rounded-lg border border-dashed border-lp-line-strong px-3 py-6 text-center text-[11px] leading-relaxed text-lp-ink-faint">
                   Select both CSV files to validate vendors, GSTINs, dates, GST arithmetic and
                   opening paid amounts. Nothing changes until you confirm the import.
                 </div>
@@ -535,7 +535,7 @@ export function DataView({
               {preview ? (
                 <div className="mt-2 space-y-3">
                   {profileDirty ? (
-                    <div className="flex items-start gap-2 rounded-lg border border-[#efd7ad] bg-[#fdf8ee] px-3 py-2 text-[10.5px] leading-relaxed text-[#7a4a12]">
+                    <div className="flex items-start gap-2 rounded-lg border border-lp-warning-border bg-lp-warning-wash px-3 py-2 text-[10.5px] leading-relaxed text-lp-warning">
                       <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                       <span>
                         The company profile has unsaved changes. Save or discard them before
@@ -550,28 +550,28 @@ export function DataView({
                     <Stat label="Opening payments" value={String(preview.openingPaymentCount)} />
                   </div>
 
-                  <div className="rounded-lg border border-[#e7e5dc] bg-white px-3 py-2.5 text-[11px] text-[#66706a]">
+                  <div className="rounded-lg border border-lp-line bg-white px-3 py-2.5 text-[11px] text-lp-ink-muted">
                     <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
                       <span>
                         Billable value{' '}
-                        <span className="font-semibold text-[#1c2420]">
+                        <span className="font-semibold text-lp-ink">
                           {formatINR(preview.invoiceValuePaise)}
                         </span>
                       </span>
                       <span>
                         Opening paid{' '}
-                        <span className="font-semibold text-[#2f7a54]">
+                        <span className="font-semibold text-lp-success">
                           {formatINR(preview.openingPaidPaise)}
                         </span>
                       </span>
                       <span>
                         Balance{' '}
-                        <span className="font-semibold text-[#1c2420]">
+                        <span className="font-semibold text-lp-ink">
                           {formatINR(preview.balancePaise)}
                         </span>
                       </span>
                       {preview.duplicateInvoiceCount > 0 ? (
-                        <span className="text-[#9a4a0d]">
+                        <span className="text-lp-warning">
                           {preview.duplicateInvoiceCount} duplicate cop
                           {preview.duplicateInvoiceCount === 1 ? 'y' : 'ies'}
                         </span>
@@ -580,29 +580,29 @@ export function DataView({
                   </div>
 
                   {issueCount === 0 ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-[#c7ddce] bg-[#f2f9f4] px-3 py-2 text-[11.5px] font-medium text-[#1f5c45]">
+                    <div className="flex items-center gap-2 rounded-lg border border-lp-success-border bg-lp-success-wash px-3 py-2 text-[11.5px] font-medium text-lp-primary">
                       <CheckCircle2 className="h-4 w-4" />
                       Validation passed. Review the caution below, then import.
                     </div>
                   ) : (
                     <div>
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div className="text-[11.5px] font-semibold text-[#1c2420]">
+                        <div className="text-[11.5px] font-semibold text-lp-ink">
                           {preview.errorCount > 0 ? (
-                            <span className="text-[#a3261f]">
+                            <span className="text-lp-danger">
                               {preview.errorCount} blocking error
                               {preview.errorCount === 1 ? '' : 's'}
                             </span>
                           ) : (
-                            <span className="text-[#2f7a54]">No blocking errors</span>
+                            <span className="text-lp-success">No blocking errors</span>
                           )}
-                          <span className="text-[#8a938d]">
+                          <span className="text-lp-ink-faint">
                             {' '}
                             · {preview.warningCount} warning
                             {preview.warningCount === 1 ? '' : 's'}
                           </span>
                         </div>
-                        <span className="text-[9.5px] text-[#8a938d]">
+                        <span className="text-[9.5px] text-lp-ink-faint">
                           Showing {visibleIssues.length} of {issueCount}
                         </span>
                       </div>
@@ -612,7 +612,7 @@ export function DataView({
                         ))}
                       </div>
                       {issueCount > visibleIssues.length ? (
-                        <p className="mt-1.5 text-[10.5px] text-[#8a938d]">
+                        <p className="mt-1.5 text-[10.5px] text-lp-ink-faint">
                           {issueCount - visibleIssues.length} more issue
                           {issueCount - visibleIssues.length === 1 ? '' : 's'} not shown. Fix
                           the first rows and re-upload.
@@ -621,7 +621,7 @@ export function DataView({
                     </div>
                   )}
 
-                  <div className="rounded-lg border border-[#e7e5dc] bg-[#fafaf7] p-3 text-[10.5px] leading-relaxed text-[#66706a]">
+                  <div className="rounded-lg border border-lp-line bg-lp-surface-muted p-3 text-[10.5px] leading-relaxed text-lp-ink-muted">
                     Importing replaces the current vendors, invoices, payments and audit events.
                     Vendor bank accounts are imported as verified unless{' '}
                     <span className="font-mono">bank_status</span> is set to{' '}
@@ -660,11 +660,11 @@ export function DataView({
                       </Button>
                     </div>
                     {preview.errorCount > 0 ? (
-                      <span className="text-[10.5px] text-[#a3261f]">
+                      <span className="text-[10.5px] text-lp-danger">
                         Fix all errors before importing.
                       </span>
                     ) : profileDirty ? (
-                      <span className="text-[10.5px] text-[#9a4a0d]">
+                      <span className="text-[10.5px] text-lp-warning">
                         Save or discard profile changes before importing.
                       </span>
                     ) : null}
@@ -680,72 +680,72 @@ export function DataView({
               subtitle="A few rules keep the ledger arithmetic honest."
             />
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-lg border border-[#e7e5dc] bg-[#fafaf7] p-3">
-                <div className="flex items-center gap-2 text-[11.5px] font-semibold text-[#1c2420]">
-                  <FileSpreadsheet className="h-3.5 w-3.5 text-[#1f5c45]" />
+              <div className="rounded-lg border border-lp-line bg-lp-surface-muted p-3">
+                <div className="flex items-center gap-2 text-[11.5px] font-semibold text-lp-ink">
+                  <FileSpreadsheet className="h-3.5 w-3.5 text-lp-primary" />
                   One row per invoice line
                 </div>
-                <p className="mt-1 text-[10.5px] leading-relaxed text-[#66706a]">
+                <p className="mt-1 text-[10.5px] leading-relaxed text-lp-ink-muted">
                   Repeat the same <span className="font-mono">vendor_gstin</span> and{' '}
                   <span className="font-mono">invoice_number</span> on extra rows to add more
                   line items to one invoice.
                 </p>
               </div>
-              <div className="rounded-lg border border-[#e7e5dc] bg-[#fafaf7] p-3">
-                <div className="flex items-center gap-2 text-[11.5px] font-semibold text-[#1c2420]">
-                  <Building2 className="h-3.5 w-3.5 text-[#1f5c45]" />
+              <div className="rounded-lg border border-lp-line bg-lp-surface-muted p-3">
+                <div className="flex items-center gap-2 text-[11.5px] font-semibold text-lp-ink">
+                  <Building2 className="h-3.5 w-3.5 text-lp-primary" />
                   GST is recalculated
                 </div>
-                <p className="mt-1 text-[10.5px] leading-relaxed text-[#66706a]">
+                <p className="mt-1 text-[10.5px] leading-relaxed text-lp-ink-muted">
                   Intra-state vs inter-state is derived from the business and vendor GSTIN state
                   codes. The rate defaults to 18%; set{' '}
                   <span className="font-mono">gst_rate</span> for 5%, 12% or 28%.
                 </p>
               </div>
-              <div className="rounded-lg border border-[#e7e5dc] bg-[#fafaf7] p-3">
-                <div className="flex items-center gap-2 text-[11.5px] font-semibold text-[#1c2420]">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-[#1f5c45]" />
+              <div className="rounded-lg border border-lp-line bg-lp-surface-muted p-3">
+                <div className="flex items-center gap-2 text-[11.5px] font-semibold text-lp-ink">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-lp-primary" />
                   Opening balances are allowed
                 </div>
-                <p className="mt-1 text-[10.5px] leading-relaxed text-[#66706a]">
+                <p className="mt-1 text-[10.5px] leading-relaxed text-lp-ink-muted">
                   <span className="font-mono">amount_paid</span> becomes a simulated historical
                   payment. It reduces the invoice balance but is not proof that money moved.
                 </p>
               </div>
-              <div className="rounded-lg border border-[#e7e5dc] bg-[#fafaf7] p-3">
-                <div className="flex items-center gap-2 text-[11.5px] font-semibold text-[#1c2420]">
-                  <XCircle className="h-3.5 w-3.5 text-[#a3261f]" />
+              <div className="rounded-lg border border-lp-line bg-lp-surface-muted p-3">
+                <div className="flex items-center gap-2 text-[11.5px] font-semibold text-lp-ink">
+                  <XCircle className="h-3.5 w-3.5 text-lp-danger" />
                   Errors block the whole file
                 </div>
-                <p className="mt-1 text-[10.5px] leading-relaxed text-[#66706a]">
+                <p className="mt-1 text-[10.5px] leading-relaxed text-lp-ink-muted">
                   A row with a bad GSTIN, unmatched vendor, broken date or overpaid amount is
                   never imported. Warnings are shown but do not block the import.
                 </p>
               </div>
             </div>
 
-            <details className="mt-3 rounded-lg border border-[#e7e5dc] bg-white px-3 py-2.5">
-              <summary className="cursor-pointer text-[11px] font-semibold text-[#1c2420]">
+            <details className="mt-3 rounded-lg border border-lp-line bg-white px-3 py-2.5">
+              <summary className="cursor-pointer text-[11px] font-semibold text-lp-ink">
                 CSV columns and examples
               </summary>
-              <div className="mt-2 grid gap-3 text-[10.5px] leading-relaxed text-[#66706a] sm:grid-cols-2">
+              <div className="mt-2 grid gap-3 text-[10.5px] leading-relaxed text-lp-ink-muted sm:grid-cols-2">
                 <div>
-                  <div className="font-semibold text-[#3e4742]">Vendors · required</div>
+                  <div className="font-semibold text-lp-ink">Vendors · required</div>
                   <p className="mt-0.5 font-mono text-[9.5px] leading-relaxed">
                     vendor_name, gstin, bank_name, account_number (or account_masked), ifsc
                   </p>
-                  <div className="mt-2 font-semibold text-[#3e4742]">Vendors · optional</div>
+                  <div className="mt-2 font-semibold text-lp-ink">Vendors · optional</div>
                   <p className="mt-0.5 font-mono text-[9.5px] leading-relaxed">
                     category, address, city, state, pincode, phone, email, terms_days, upi_id,
                     bank_status
                   </p>
                 </div>
                 <div>
-                  <div className="font-semibold text-[#3e4742]">Invoices · required</div>
+                  <div className="font-semibold text-lp-ink">Invoices · required</div>
                   <p className="mt-0.5 font-mono text-[9.5px] leading-relaxed">
                     invoice_number, issue_date, description, rate, vendor_gstin (or vendor_name)
                   </p>
-                  <div className="mt-2 font-semibold text-[#3e4742]">Invoices · optional</div>
+                  <div className="mt-2 font-semibold text-lp-ink">Invoices · optional</div>
                   <p className="mt-0.5 font-mono text-[9.5px] leading-relaxed">
                     received_date, due_date, terms_days, po_number, grn_number, gst_type,
                     gst_rate, place_of_supply, hsn, qty, unit, amount_paid, paid_date,
@@ -753,7 +753,7 @@ export function DataView({
                   </p>
                 </div>
               </div>
-              <p className="mt-2 border-t border-[#eeede8] pt-2 text-[10px] leading-relaxed text-[#8a938d]">
+              <p className="mt-2 border-t border-lp-line-soft pt-2 text-[10px] leading-relaxed text-lp-ink-faint">
                 Dates accept YYYY-MM-DD, DD/MM/YYYY or DD-MMM-YYYY. Money accepts digits, commas,
                 ₹ or an Rs. prefix. Use <span className="font-mono">duplicate_of</span> with the
                 original invoice number to record a duplicate copy.
@@ -878,13 +878,13 @@ export function DataView({
               </label>
             </div>
 
-            <p className="mt-2.5 text-[10px] leading-relaxed text-[#8a938d]">
+            <p className="mt-2.5 text-[10px] leading-relaxed text-lp-ink-faint">
               Currently showing {formatDateTime(state.business.asOf)} IST. Changing the as-of date
               changes which invoices count as overdue.
             </p>
 
             {profileErrors.length > 0 ? (
-              <div className="mt-2.5 rounded-lg border border-[#efc9c5] bg-[#fdf4f3] p-2.5 text-[10.5px] leading-relaxed text-[#8f2a23]">
+              <div className="mt-2.5 rounded-lg border border-lp-danger-border bg-lp-danger-wash p-2.5 text-[10.5px] leading-relaxed text-lp-danger">
                 {profileErrors.map((error) => (
                   <div key={error}>{error}</div>
                 ))}
@@ -903,7 +903,7 @@ export function DataView({
               {profileDirty ? (
                 <button
                   type="button"
-                  className="text-[10px] font-medium text-[#66706a] hover:underline"
+                  className="text-[10px] font-medium text-lp-ink-muted hover:underline"
                   onClick={() => {
                     setProfile(profileFromBusiness(state.business));
                     setProfileErrors([]);
@@ -931,21 +931,21 @@ export function DataView({
                   )
                 }
               >
-                <FileJson className="h-4 w-4 text-[#1f5c45]" />
+                <FileJson className="h-4 w-4 text-lp-primary" />
                 <span className="flex-1 text-left">
                   Download JSON backup
-                  <span className="block text-[9.5px] font-normal text-[#8a938d]">
+                  <span className="block text-[9.5px] font-normal text-lp-ink-faint">
                     Vendors, invoices, payments, audit trail and profile
                   </span>
                 </span>
-                <Download className="h-3.5 w-3.5 text-[#8a938d]" />
+                <Download className="h-3.5 w-3.5 text-lp-ink-faint" />
               </Button>
 
-              <label className="flex w-full cursor-pointer items-center gap-2 rounded-lg border border-[#d9d7ce] bg-white px-3 py-2 text-[12.5px] font-medium text-[#1c2420] transition-colors hover:border-[#b9b7ac] hover:bg-[#f8f7f3]">
-                <Upload className="h-4 w-4 text-[#1f5c45]" />
+              <label className="flex w-full cursor-pointer items-center gap-2 rounded-lg border border-lp-line-strong bg-white px-3 py-2 text-[12.5px] font-medium text-lp-ink transition-colors hover:border-lp-line-strong hover:bg-lp-surface-muted">
+                <Upload className="h-4 w-4 text-lp-primary" />
                 <span className="flex-1">
                   Restore a JSON backup
-                  <span className="block text-[9.5px] font-normal text-[#8a938d]">
+                  <span className="block text-[9.5px] font-normal text-lp-ink-faint">
                     {restoreName || 'Replaces the whole workspace after confirmation'}
                   </span>
                 </span>
@@ -956,16 +956,16 @@ export function DataView({
                   disabled={!canEdit}
                   onChange={(event) => void handleRestore(event)}
                 />
-                <Download className="h-3.5 w-3.5 rotate-180 text-[#8a938d]" />
+                <Download className="h-3.5 w-3.5 rotate-180 text-lp-ink-faint" />
               </label>
               {restoreError ? (
-                <p className="rounded-md border border-[#efc9c5] bg-[#fdf4f3] px-2.5 py-2 text-[10.5px] leading-relaxed text-[#8f2a23]">
+                <p className="rounded-md border border-lp-danger-border bg-lp-danger-wash px-2.5 py-2 text-[10.5px] leading-relaxed text-lp-danger">
                   {restoreError}
                 </p>
               ) : null}
             </div>
 
-            <div className="my-3 border-t border-[#eeede8]" />
+            <div className="my-3 border-t border-lp-line-soft" />
 
             <div className="flex flex-wrap gap-2">
               <Button
@@ -989,7 +989,7 @@ export function DataView({
                 Invoices CSV
               </Button>
             </div>
-            <p className="mt-2 text-[10px] leading-relaxed text-[#8a938d]">{WORKSPACE_CSV_NOTE}</p>
+            <p className="mt-2 text-[10px] leading-relaxed text-lp-ink-faint">{WORKSPACE_CSV_NOTE}</p>
           </Card>
 
           <Card className="p-4 sm:p-5">
@@ -999,19 +999,19 @@ export function DataView({
             />
             <Button
               variant="secondary"
-              className="w-full justify-start text-[#8f2a23]"
+              className="w-full justify-start text-lp-danger"
               disabled={!canEdit}
               onClick={onReset}
             >
               <RotateCcw className="h-4 w-4" />
               <span className="flex-1 text-left">
                 Reset to demo data
-                <span className="block text-[9.5px] font-normal text-[#8a938d]">
+                <span className="block text-[9.5px] font-normal text-lp-ink-faint">
                   12 vendors, 16 invoices, 10 payments and 19 audit events
                 </span>
               </span>
             </Button>
-            <p className="mt-2 text-[10px] leading-relaxed text-[#8a938d]">
+            <p className="mt-2 text-[10px] leading-relaxed text-lp-ink-faint">
               {mode === 'api'
                 ? 'Reset discards imported vendors, invoices, payments and profile changes in the PostgreSQL workspace. Download a backup first if you need to keep them.'
                 : 'Reset discards imported vendors, invoices, payments and profile changes in this browser. Download a backup first if you need to keep them.'}

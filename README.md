@@ -157,7 +157,6 @@ credentials, API keys or customer data.
 | `DEMO_MODE` | `true` | API | Enables `/api/demo/reset` and demo fault hooks. |
 | `EXTRACTOR` | `mock` | API | `mock`, `off` or demo-only `garbage` via the upload form. |
 | `LLM_PROVIDER` | `mock` | API | The demo is rules-first; no model key is required. |
-| `GEMINI_API_KEY` | empty | Optional | Only for optional AI experiments. Never commit it. |
 | `MAX_UPLOAD_MB` | `10` | API | Upload size ceiling. |
 | `MAX_PDF_PAGES` | `5` | API | PDF page ceiling. |
 | `UPLOAD_DIR` | `backend/data/uploads` (`/tmp/ledgerpilot/uploads` on Vercel) | API | Original-file storage. Ignored by Git. |
@@ -165,8 +164,8 @@ credentials, API keys or customer data.
 | `VITE_API_URL` | `http://127.0.0.1:8000` in dev; same origin in production | Frontend | API base URL used by the React adapter. |
 | `LP_TEST_DATABASE_URL` | unset | Tests | Optional external disposable DB; name must end in `_test`. |
 
-The checked-in `firebase-applet-config.json` is a sanitized AI Studio scaffold file with a
-placeholder API key. The LedgerPilot console does not import Firebase.
+The console is a standalone Vite + React app. It does not require Firebase, a
+model key or a hosted AI service.
 
 ---
 
@@ -327,7 +326,7 @@ scripts/             frontend assertion scripts and seed export
 | **Port 8000 is busy** | `Get-NetTCPConnection -LocalPort 8000` shows the owner. Stop that process or run the API on 8010 and set `VITE_API_URL`. Do not stop an unrelated service without checking. |
 | **DB_UNAVAILABLE** | `docker compose ps` and `docker compose logs db`; for the embedded path, confirm `backend/.pg_url` matches the running server. |
 | **Migrations are missing** | `python -m backend.scripts.migrate --status`, then apply them. The Docker command applies migrations automatically. |
-| **npm install peer warnings** | The scaffold has older peer ranges; `--legacy-peer-deps` is the supported install path. |
+| **npm install peer warnings** | The Vercel install command uses `--legacy-peer-deps` to keep installs reproducible across npm versions. |
 | **Reset did not restore the seed** | In API mode, confirm the header badge is **PostgreSQL API**; in local mode, confirm the URL has `?api=off`. Reset is destructive in both modes. |
 | **Upload rejected** | Only PNG, JPEG and PDF are accepted, up to 10 MB, and the bytes must match the declared type. SVG is rejected deliberately. |
 
@@ -335,6 +334,6 @@ scripts/             frontend assertion scripts and seed export
 
 ## License and attribution
 
-This hackathon prototype is provided for demonstration and evaluation. The React shell originated
-from an AI Studio scaffold; the LedgerPilot ledger, FastAPI service, PostgreSQL schema and tests are
-part of this repository. All data is synthetic.
+This hackathon prototype is provided for demonstration and evaluation. Portions of the React shell
+retain their original Apache-2.0 SPDX notice in `src/App.tsx`; the LedgerPilot ledger, FastAPI
+service, PostgreSQL schema and tests are part of this repository. All data is synthetic.

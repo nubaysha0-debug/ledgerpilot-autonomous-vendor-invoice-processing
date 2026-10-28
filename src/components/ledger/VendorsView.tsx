@@ -20,18 +20,18 @@ function VendorBank({ vendor, onVerify }: { vendor: Vendor; onVerify: () => void
   if (vendor.bank.status === 'changed') {
     return (
       <div>
-        <div className="flex items-center gap-1.5 text-[11.5px] font-medium text-[#9a4a0d]">
+        <div className="flex items-center gap-1.5 text-[11.5px] font-medium text-lp-warning">
           <ShieldAlert className="h-3.5 w-3.5" />
           Account changed
         </div>
-        <div className="mt-0.5 text-[10.5px] leading-relaxed text-[#66706a]">
+        <div className="mt-0.5 text-[10.5px] leading-relaxed text-lp-ink-muted">
           {vendor.bank.previousAccountMasked} → {vendor.bank.accountMasked}
           {vendor.bank.changedAt ? ` on ${formatDate(vendor.bank.changedAt)}` : ''}
         </div>
         <button
           type="button"
           onClick={onVerify}
-          className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-[#efd7ad] bg-[#fdf8ee] px-2 py-1 text-[10.5px] font-medium text-[#8a4d0c] hover:bg-[#faefdb]"
+          className="mt-1.5 inline-flex items-center gap-1 rounded-md border border-lp-warning-border bg-lp-warning-wash px-2 py-1 text-[10.5px] font-medium text-lp-warning hover:bg-lp-warning-wash"
         >
           <ShieldCheck className="h-3 w-3" />
           Verify by phone
@@ -41,14 +41,14 @@ function VendorBank({ vendor, onVerify }: { vendor: Vendor; onVerify: () => void
   }
   return (
     <div>
-      <div className="flex items-center gap-1.5 text-[11.5px] text-[#3e4742]">
-        <Landmark className="h-3.5 w-3.5 text-[#8a938d]" />
+      <div className="flex items-center gap-1.5 text-[11.5px] text-lp-ink">
+        <Landmark className="h-3.5 w-3.5 text-lp-ink-faint" />
         {vendor.bank.bankName}
       </div>
-      <div className="mt-0.5 font-mono text-[10.5px] text-[#66706a]">
+      <div className="mt-0.5 font-mono text-[10.5px] text-lp-ink-muted">
         {vendor.bank.accountMasked} · {vendor.bank.ifsc}
       </div>
-      <div className="mt-1 inline-flex items-center gap-1 text-[10px] font-medium text-[#2f7a54]">
+      <div className="mt-1 inline-flex items-center gap-1 text-[10px] font-medium text-lp-success">
         <CheckCircle2 className="h-3 w-3" />
         Verified
       </div>
@@ -122,50 +122,50 @@ export function VendorsView({
     <div className="space-y-5">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <div className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[#1f5c45]">
+          <div className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-lp-primary">
             Supplier master
           </div>
-          <h1 className="mt-1 text-[26px] font-semibold tracking-tight text-[#1c2420]">
+          <h1 className="mt-1 text-[26px] font-semibold tracking-tight text-lp-ink">
             Vendors
           </h1>
-          <p className="mt-1 text-[12.5px] text-[#66706a]">
+          <p className="mt-1 text-[12.5px] text-lp-ink-muted">
             {state.vendors.length} vendors · {withBalance} with open balances ·{' '}
             {needsVerification} bank change awaiting verification
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-[#e2e0d8] bg-white px-4 py-2.5">
+        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-lp-line bg-white px-4 py-2.5">
           <div>
-            <div className="text-[9.5px] uppercase tracking-[0.08em] text-[#8a938d]">Open payables</div>
+            <div className="text-[9.5px] uppercase tracking-[0.08em] text-lp-ink-faint">Open payables</div>
             <Money
               paise={rows.reduce((sum, row) => sum + row.outstandingPaise, 0)}
-              className="text-[13px] font-semibold text-[#1c2420]"
+              className="text-[13px] font-semibold text-lp-ink"
             />
           </div>
-          <div className="h-7 w-px bg-[#eeede8]" />
+          <div className="h-7 w-px bg-lp-line-soft" />
           <div>
-            <div className="text-[9.5px] uppercase tracking-[0.08em] text-[#8a938d]">Overdue</div>
-            <Money paise={totalOverdue} className="text-[13px] font-semibold text-[#a3261f]" />
+            <div className="text-[9.5px] uppercase tracking-[0.08em] text-lp-ink-faint">Overdue</div>
+            <Money paise={totalOverdue} className="text-[13px] font-semibold text-lp-danger" />
           </div>
         </div>
       </div>
 
       <Card className="overflow-hidden">
-        <div className="flex flex-col gap-3 border-b border-[#eeede8] p-3.5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-lp-line-soft p-3.5 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:max-w-sm">
-            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8a938d]" />
+            <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-lp-ink-faint" />
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search vendor, category, city or GSTIN"
-              className="w-full rounded-lg border border-[#d9d7ce] bg-[#fafaf7] py-2 pl-9 pr-3 text-[12px] text-[#1c2420] outline-none placeholder:text-[#8a938d] focus:border-[#1f5c45] focus:bg-white focus:ring-1 focus:ring-[#1f5c45]"
+              className="w-full rounded-lg border border-lp-line-strong bg-lp-surface-muted py-2 pl-9 pr-3 text-[12px] text-lp-ink outline-none placeholder:text-lp-ink-faint focus:border-lp-primary focus:bg-white focus:ring-1 focus:ring-lp-primary"
             />
           </div>
-          <label className="inline-flex cursor-pointer items-center gap-2 text-[11.5px] text-[#4e5a52]">
+          <label className="inline-flex cursor-pointer items-center gap-2 text-[11.5px] text-lp-ink-muted">
             <input
               type="checkbox"
               checked={onlyWithBalance}
               onChange={(event) => setOnlyWithBalance(event.target.checked)}
-              className="h-3.5 w-3.5 rounded border-[#c9c7bc] accent-[#1f5c45]"
+              className="h-3.5 w-3.5 rounded border-lp-line-strong accent-lp-primary"
             />
             Only vendors with an open balance
           </label>
@@ -192,7 +192,7 @@ export function VendorsView({
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1060px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-[#eeede8] bg-[#fafaf7] text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8a938d]">
+                <tr className="border-b border-lp-line-soft bg-lp-surface-muted text-[10px] font-semibold uppercase tracking-[0.08em] text-lp-ink-faint">
                   <th className="px-3.5 py-2.5">Vendor</th>
                   <th className="px-3.5 py-2.5">Terms</th>
                   <th className="px-3.5 py-2.5">Bank account</th>
@@ -203,30 +203,30 @@ export function VendorsView({
                   <th className="px-3.5 py-2.5" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f2f1ec]">
+              <tbody className="divide-y divide-lp-line-soft">
                 {rows.map((row) => (
-                  <tr key={row.vendor.id} className="transition-colors hover:bg-[#fafaf7]">
+                  <tr key={row.vendor.id} className="transition-colors hover:bg-lp-surface-muted">
                     <td className="px-3.5 py-3">
                       <div className="flex items-start gap-2">
-                        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#eef1ee] text-[#1f5c45]">
+                        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-lp-success-wash text-lp-primary">
                           <Building2 className="h-3.5 w-3.5" />
                         </span>
                         <div className="min-w-0">
-                          <div className="truncate text-[12px] font-semibold text-[#1c2420]">
+                          <div className="truncate text-[12px] font-semibold text-lp-ink">
                             {row.vendor.name}
                           </div>
-                          <div className="mt-0.5 text-[10.5px] text-[#66706a]">
+                          <div className="mt-0.5 text-[10.5px] text-lp-ink-muted">
                             {row.vendor.category} · {row.vendor.city}
                           </div>
-                          <div className="mt-0.5 font-mono text-[9.5px] text-[#8a938d]">
+                          <div className="mt-0.5 font-mono text-[9.5px] text-lp-ink-faint">
                             {row.vendor.gstin}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-3.5 py-3">
-                      <div className="text-[11.5px] text-[#3e4742]">{row.vendor.termsLabel}</div>
-                      <div className="mt-0.5 text-[10px] text-[#8a938d]">
+                      <div className="text-[11.5px] text-lp-ink">{row.vendor.termsLabel}</div>
+                      <div className="mt-0.5 text-[10px] text-lp-ink-faint">
                         {row.vendor.termsDays} days
                       </div>
                     </td>
@@ -241,8 +241,8 @@ export function VendorsView({
                         className={cn(
                           'inline-flex min-w-6 justify-center rounded-md px-1.5 py-0.5 text-[11px] font-medium',
                           row.openCount > 0
-                            ? 'bg-[#eef1ee] text-[#1f5c45]'
-                            : 'bg-[#f5f4ef] text-[#8a938d]',
+                            ? 'bg-lp-success-wash text-lp-primary'
+                            : 'bg-lp-surface-sunken text-lp-ink-faint',
                         )}
                       >
                         {row.openCount}
@@ -253,7 +253,7 @@ export function VendorsView({
                         paise={row.outstandingPaise}
                         className={cn(
                           'text-[12px] font-semibold',
-                          row.outstandingPaise > 0 ? 'text-[#1c2420]' : 'text-[#8a938d]',
+                          row.outstandingPaise > 0 ? 'text-lp-ink' : 'text-lp-ink-faint',
                         )}
                       />
                     </td>
@@ -261,17 +261,17 @@ export function VendorsView({
                       {row.overduePaise > 0 ? (
                         <Money
                           paise={row.overduePaise}
-                          className="text-[12px] font-semibold text-[#a3261f]"
+                          className="text-[12px] font-semibold text-lp-danger"
                         />
                       ) : (
-                        <span className="text-[11px] text-[#8a938d]">—</span>
+                        <span className="text-[11px] text-lp-ink-faint">—</span>
                       )}
                     </td>
                     <td className="px-3.5 py-3">
-                      <div className="text-[11px] text-[#3e4742]">
+                      <div className="text-[11px] text-lp-ink">
                         {row.lastPayment ? formatDate(row.lastPayment) : 'No payment yet'}
                       </div>
-                      <div className="mt-0.5 text-[10px] text-[#8a938d]">
+                      <div className="mt-0.5 text-[10px] text-lp-ink-faint">
                         {row.lastPayment ? 'SIMULATED' : '—'}
                       </div>
                     </td>
@@ -292,7 +292,7 @@ export function VendorsView({
           </div>
         )}
 
-        <div className="border-t border-[#eeede8] bg-[#fafaf7] px-3.5 py-2.5 text-[11px] text-[#66706a]">
+        <div className="border-t border-lp-line-soft bg-lp-surface-muted px-3.5 py-2.5 text-[11px] text-lp-ink-muted">
           Bank changes block new payment requests until an owner verifies the account by phone.
           Amounts are outstanding balances, excluding duplicate copies.
         </div>

@@ -492,40 +492,40 @@ export function AppShell() {
     state.payments.filter((payment) => payment.status === 'failed').length;
 
   return (
-    <div className="min-h-screen bg-[#f4f3ee] text-[#1c2420]">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-[#e2e0d8] bg-[#fbfaf7] lg:flex">
-        <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-[#eeede8] px-4">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#1f5c45] text-[10.5px] font-bold tracking-tight text-white">
+    <div className="min-h-screen bg-lp-canvas text-lp-ink">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-lp-line bg-lp-surface-muted lg:flex">
+        <div className="flex h-14 shrink-0 items-center gap-2.5 border-b border-lp-line-soft px-4">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-lp-primary text-[10.5px] font-bold tracking-tight text-white">
             LP
           </span>
           <div className="leading-tight">
-            <div className="text-[13px] font-semibold tracking-tight text-[#1c2420]">
+            <div className="text-[13px] font-semibold tracking-tight text-lp-ink">
               LedgerPilot
             </div>
-            <div className="text-[9.5px] uppercase tracking-[0.1em] text-[#8a938d]">
+            <div className="text-[9.5px] uppercase tracking-[0.1em] text-lp-ink-faint">
               Payables console
             </div>
           </div>
         </div>
 
         <div className="px-3 pt-3">
-          <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5">
-            <div className="text-[11.5px] font-semibold leading-snug text-[#1c2420]">
+          <div className="rounded-lg border border-lp-line bg-white p-2.5">
+            <div className="text-[11.5px] font-semibold leading-snug text-lp-ink">
               {state.business.name}
             </div>
-            <div className="mt-1 text-[10px] leading-relaxed text-[#66706a]">
+            <div className="mt-1 text-[10px] leading-relaxed text-lp-ink-muted">
               {state.business.city}, {state.business.state}
               <br />
               <span className="font-mono text-[9.5px]">{state.business.gstin}</span>
             </div>
-            <div className="mt-1.5 inline-flex rounded bg-[#f5f4ef] px-1.5 py-0.5 text-[9px] font-medium text-[#66706a]">
+            <div className="mt-1.5 inline-flex rounded bg-lp-surface-sunken px-1.5 py-0.5 text-[9px] font-medium text-lp-ink-muted">
               FY {state.business.fy}
             </div>
           </div>
         </div>
 
         <nav className="mt-3 flex-1 overflow-y-auto px-2">
-          <div className="px-2 pb-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-[#8a938d]">
+          <div className="px-2 pb-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-lp-ink-faint">
             Workspace
           </div>
           {NAV.map((item) => {
@@ -545,20 +545,20 @@ export function AppShell() {
                 className={cn(
                   'mb-0.5 flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors',
                   active
-                    ? 'bg-[#eaf1eb] text-[#1f5c45]'
-                    : 'text-[#4e5a52] hover:bg-[#f1f0ea] hover:text-[#1c2420]',
+                    ? 'bg-lp-success-wash text-lp-primary'
+                    : 'text-lp-ink-muted hover:bg-lp-surface-sunken hover:text-lp-ink',
                 )}
               >
-                <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-[#1f5c45]' : 'text-[#8a938d]')} />
+                <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-lp-primary' : 'text-lp-ink-faint')} />
                 <span className="min-w-0 flex-1">
                   <span className="block text-[12px] font-medium">{item.label}</span>
-                  <span className="block text-[9.5px] text-[#8a938d]">{item.caption}</span>
+                  <span className="block text-[9.5px] text-lp-ink-faint">{item.caption}</span>
                 </span>
                 {count != null ? (
                   <span
                     className={cn(
                       'rounded px-1.5 py-0.5 text-[9.5px] font-semibold',
-                      active ? 'bg-[#1f5c45] text-white' : 'bg-[#f1f0ea] text-[#66706a]',
+                      active ? 'bg-lp-primary text-white' : 'bg-lp-surface-sunken text-lp-ink-muted',
                     )}
                   >
                     {count}
@@ -569,16 +569,16 @@ export function AppShell() {
           })}
         </nav>
 
-        <div className="border-t border-[#eeede8] p-3">
-          <div className="rounded-lg border border-[#e7e5dc] bg-white p-2.5">
+        <div className="border-t border-lp-line-soft p-3">
+          <div className="rounded-lg border border-lp-line bg-white p-2.5">
             <div className="flex items-center gap-2">
               <Avatar initials={activeMember?.initials ?? 'RP'} name={activeMember?.name} size="sm" />
               <div className="min-w-0 flex-1">
-                <div className="truncate text-[11.5px] font-semibold text-[#1c2420]">
+                <div className="truncate text-[11.5px] font-semibold text-lp-ink">
                   {activeMember?.name}
                 </div>
                 <div
-                  className="truncate text-[9.5px] text-[#8a938d]"
+                  className="truncate text-[9.5px] text-lp-ink-faint"
                   title={`${activeMember?.role} · ${activeMember?.title}`}
                 >
                   {activeMember?.title}
@@ -588,16 +588,16 @@ export function AppShell() {
             <button
               type="button"
               onClick={() => setControlsOpen(true)}
-              className="mt-2 flex w-full items-center justify-between rounded-md border border-[#e7e5dc] bg-[#fafaf7] px-2 py-1.5 text-[10.5px] font-medium text-[#4e5a52] hover:bg-[#f1f0ea]"
+              className="mt-2 flex w-full items-center justify-between rounded-md border border-lp-line bg-lp-surface-muted px-2 py-1.5 text-[10.5px] font-medium text-lp-ink-muted hover:bg-lp-surface-sunken"
             >
               <span className="inline-flex items-center gap-1.5">
                 <Settings2 className="h-3.5 w-3.5" />
                 Demo controls
               </span>
-              <span className="text-[9px] text-[#8a938d]">Role & failure</span>
+              <span className="text-[9px] text-lp-ink-faint">Role & failure</span>
             </button>
           </div>
-          <p className="mt-2 px-0.5 text-[9px] leading-relaxed text-[#8a938d]">
+          <p className="mt-2 px-0.5 text-[9px] leading-relaxed text-lp-ink-faint">
             {mode === 'api'
               ? 'PostgreSQL workspace via the local FastAPI service. Payments are simulated.'
               : importedWorkspace
@@ -609,37 +609,37 @@ export function AppShell() {
 
       <div className="lg:pl-60">
         <div className="sticky top-0 z-30">
-          <div className="flex items-center justify-between gap-3 bg-[#163c2d] px-4 py-1.5 text-[10.5px] text-[#dfe9e2] sm:px-6">
+          <div className="flex items-center justify-between gap-3 bg-lp-primary-deep px-4 py-1.5 text-[10.5px] text-lp-on-deep sm:px-6">
             <div
               role="note"
               aria-label="DEMO - Payments are simulated. No money is transferred."
               className="flex min-w-0 items-center gap-2"
             >
-              <span className="shrink-0 rounded bg-[#d9a441] px-1.5 py-0.5 text-[8.5px] font-bold tracking-[0.12em] text-[#2b1c04]">
+              <span className="shrink-0 rounded bg-lp-amber-badge px-1.5 py-0.5 text-[8.5px] font-bold tracking-[0.12em] text-lp-on-amber">
                 DEMO
               </span>
               <span className="truncate">
                 Payments are simulated. No money is transferred.
               </span>
             </div>
-            <span className="hidden shrink-0 items-center gap-1.5 text-[9.5px] text-[#b9cdc0] sm:flex">
+            <span className="hidden shrink-0 items-center gap-1.5 text-[9.5px] text-lp-on-deep-muted sm:flex">
               <Lock className="h-3 w-3" />
               No bank or vendor connection
             </span>
           </div>
 
-          <header className="border-b border-[#e2e0d8] bg-[#fbfaf7]/95 backdrop-blur">
+          <header className="border-b border-lp-line bg-lp-surface-muted/95 backdrop-blur">
             <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
               <div className="flex items-center gap-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#1f5c45] text-[10px] font-bold text-white lg:hidden">
+                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-lp-primary text-[10px] font-bold text-white lg:hidden">
                   LP
                 </span>
-                <div className="hidden items-center gap-2 text-[11px] text-[#8a938d] lg:flex">
+                <div className="hidden items-center gap-2 text-[11px] text-lp-ink-faint lg:flex">
                   <span>Workspace</span>
                   <span>/</span>
-                  <span className="font-medium text-[#1c2420]">{VIEW_LABEL[view]}</span>
+                  <span className="font-medium text-lp-ink">{VIEW_LABEL[view]}</span>
                 </div>
-                <div className="text-[12px] font-semibold text-[#1c2420] lg:hidden">
+                <div className="text-[12px] font-semibold text-lp-ink lg:hidden">
                   {VIEW_LABEL[view]}
                 </div>
               </div>
@@ -654,10 +654,10 @@ export function AppShell() {
                   className={cn(
                     'hidden items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.07em] sm:inline-flex',
                     apiStatus === 'connected'
-                      ? 'border-[#c7ddce] bg-[#edf6ef] text-[#1f5c45]'
+                      ? 'border-lp-success-border bg-lp-success-wash text-lp-primary'
                       : apiStatus === 'connecting'
-                        ? 'border-[#d9ded8] bg-[#f3f5f2] text-[#66706a]'
-                        : 'border-[#e7e5dc] bg-[#fafaf7] text-[#8a938d]',
+                        ? 'border-lp-neutral-border bg-lp-neutral-wash text-lp-ink-muted'
+                        : 'border-lp-line bg-lp-surface-muted text-lp-ink-faint',
                   )}
                 >
                   <Database className="h-3 w-3" />
@@ -667,19 +667,19 @@ export function AppShell() {
                       ? 'Connecting'
                       : 'Browser-local'}
                 </span>
-                <div className="hidden items-center gap-1.5 text-[10px] text-[#66706a] xl:flex">
-                  <CalendarDays className="h-3.5 w-3.5 text-[#8a938d]" />
+                <div className="hidden items-center gap-1.5 text-[10px] text-lp-ink-muted xl:flex">
+                  <CalendarDays className="h-3.5 w-3.5 text-lp-ink-faint" />
                   As of {formatDateTime(state.business.asOf)} IST
                 </div>
-                <label className="flex items-center gap-1.5 rounded-lg border border-[#d9d7ce] bg-white py-1 pl-2 pr-1">
-                  <span className="hidden text-[9px] font-semibold uppercase tracking-[0.08em] text-[#8a938d] sm:inline">
+                <label className="flex items-center gap-1.5 rounded-lg border border-lp-line-strong bg-white py-1 pl-2 pr-1">
+                  <span className="hidden text-[9px] font-semibold uppercase tracking-[0.08em] text-lp-ink-faint sm:inline">
                     Acting as
                   </span>
                   <select
                     value={state.role}
                     onChange={(event) => setRole(event.target.value as Role)}
                     aria-label="Acting role"
-                    className="max-w-[150px] cursor-pointer bg-transparent text-[11px] font-medium text-[#1c2420] outline-none"
+                    className="max-w-[150px] cursor-pointer bg-transparent text-[11px] font-medium text-lp-ink outline-none"
                   >
                     {state.team.map((member) => (
                       <option key={member.id} value={member.role}>
@@ -703,7 +703,7 @@ export function AppShell() {
         </div>
 
         {mode === 'api' && syncError ? (
-          <div className="flex items-start gap-2 border-b border-[#efc9c5] bg-[#fbeceb] px-4 py-2 text-[11px] leading-relaxed text-[#a3261f] sm:px-6">
+          <div className="flex items-start gap-2 border-b border-lp-danger-border bg-lp-danger-wash px-4 py-2 text-[11px] leading-relaxed text-lp-danger sm:px-6">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>
               Server sync problem: {syncError} The last loaded workspace is still shown; retry
@@ -712,7 +712,7 @@ export function AppShell() {
           </div>
         ) : null}
 
-        <nav className="flex gap-1 overflow-x-auto border-b border-[#e2e0d8] bg-[#fbfaf7] px-3 py-1.5 no-scrollbar lg:hidden">
+        <nav className="flex gap-1 overflow-x-auto border-b border-lp-line bg-lp-surface-muted px-3 py-1.5 no-scrollbar lg:hidden">
           {NAV.map((item) => {
             const Icon = item.icon;
             const active = view === item.key;
@@ -724,8 +724,8 @@ export function AppShell() {
                 className={cn(
                   'inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1.5 text-[10.5px] font-medium',
                   active
-                    ? 'bg-[#1f5c45] text-white'
-                    : 'text-[#4e5a52] hover:bg-[#f1f0ea] hover:text-[#1c2420]',
+                    ? 'bg-lp-primary text-white'
+                    : 'text-lp-ink-muted hover:bg-lp-surface-sunken hover:text-lp-ink',
                 )}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -798,7 +798,7 @@ export function AppShell() {
             />
           ) : null}
 
-          <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-[#e2e0d8] pt-3 text-[9.5px] leading-relaxed text-[#8a938d]">
+          <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-lp-line pt-3 text-[9.5px] leading-relaxed text-lp-ink-faint">
             <span>
               {importedWorkspace ? 'Local workspace data' : 'Synthetic demo data'} ·{' '}
               {state.business.name} · GSTIN{' '}
