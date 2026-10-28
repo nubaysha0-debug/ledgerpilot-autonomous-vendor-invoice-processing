@@ -609,7 +609,7 @@ export function AppShell() {
 
       <div className="lg:pl-60">
         <div className="sticky top-0 z-30">
-          <div className="flex items-center justify-between gap-3 bg-lp-primary-deep px-4 py-1.5 text-[10.5px] text-lp-on-deep sm:px-6">
+          <div className="flex items-center justify-between gap-3 border-b border-lp-warning-border/70 bg-lp-warning-wash px-4 py-1.5 text-[10.5px] text-lp-ink-muted sm:px-6">
             <div
               role="note"
               aria-label="DEMO - Payments are simulated. No money is transferred."
@@ -622,7 +622,7 @@ export function AppShell() {
                 Payments are simulated. No money is transferred.
               </span>
             </div>
-            <span className="hidden shrink-0 items-center gap-1.5 text-[9.5px] text-lp-on-deep-muted sm:flex">
+            <span className="hidden shrink-0 items-center gap-1.5 text-[9.5px] text-lp-ink-faint sm:flex">
               <Lock className="h-3 w-3" />
               No bank or vendor connection
             </span>

@@ -269,7 +269,7 @@ failure drills. The seed is deterministic:
 - ₹3,83,870 open payables across 11 invoices
 - ₹1,01,088 overdue on 4 invoices
 - ABC Electricals `ABC/26-27/0184`: ₹12,500 total, ₹5,000 paid, ₹7,500 available
-- Sharma Hardware `Sharma/26-27/0412`: ₹21,995 printed vs ₹22,130 arithmetic, a ₹135 exception
+- Sharma Hardware `Sharma/26-27/0412`: ₹22,130 printed vs ₹21,995 arithmetic, a ₹135 exception
 - One changed bank account, one duplicate candidate, one missing purchase order
 
 Use **Data → Reset demo data** to restore the seed. In API mode this replaces the PostgreSQL

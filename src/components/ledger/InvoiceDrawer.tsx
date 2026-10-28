@@ -559,9 +559,8 @@ export function InvoiceDrawer({
               ) : (
                 <ol className="divide-y divide-lp-line-soft">
                   {activity.map((event) => (
-                    <li key={event.id} className="flex items-start gap-3 px-3.5 py-3">
-                      <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-lp-primary/60" />
-                      <div className="min-w-0">
+                    <li key={event.id} className="px-3.5 py-3">
+                      <div className="min-w-0 border-l-2 border-lp-primary/20 pl-3">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="text-[11.5px] font-semibold text-lp-ink">
                             {event.action}
