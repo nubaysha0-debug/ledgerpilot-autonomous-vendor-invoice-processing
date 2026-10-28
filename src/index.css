@@ -1,52 +1,54 @@
 @import "tailwindcss";
 
 @theme {
-  /* LedgerPilot product console palette. Muted forest/cream identity. */
-  --color-lp-canvas: #f4f3ee;
+  /* LedgerPilot "Cappuccino" palette. Espresso, coffee, tan and warm stone. */
+  --color-lp-canvas: #f5f1e9;
   --color-lp-surface: #ffffff;
-  --color-lp-surface-muted: #fafaf7;
-  --color-lp-surface-sunken: #f1f0ea;
+  --color-lp-surface-muted: #fbf8f2;
+  --color-lp-surface-sunken: #f0ebe2;
 
-  --color-lp-ink: #1c2420;
-  --color-lp-ink-muted: #66706a;
-  --color-lp-ink-faint: #5f6a63;
+  --color-lp-ink: #2b2118;
+  --color-lp-ink-muted: #6a5b4b;
+  --color-lp-ink-faint: #72624f;
 
-  --color-lp-line: #e2e0d8;
-  --color-lp-line-strong: #d9d7ce;
-  --color-lp-line-soft: #eeede8;
+  --color-lp-line: #d8d1c7;
+  --color-lp-line-strong: #c6c0b9;
+  --color-lp-line-soft: #e9e3da;
 
-  --color-lp-primary: #1f5c45;
-  --color-lp-primary-hover: #184a37;
-  --color-lp-primary-deep: #163c2d;
-  --color-lp-selection: #cfe0d4;
-  --color-lp-amber-badge: #d9a441;
-  --color-lp-link: #8a5a1f;
-  --color-lp-overlay: #101512;
-  --color-lp-on-amber: #2b1c04;
+  --color-lp-primary: #422701;
+  --color-lp-primary-hover: #331d00;
+  --color-lp-primary-deep: #2a1800;
+  --color-lp-selection: #d6b588;
+  --color-lp-amber-badge: #d6b588;
+  --color-lp-accent-wash: #f7efe3;
+  --color-lp-accent-border: #e6d3ba;
+  --color-lp-link: #705e46;
+  --color-lp-overlay: #1c140c;
+  --color-lp-on-amber: #422701;
 
-  --color-lp-success: #1f7a56;
-  --color-lp-success-wash: #edf6ef;
-  --color-lp-success-border: #c7ddce;
+  --color-lp-success: #4f6b45;
+  --color-lp-success-wash: #eff3ea;
+  --color-lp-success-border: #cfdac5;
 
-  --color-lp-warning: #a15c12;
-  --color-lp-warning-wash: #fdf8ee;
-  --color-lp-warning-border: #efd7ad;
+  --color-lp-warning: #8a5a2b;
+  --color-lp-warning-wash: #fbf3e8;
+  --color-lp-warning-border: #e8d3b6;
 
-  --color-lp-danger: #a3261f;
-  --color-lp-danger-wash: #fdf4f3;
-  --color-lp-danger-border: #efc9c5;
+  --color-lp-danger: #8c3a2e;
+  --color-lp-danger-wash: #fbf0ee;
+  --color-lp-danger-border: #e9cbc5;
 
-  --color-lp-info: #245b89;
-  --color-lp-info-wash: #eef5fb;
-  --color-lp-info-border: #c9dced;
+  --color-lp-info: #5b6b78;
+  --color-lp-info-wash: #eff2f4;
+  --color-lp-info-border: #d3dce2;
 
-  --color-lp-neutral: #52605a;
-  --color-lp-neutral-wash: #f3f5f2;
-  --color-lp-neutral-border: #d9ded8;
+  --color-lp-neutral: #705e46;
+  --color-lp-neutral-wash: #f3efe8;
+  --color-lp-neutral-border: #ddd5c9;
 
-  --color-lp-teal: #17645c;
-  --color-lp-teal-wash: #edf7f5;
-  --color-lp-teal-border: #c7dedc;
+  --color-lp-teal: #5a6b62;
+  --color-lp-teal-wash: #eff3f0;
+  --color-lp-teal-border: #d2dcd6;
 }
 
 @layer utilities {
@@ -75,16 +77,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(28, 36, 32, 0.04);
+  background: rgba(43, 33, 24, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(28, 36, 32, 0.18);
+  background: rgba(43, 33, 24, 0.2);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(28, 36, 32, 0.3);
+  background: rgba(43, 33, 24, 0.32);
 }
 
 .lp-num {

@@ -580,7 +580,7 @@ export function DataView({
                   </div>
 
                   {issueCount === 0 ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-lp-success-border bg-lp-success-wash px-3 py-2 text-[11.5px] font-medium text-lp-primary">
+                    <div className="flex items-center gap-2 rounded-lg border border-lp-success-border bg-lp-success-wash px-3 py-2 text-[11.5px] font-medium text-lp-success">
                       <CheckCircle2 className="h-4 w-4" />
                       Validation passed. Review the caution below, then import.
                     </div>

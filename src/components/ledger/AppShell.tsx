@@ -545,7 +545,7 @@ export function AppShell() {
                 className={cn(
                   'mb-0.5 flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors',
                   active
-                    ? 'bg-lp-success-wash text-lp-primary'
+                    ? 'bg-lp-accent-wash text-lp-primary'
                     : 'text-lp-ink-muted hover:bg-lp-surface-sunken hover:text-lp-ink',
                 )}
               >
@@ -654,7 +654,7 @@ export function AppShell() {
                   className={cn(
                     'hidden items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.07em] sm:inline-flex',
                     apiStatus === 'connected'
-                      ? 'border-lp-success-border bg-lp-success-wash text-lp-primary'
+                      ? 'border-lp-success-border bg-lp-success-wash text-lp-success'
                       : apiStatus === 'connecting'
                         ? 'border-lp-neutral-border bg-lp-neutral-wash text-lp-ink-muted'
                         : 'border-lp-line bg-lp-surface-muted text-lp-ink-faint',

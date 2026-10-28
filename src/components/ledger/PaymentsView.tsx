@@ -201,7 +201,7 @@ export function PaymentsView({
               title="Approved, ready to execute"
               subtitle="Execution is the simulated disbursement step"
             />
-            <span className="rounded-md bg-lp-success-wash px-2 py-0.5 text-[11px] font-semibold text-lp-primary">
+            <span className="rounded-md bg-lp-success-wash px-2 py-0.5 text-[11px] font-semibold text-lp-success">
               {approved.length}
             </span>
           </div>

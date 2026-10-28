@@ -228,7 +228,7 @@ export function InvoiceDrawer({
       aria-label={`Invoice ${view.invoice.invoiceNumber}`}
     >
       <div
-        className="flex h-full w-full max-w-3xl flex-col border-l border-lp-line bg-lp-canvas shadow-[-12px_0_40px_rgba(15,23,18,0.18)]"
+        className="flex h-full w-full max-w-3xl flex-col border-l border-lp-line bg-lp-canvas shadow-[-12px_0_40px_rgba(43,33,24,0.18)]"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="border-b border-lp-line bg-lp-surface-muted">

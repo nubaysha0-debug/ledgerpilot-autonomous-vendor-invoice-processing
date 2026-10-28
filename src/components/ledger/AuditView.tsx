@@ -15,7 +15,7 @@ const FILTERS: Array<{ key: AuditFilter; label: string }> = [
 ];
 
 const ROLE_STYLES: Record<string, string> = {
-  owner: 'bg-lp-success-wash text-lp-primary',
+  owner: 'bg-lp-accent-wash text-lp-primary',
   accountant: 'bg-lp-info-wash text-lp-info',
   staff: 'bg-lp-surface-sunken text-lp-neutral',
   system: 'bg-lp-surface-sunken text-lp-neutral',
@@ -99,7 +99,7 @@ export function AuditView({
           </p>
           <SimulatedStamp className="mt-2" />
         </div>
-        <div className="flex items-center gap-2 rounded-lg border border-lp-success-border bg-lp-success-wash px-3 py-2 text-[11px] font-medium text-lp-primary">
+        <div className="flex items-center gap-2 rounded-lg border border-lp-success-border bg-lp-success-wash px-3 py-2 text-[11px] font-medium text-lp-success">
           <ShieldCheck className="h-4 w-4" />
           Append-only in this demo session
         </div>

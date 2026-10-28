@@ -42,7 +42,7 @@ function KpiCard({
   onClick?: () => void;
 }) {
   const tones = {
-    ink: 'bg-lp-success-wash text-lp-primary',
+    ink: 'bg-lp-accent-wash text-lp-primary',
     amber: 'bg-lp-warning-wash text-lp-warning',
     blue: 'bg-lp-info-wash text-lp-info',
     red: 'bg-lp-danger-wash text-lp-danger',
@@ -52,7 +52,7 @@ function KpiCard({
     <button
       type="button"
       onClick={onClick}
-      className="rounded-xl border border-lp-line bg-white p-4 text-left shadow-[0_1px_2px_rgba(28,36,32,0.04)] transition-colors hover:border-lp-line-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-lp-primary"
+      className="rounded-xl border border-lp-line bg-white p-4 text-left shadow-[0_1px_2px_rgba(43,33,24,0.05)] transition-colors hover:border-lp-line-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-lp-primary"
     >
       <div className="flex items-start justify-between gap-3">
         <span className="text-[11px] font-medium uppercase tracking-[0.07em] text-lp-ink-muted">

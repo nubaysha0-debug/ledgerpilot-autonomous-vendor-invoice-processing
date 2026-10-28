@@ -54,7 +54,7 @@ const INVOICE_STATUS_STYLES: Record<InvoiceStatus, string> = {
   'Needs review': 'border-lp-warning-border bg-lp-warning-wash text-lp-warning',
   'Ready for approval': 'border-lp-neutral-border bg-lp-neutral-wash text-lp-ink-muted',
   'Pending approval': 'border-lp-info-border bg-lp-info-wash text-lp-info',
-  Approved: 'border-lp-success-border bg-lp-success-wash text-lp-primary',
+  Approved: 'border-lp-success-border bg-lp-success-wash text-lp-success',
   'Part-paid': 'border-lp-teal-border bg-lp-teal-wash text-lp-teal',
   Paid: 'border-lp-neutral-border bg-lp-neutral-wash text-lp-neutral',
   Rejected: 'border-lp-danger-border bg-lp-danger-wash text-lp-danger',
@@ -62,27 +62,14 @@ const INVOICE_STATUS_STYLES: Record<InvoiceStatus, string> = {
   'Approval stale': 'border-lp-warning-border bg-lp-warning-wash text-lp-warning',
 };
 
-const INVOICE_STATUS_DOTS: Record<InvoiceStatus, string> = {
-  'Needs review': 'bg-lp-warning',
-  'Ready for approval': 'bg-lp-neutral',
-  'Pending approval': 'bg-lp-info',
-  Approved: 'bg-lp-success',
-  'Part-paid': 'bg-lp-teal',
-  Paid: 'bg-lp-neutral',
-  Rejected: 'bg-lp-danger',
-  'Payment failed': 'bg-lp-danger',
-  'Approval stale': 'bg-lp-warning',
-};
-
 export function StatusBadge({ status }: { status: InvoiceStatus }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border px-2 py-0.5 text-[11px] font-medium',
+        'inline-flex items-center whitespace-nowrap rounded-md border px-2 py-0.5 text-[11px] font-medium',
         INVOICE_STATUS_STYLES[status],
       )}
     >
-      <span className={cn('h-1.5 w-1.5 rounded-full', INVOICE_STATUS_DOTS[status])} />
       {status}
     </span>
   );
@@ -90,7 +77,7 @@ export function StatusBadge({ status }: { status: InvoiceStatus }) {
 
 const PAYMENT_STATUS_STYLES: Record<PaymentStatus, string> = {
   pending_approval: 'border-lp-info-border bg-lp-info-wash text-lp-info',
-  approved: 'border-lp-success-border bg-lp-success-wash text-lp-primary',
+  approved: 'border-lp-success-border bg-lp-success-wash text-lp-success',
   failed: 'border-lp-danger-border bg-lp-danger-wash text-lp-danger',
   simulated: 'border-lp-neutral-border bg-lp-neutral-wash text-lp-neutral',
   rejected: 'border-lp-danger-border bg-lp-danger-wash text-lp-danger',
@@ -189,7 +176,7 @@ export function Card({
   return (
     <div
       className={cn(
-        'rounded-xl border border-lp-line bg-white shadow-[0_1px_2px_rgba(28,36,32,0.04)]',
+        'rounded-xl border border-lp-line bg-white shadow-[0_1px_2px_rgba(43,33,24,0.05)]',
         className,
       )}
     >
@@ -300,7 +287,7 @@ export function Modal({
       <div
         onMouseDown={(event) => event.stopPropagation()}
         className={cn(
-          'flex max-h-[92vh] w-full flex-col overflow-hidden rounded-xl border border-lp-line bg-white shadow-[0_18px_60px_rgba(15,23,18,0.22)]',
+          'flex max-h-[92vh] w-full flex-col overflow-hidden rounded-xl border border-lp-line bg-white shadow-[0_18px_60px_rgba(43,33,24,0.22)]',
           width,
         )}
       >
@@ -509,7 +496,7 @@ export function ToastView({ toast }: { toast: ToastData | null }) {
     toast.tone === 'error'
       ? 'border-lp-danger-border bg-lp-danger-wash text-lp-danger'
       : toast.tone === 'success'
-        ? 'border-lp-success-border bg-lp-success-wash text-lp-primary'
+        ? 'border-lp-success-border bg-lp-success-wash text-lp-success'
         : 'border-lp-info-border bg-lp-info-wash text-lp-info';
   return (
     <div className="pointer-events-none fixed bottom-5 right-5 z-[60] max-w-sm">

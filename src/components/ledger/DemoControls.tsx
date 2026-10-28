@@ -41,7 +41,7 @@ export function DemoControls({
         </div>
       }
     >
-      <div className="flex items-start gap-2 rounded-lg border border-lp-success-border bg-lp-success-wash p-3 text-[11px] leading-relaxed text-lp-primary">
+      <div className="flex items-start gap-2 rounded-lg border border-lp-accent-border bg-lp-accent-wash p-3 text-[11px] leading-relaxed text-lp-primary">
         <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
         <span>
           This console runs on synthetic data. Nothing is sent to a bank, a vendor, or an external

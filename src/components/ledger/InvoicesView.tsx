@@ -162,13 +162,13 @@ export function InvoicesView({
 
       {vendor && (
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-lp-success-border bg-lp-success-wash px-2.5 py-1 text-[11px] font-medium text-lp-primary">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-lp-accent-border bg-lp-accent-wash px-2.5 py-1 text-[11px] font-medium text-lp-primary">
             Vendor: {vendor.name}
             <button
               type="button"
               onClick={onClearVendorFilter}
               aria-label="Clear vendor filter"
-              className="rounded-full p-0.5 hover:bg-lp-success-border"
+              className="rounded-full p-0.5 hover:bg-lp-accent-border"
             >
               <X className="h-3 w-3" />
             </button>
