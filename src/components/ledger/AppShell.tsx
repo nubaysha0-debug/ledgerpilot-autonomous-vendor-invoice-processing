@@ -7,11 +7,15 @@ import {
   FileText,
   LayoutDashboard,
   Lock,
+  LogOut,
   ScrollText,
   Settings2,
+  Share2,
+  Users,
   Wallet,
 } from 'lucide-react';
-import type { BusinessProfileInput, PaymentRequestInput, Role } from '../../ledger/types';
+import type { BusinessProfileInput, PaymentRequestInput, Role, TeamMember } from '../../ledger/types';
+import type { AuthUser } from '../../ledger/auth';
 import type { WorkspaceImportInput } from '../../ledger/importer';
 import { formatDateTime, formatINR } from '../../ledger/money';
 import { useLedger } from '../../ledger/store';
@@ -36,8 +40,9 @@ import { InvoiceDrawer } from './InvoiceDrawer';
 import { PaymentDialog } from './PaymentDialog';
 import { DemoControls } from './DemoControls';
 import { DataView } from './DataView';
+import { TeamView } from './TeamView';
 
-type WorkspaceView = 'overview' | 'invoices' | 'vendors' | 'payments' | 'audit' | 'data';
+type WorkspaceView = 'overview' | 'invoices' | 'vendors' | 'payments' | 'audit' | 'data' | 'team';
 
 const NAV: Array<{
   key: WorkspaceView;
@@ -51,6 +56,7 @@ const NAV: Array<{
   { key: 'payments', label: 'Payments', caption: 'Approval queue', icon: Wallet },
   { key: 'audit', label: 'Audit trail', caption: 'Controls log', icon: ScrollText },
   { key: 'data', label: 'Data', caption: 'CSV & backups', icon: Database },
+  { key: 'team', label: 'Team', caption: 'Reviewers & access', icon: Users },
 ];
 
 const VIEW_LABEL: Record<WorkspaceView, string> = {
@@ -60,13 +66,20 @@ const VIEW_LABEL: Record<WorkspaceView, string> = {
   payments: 'Payments',
   audit: 'Audit trail',
   data: 'Data & backups',
+  team: 'Team & Reviewers',
 };
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Something went wrong.';
 }
 
-export function AppShell() {
+export function AppShell({
+  user,
+  onLogout,
+}: {
+  user?: AuthUser | null;
+  onLogout?: () => void;
+} = {}) {
   const { state, views, totals, actions, mode, apiStatus, apiBaseUrl, syncError } = useLedger();
   const [view, setView] = useState<WorkspaceView>('overview');
   const [invoiceFilter, setInvoiceFilter] = useState('All');
@@ -93,8 +106,22 @@ export function AppShell() {
     [],
   );
 
-  const activeMember =
-    state.team.find((member) => member.role === state.role) ?? state.team[0];
+  const activeMember: TeamMember = user
+    ? {
+        id: 'user-auth',
+        name: user.full_name,
+        title: `${user.ledger_role === 'owner' ? 'Proprietor & Approver' : user.ledger_role === 'accountant' ? 'Accountant' : 'Reviewer'} · ${user.email}`,
+        role: user.ledger_role,
+        initials:
+          user.full_name
+            .split(' ')
+            .map((part) => part[0])
+            .slice(0, 2)
+            .join('')
+            .toUpperCase() || 'LP',
+      }
+    : (state.team.find((member) => member.role === state.role) ?? state.team[0]);
+
   const openView = openInvoiceId
     ? views.find((item) => item.invoice.id === openInvoiceId)
     : undefined;
@@ -110,11 +137,12 @@ export function AppShell() {
     );
 
   const ensureOwner = () => {
-    if (state.role !== 'owner') {
+    const isOwner = user ? user.ledger_role === 'owner' : state.role === 'owner';
+    if (!isOwner) {
       notify(
         'error',
         'Owner approval required',
-        `${activeMember.name} cannot approve, reject, or execute payments. Switch to Ramesh Patil in Demo controls.`,
+        `${activeMember.name} cannot approve, reject, or execute payments. Only the workspace owner can perform this action.`,
       );
       return false;
     }
@@ -572,30 +600,52 @@ export function AppShell() {
         <div className="border-t border-lp-line-soft p-3">
           <div className="rounded-lg border border-lp-line bg-white p-2.5">
             <div className="flex items-center gap-2">
-              <Avatar initials={activeMember?.initials ?? 'RP'} name={activeMember?.name} size="sm" />
+              <Avatar initials={activeMember?.initials ?? 'LP'} name={activeMember?.name} size="sm" />
               <div className="min-w-0 flex-1">
                 <div className="truncate text-[11.5px] font-semibold text-lp-ink">
                   {activeMember?.name}
                 </div>
                 <div
                   className="truncate text-[9.5px] text-lp-ink-faint"
-                  title={`${activeMember?.role} · ${activeMember?.title}`}
+                  title={user?.email || `${activeMember?.role} · ${activeMember?.title}`}
                 >
-                  {activeMember?.title}
+                  {user?.email || activeMember?.title}
                 </div>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setControlsOpen(true)}
-              className="mt-2 flex w-full items-center justify-between rounded-md border border-lp-line bg-lp-surface-muted px-2 py-1.5 text-[10.5px] font-medium text-lp-ink-muted hover:bg-lp-surface-sunken"
-            >
-              <span className="inline-flex items-center gap-1.5">
-                <Settings2 className="h-3.5 w-3.5" />
-                Demo controls
-              </span>
-              <span className="text-[9px] text-lp-ink-faint">Role & failure</span>
-            </button>
+
+            {user ? (
+              <div className="mt-2.5 flex items-center gap-1.5 border-t border-lp-line-soft pt-2">
+                <button
+                  type="button"
+                  onClick={() => navigate('team')}
+                  className="flex-1 inline-flex items-center justify-center gap-1 rounded-md border border-lp-line bg-lp-surface-muted px-2 py-1.5 text-[10.5px] font-medium text-lp-ink hover:bg-lp-surface-sunken"
+                >
+                  <Share2 className="h-3 w-3 text-lp-primary" />
+                  Invite reviewer
+                </button>
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  title="Sign out"
+                  className="inline-flex items-center justify-center rounded-md border border-lp-line bg-lp-surface-muted p-1.5 text-lp-danger hover:bg-lp-danger-wash"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setControlsOpen(true)}
+                className="mt-2 flex w-full items-center justify-between rounded-md border border-lp-line bg-lp-surface-muted px-2 py-1.5 text-[10.5px] font-medium text-lp-ink-muted hover:bg-lp-surface-sunken"
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <Settings2 className="h-3.5 w-3.5" />
+                  Demo controls
+                </span>
+                <span className="text-[9px] text-lp-ink-faint">Role & failure</span>
+              </button>
+            )}
           </div>
           <p className="mt-2 px-0.5 text-[9px] leading-relaxed text-lp-ink-faint">
             {mode === 'api'
@@ -671,32 +721,46 @@ export function AppShell() {
                   <CalendarDays className="h-3.5 w-3.5 text-lp-ink-faint" />
                   As of {formatDateTime(state.business.asOf)} IST
                 </div>
-                <label className="flex items-center gap-1.5 rounded-lg border border-lp-line-strong bg-white py-1 pl-2 pr-1">
-                  <span className="hidden text-[9px] font-semibold uppercase tracking-[0.08em] text-lp-ink-faint sm:inline">
-                    Acting as
-                  </span>
-                  <select
-                    value={state.role}
-                    onChange={(event) => setRole(event.target.value as Role)}
-                    aria-label="Acting role"
-                    className="max-w-[150px] cursor-pointer bg-transparent text-[11px] font-medium text-lp-ink outline-none"
+                {user ? (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate('team')}
+                    aria-label="Invite reviewer"
                   >
-                    {state.team.map((member) => (
-                      <option key={member.id} value={member.role}>
-                        {member.name.split(' ')[0]} · {member.role}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setControlsOpen(true)}
-                  aria-label="Open demo controls"
-                >
-                  <Settings2 className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Demo controls</span>
-                </Button>
+                    <Share2 className="h-3.5 w-3.5 text-lp-primary" />
+                    <span className="hidden sm:inline">Invite Reviewer</span>
+                  </Button>
+                ) : (
+                  <label className="flex items-center gap-1.5 rounded-lg border border-lp-line-strong bg-white py-1 pl-2 pr-1">
+                    <span className="hidden text-[9px] font-semibold uppercase tracking-[0.08em] text-lp-ink-faint sm:inline">
+                      Acting as
+                    </span>
+                    <select
+                      value={state.role}
+                      onChange={(event) => setRole(event.target.value as Role)}
+                      aria-label="Acting role"
+                      className="max-w-[150px] cursor-pointer bg-transparent text-[11px] font-medium text-lp-ink outline-none"
+                    >
+                      {state.team.map((member) => (
+                        <option key={member.id} value={member.role}>
+                          {member.name.split(' ')[0]} · {member.role}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                {!user ? (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setControlsOpen(true)}
+                    aria-label="Open demo controls"
+                  >
+                    <Settings2 className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Demo controls</span>
+                  </Button>
+                ) : null}
               </div>
             </div>
           </header>
@@ -796,6 +860,10 @@ export function AppShell() {
               onReset={requestReset}
               onNotify={notify}
             />
+          ) : null}
+
+          {view === 'team' ? (
+            <TeamView isOwner={user ? user.ledger_role === 'owner' : state.role === 'owner'} />
           ) : null}
 
           <footer className="mt-8 flex flex-wrap items-center justify-between gap-2 border-t border-lp-line pt-3 text-[9.5px] leading-relaxed text-lp-ink-faint">
