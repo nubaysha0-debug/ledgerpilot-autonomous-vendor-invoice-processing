@@ -117,6 +117,9 @@ class API:
             "MOCK_ALLOW_FORCED_FAILURE": "true",
             "UPLOAD_DIR": str(upload_dir),
             "CORS_ALLOWED_ORIGINS": "http://localhost:3000,http://127.0.0.1:3000",
+            # Keep AUTH_REQUIRED=false so all 31 acceptance tests continue to
+            # use the legacy X-Actor-Id header path without modification.
+            "AUTH_REQUIRED": "false",
         }
         self._env.update(env_overrides or {})
         self._start()

@@ -75,6 +75,17 @@ class Settings:
     dup_date_window_days: int = int(os.getenv("DUP_DATE_WINDOW_DAYS", "3"))
     fault_injection: str = os.getenv("FAULT_INJECTION", "")
 
+    # ── Authentication ────────────────────────────────────────────────────
+    # Set AUTH_REQUIRED=true in production / Vercel to enforce login.
+    # Defaults to false so existing ?api=off demo and acceptance tests
+    # keep working without any changes.
+    auth_required: bool = field(default_factory=lambda: _bool("AUTH_REQUIRED", False))
+    # A long random string used to sign session tokens.  Generate with:
+    #   python -c "import secrets; print(secrets.token_hex(32))"
+    session_secret: str = os.getenv("SESSION_SECRET", "change-me-in-production")
+    # Session lifetime in seconds (default 8 hours)
+    session_max_age: int = int(os.getenv("SESSION_MAX_AGE", str(8 * 60 * 60)))
+
     @property
     def simulated_label(self) -> str:
         return "SIMULATED — no money transferred"

@@ -39,6 +39,7 @@ from .routers import (
     system,
     vendors,
 )
+from .auth_router import router as auth_router
 from .seed import seed_demo
 from .workflow import sweep_interrupted_runs
 
@@ -79,7 +80,7 @@ settings = get_settings()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_allowed_origins,
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     expose_headers=["X-Correlation-Id", "Idempotency-Key"],
@@ -150,6 +151,8 @@ for module in (
     assistant,
 ):
     app.include_router(module.router)
+
+app.include_router(auth_router)
 
 
 @app.get("/api", include_in_schema=False)

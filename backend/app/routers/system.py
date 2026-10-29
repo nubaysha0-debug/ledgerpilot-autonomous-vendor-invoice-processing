@@ -45,6 +45,7 @@ def health() -> dict[str, Any]:
         "database": "ok",
         "migrations": migrations,
         "seeded": bool(has_profile),
+        "auth_required": settings.auth_required,
         "adapters": {
             "extractor": settings.extractor,
             "llm": settings.llm_provider,
