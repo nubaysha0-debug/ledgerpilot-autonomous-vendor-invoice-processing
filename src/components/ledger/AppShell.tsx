@@ -231,21 +231,22 @@ export function AppShell({
     if (!ensureOwner()) return;
     const payment = state.payments.find((item) => item.id === paymentId);
     if (!payment) return;
+    const isApproved = payment.status === 'approved';
     setReason({
-      title: 'Reject this payment?',
-      label: 'Reason for rejection',
+      title: isApproved ? 'Cancel this payment?' : 'Reject this payment?',
+      label: isApproved ? 'Reason for cancellation' : 'Reason for rejection',
       placeholder: 'For example: vendor invoice is under dispute; re-record after the credit note.',
-      confirmLabel: 'Reject payment',
+      confirmLabel: isApproved ? 'Cancel payment' : 'Reject payment',
       onConfirm: async (text) => {
         try {
           await actions.rejectPayment(paymentId, text);
           notify(
             'info',
-            'Payment rejected',
-            `${formatINR(payment.amountPaise)} request rejected. The reason is in the audit trail.`,
+            isApproved ? 'Payment cancelled' : 'Payment rejected',
+            `${formatINR(payment.amountPaise)} ${isApproved ? 'cancelled' : 'rejected'}. The reason is in the audit trail.`,
           );
         } catch (error) {
-          notify('error', 'Rejection failed', errorMessage(error));
+          notify('error', isApproved ? 'Cancellation failed' : 'Rejection failed', errorMessage(error));
         }
       },
     });

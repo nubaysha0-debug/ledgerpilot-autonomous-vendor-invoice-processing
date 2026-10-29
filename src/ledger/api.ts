@@ -340,12 +340,54 @@ export class LedgerApi {
   }
 
   async rejectPayment(paymentId: string, reason: string): Promise<void> {
-    const approval = await this.pendingApproval(paymentId);
-    await request(this.baseUrl, `/api/approvals/${approval.id}/decision`, {
-      method: 'POST',
-      actorId: this.actor('owner'),
-      body: { decision: 'reject', fingerprint: approval.fingerprint, reason },
-    });
+    // 1. Try to find a pending approval first
+    const body = await request<{ items: ApprovalItem[] }>(
+      this.baseUrl,
+      '/api/approvals?status=pending',
+    ).catch(() => ({ items: [] }));
+    const approval = (body.items ?? []).find((item) => item.payment_id === paymentId);
+
+    if (approval) {
+      await request(this.baseUrl, `/api/approvals/${approval.id}/decision`, {
+        method: 'POST',
+        actorId: this.actor('owner'),
+        body: { decision: 'reject', fingerprint: approval.fingerprint, reason },
+      });
+      return;
+    }
+
+    // 2. If no pending approval exists (e.g. payment was already approved),
+    // cancel it via PATCH /api/payments/{paymentId}
+    try {
+      const payment = await request<{ id: string; version: number; status: string }>(
+        this.baseUrl,
+        `/api/payments/${encodeURIComponent(paymentId)}`,
+      );
+      if (payment && payment.status !== 'paid_simulated' && payment.status !== 'cancelled') {
+        await request(
+          this.baseUrl,
+          `/api/payments/${encodeURIComponent(paymentId)}`,
+          {
+            method: 'PATCH',
+            actorId: this.actor('owner'),
+            body: {
+              version: payment.version,
+              cancel: true,
+              note: reason,
+            },
+          },
+        );
+        return;
+      }
+    } catch {
+      // Fall through to error below
+    }
+
+    throw new ApiError(
+      409,
+      'APPROVAL_NOT_FOUND',
+      'No pending approval exists for this payment. Reload the workspace.',
+    );
   }
 
   async executePayment(
