@@ -202,6 +202,12 @@ export async function authInvite(
       body: { email, ledger_role: ledgerRole },
     });
   } catch (error) {
+    // Only fake an invite when the API is genuinely unreachable (offline demo).
+    // Real failures (401, 409, 422, 500) must surface so we never hand out a
+    // link that cannot work.
+    if (!(error instanceof ApiError && error.unreachable)) {
+      throw error;
+    }
     const token = Math.random().toString(36).slice(2, 14) + Date.now().toString(36);
     return {
       invite_id: 'inv-' + token.slice(0, 8),
@@ -227,6 +233,12 @@ export async function authAcceptInvite(
     setStoredUser(user);
     return user;
   } catch (error) {
+    // Only fall back to the offline demo when the API is unreachable. If the
+    // server says the invite is invalid/expired/used, show that error instead
+    // of silently signing the visitor in as a demo user.
+    if (!(error instanceof ApiError && error.unreachable)) {
+      throw error;
+    }
     const localUser: AuthUser = {
       email: 'invitee@example.com',
       full_name: fullName,
