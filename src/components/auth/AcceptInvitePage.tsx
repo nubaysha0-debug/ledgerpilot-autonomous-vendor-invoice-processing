@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { authAcceptInvite, type AuthUser } from '../../ledger/auth';
 import { ApiError } from '../../ledger/api';
 
@@ -11,18 +11,32 @@ export function AcceptInvitePage({ token, onAuth }: Props) {
   const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const submitting = useRef(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    // Guard against a fast double-click: the second request would hit an
+    // already-accepted invite and show a misleading error.
+    if (submitting.current) return;
+    submitting.current = true;
     setError(null);
+    setErrorCode(null);
     setLoading(true);
     try {
       const user = await authAcceptInvite(token, fullName, password);
       onAuth(user);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Something went wrong.');
+      if (err instanceof ApiError) {
+        setError(err.message);
+        setErrorCode(err.code);
+      } else {
+        setError('Something went wrong. Please try again.');
+        setErrorCode(null);
+      }
     } finally {
+      submitting.current = false;
       setLoading(false);
     }
   }
@@ -74,9 +88,23 @@ export function AcceptInvitePage({ token, onAuth }: Props) {
             </div>
 
             {error && (
-              <p className="rounded-lg bg-lp-danger-wash px-3 py-2 text-[12.5px] text-lp-danger">
-                {error}
-              </p>
+              <div className="rounded-lg bg-lp-danger-wash px-3 py-2 text-[12.5px] text-lp-danger">
+                <p>{error}</p>
+                {errorCode === 'INVITE_USED' && (
+                  <button
+                    type="button"
+                    onClick={() => window.location.assign('/')}
+                    className="mt-1.5 text-[12px] font-semibold underline underline-offset-2 hover:no-underline"
+                  >
+                    Sign in instead
+                  </button>
+                )}
+                {(errorCode === 'INVITE_EXPIRED' || errorCode === 'INVITE_NOT_FOUND') && (
+                  <p className="mt-1.5 text-[11.5px] opacity-80">
+                    Ask the workspace owner to send you a fresh invite link.
+                  </p>
+                )}
+              </div>
             )}
 
             <button

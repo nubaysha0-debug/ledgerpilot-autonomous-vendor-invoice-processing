@@ -58,7 +58,17 @@ async function authRequest<T>(
   const payload = text ? (JSON.parse(text) as unknown) : null;
 
   if (!response.ok) {
-    const err = payload as { code?: string; message?: string; detail?: string } | null;
+    // The API uses a nested envelope: {"error": {code, message, details, ...}}.
+    // Older/simpler endpoints may use top-level fields, so support both.
+    const body = payload as
+      | {
+          error?: { code?: string; message?: string; detail?: string };
+          code?: string;
+          message?: string;
+          detail?: string;
+        }
+      | null;
+    const err = body?.error ?? body;
     throw new ApiError(
       response.status,
       err?.code ?? 'AUTH_ERROR',
